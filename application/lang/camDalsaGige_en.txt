@@ -1,0 +1,18 @@
+﻿# English  Translations for MVS.
+
+#Code					TEXT
+#-------------------------------------------
+
+
+
+# DALSA GIGE CAMERAS 
+
+EV_DALSACAMGIGE_UNKNOW_DEVICE		Camera is not connected.
+EV_DALSACAMGIGE_NOT_READY		Camera not configured yet.
+EV_DALSACAMGIGE_ERROR_CFG		Camera not configured correctly.
+EV_DALSACAMGIGE_NO_REAL_TIME		Fail reading real time manager.
+EV_DALSACAMGIGE_NO_PLANE_RAW		RAW plane don´t exist.
+EV_DALSACAMGIGE_IMAGE_SIZE		Incorrect image size.
+EV_DALSACAMGIGE_IMAGE_BITCOUNT		Fail reading RAW pixel size.
+EV_DALSACAMGIGE_FAIL_START_ADQ		Fail starting image acquisition.
+EV_DALSACAMGIGE_FAIL_STOP_ADQ		Fail stopping image adquisition.

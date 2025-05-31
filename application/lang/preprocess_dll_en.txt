@@ -1,0 +1,26 @@
+﻿# English  Translations for MVS.
+
+#Code					Text
+#--------------------------------------------
+
+
+
+# PREPROCESS
+
+EV_IMG_LOAD_FILE			Error loading image compensation.
+EV_MISSING_PLANE			Configuration fail.Is necessary some plane that is missing.
+EV_BITCOUNT_ERRONEOUS			Configuration fail.The bits size of the plane is erroneous.
+EV_ERROR_IN_SIZE_PLANES			Configuration fail.The sizes of the planes do not match.
+EV_COMP_ERROR				Configuration fail.Compensation plane not found.
+EV_MONO2INTCOMP_SAVE_ERROR		Fail to save the color compensation file.
+
+EV_EXTERNAL_FILE_COULDNT_OPEN		Fail to load external file:
+
+EV_FUSION_ERR_CODE			Fail image fusion
+EV_FUSSION_MYGO				Fail image fusion
+EV_FUSSION_INVALID			Fail image fusion
+EV_SENDER_REQUIRED			Fail image fusion
+EV_IMAGE_MNGR_REQUIRED			Fail image fusion
+EV_DISTORTION_REQUIRED			Fail image fusion
+
+FAULTY_FAIL_FUSSION			Fail fusion

@@ -1,0 +1,272 @@
+﻿# English  Translations for MVS.
+
+WARNING				AVISO
+DeleteConfigConfirm		Are you sure you want to delete selected configuration? 
+HomeFolder			Home Folder
+ExternalDisk			External Disk
+SelectConf			Selecct configuration:	
+Select				Select:	
+OkBtnSaveCfgDlg			Ok	
+OkBtn				Ok
+
+#Code					TEXT
+#-------------------------------------------
+ErrorEventsTabSheet		Errors
+#------
+WarningEventsTabSheet		Warnings
+#------
+InfoEventsTabSheet		Info
+#------
+AllEventsTabSheet		All
+#------
+EventsClearBt			Clear
+#------
+
+PanelBotomRight
+#------
+AppName
+#------
+SerialNumber
+#------
+Version
+#------
+StartButton			Start
+StartButtonStop			Stop
+#------
+InitButton		 	Go	
+#------
+StopButton			Stop
+#------
+CfgButton			Configure
+#------
+
+#-- Same button, two "captions" to be sowhed. 
+ShutDownBt			Shut Down
+ShutDownLockBt			Lock
+
+
+
+#------
+PanelTop
+TVisualizerForm
+OptionsPanel
+#------
+sbFullScreen
+#------
+Pixelslb			Coord
+#------
+timestamplb
+#------
+selectedplanelb			Value
+#------			
+HideBt				Hide
+#------
+numberImglbl
+#------
+
+#------
+PanelProdGraph
+#------
+Chart1
+
+#------
+PanelBotomLeft
+#------
+PageControlCfg
+#------
+TabSheetInternalCfg		User Configuration
+#------
+ToolsTabSheet			Tools
+
+
+
+#------
+SaveImagesBt			Save Images
+#------
+LoadImgBt			Load Images
+#------
+SaveCfgBt			Save Config
+#------
+LoadCfgBt			Load Config
+#------
+
+ImportWkModesBt		Import
+LoadFromFilelbl		Load from file:
+LoadXFile			File %s loaded
+LoadingFile			Loading ...
+ImportWkFailedinX	Working modes importation failed in working mode %s. Previous working modes were succesfully imported.
+ImportWkFailed		The current configuration is not valid after importation. Please reset the machine.
+ImportWkFailedlbl	Importation failed.
+lbl_importWM		Import Working Modes Assistant
+btn_closeImport		CLOSE
+	
+ExportWkModesBt		Export
+SelectWkTypeslbl	Select working modes:
+SaveToFilelbl		Save to file:
+SavedXFile			%s file saved
+SaveFileFailed		Save failed
+SavingFile			Saving ...
+lbl_exportWM		Export Working Modes Assistant
+btn_closeExport		CLOSE
+
+#------
+
+GroupBoxFocus			Focus quality
+LabelSatFocus		   	Saturated points
+LabelIntenFocus	   		Max. intensity
+FormFocus	  		Focus
+	
+ButtonFocus			Focus
+
+BtClearColor			Clear
+
+
+SelectTypelbl			Select Product:
+SaveTypeAsBt			Save As
+RenameTypeBt			Rename
+DeleteTypeBt			Delete
+
+RenameCaption			Rename Product
+renamelbl			Enter New Name for Product:
+renameselectlbl			Select Product to be renamed:
+
+DeleteProduct 			Delete Product
+deleteselectlbl			Select Product to be deleted:
+
+SaveProductAs 			Save Product As
+saveasproductlbl		Enter New Name for Product:
+
+CreateProduct			Create Product
+
+
+ConfigTabSheet			Configuration
+UserMngTabSheet			User Management
+#------
+CreateUserBt			Create User
+DeleteUserBt			Delete User
+ChangePassBt			Change Password
+UserNamelbl			User Name
+passlbl				Password
+repasslbl			Re-enter Password
+selectuserlbl			Select User:
+
+
+
+#------
+TabSheeExtCfg			GridInterface
+
+#-- GRIDINTERFACE----
+#------
+userlbl				User
+#------
+CfgCB_16
+#------
+CfgCB_18
+#------
+CfgCB_17
+#------
+CfgCB_19
+#------
+CfgCB_23
+#------
+CfgCB_22
+#------
+CfgCB_21
+#------
+CfgCB_20
+#------
+FlagsSystemPanel
+#------
+systemflagslbl			System Flags
+#------
+CfgCB_0
+#------
+CfgCB_1
+#------
+CfgCB_14
+#------
+CfgCB_15
+#------
+CfgCB_2
+#------
+CfgCB_3
+#------
+CfgCB_4
+#------
+CfgCB_5
+#------
+CfgCB_6
+#------
+CfgCB_10
+#------
+
+buttonDelItem			Delete Item
+#------
+buttonAddAttrib			Add Attrib
+#------
+buttonAddData			Add Data
+#------
+buttonAddItem			Add Manager
+
+#------
+TabSheetAnalysis		Analysis
+#------
+
+#GRIDINTERFACE USER
+BACK_BUTTON				Back
+
+#------
+#TEJECTORTEST
+
+LabelAvailable			Available	
+LabelOK				Tested: OK
+LabelKO				Tested: KO
+LabelDiabled			Test disabled	
+LabelActivated			Activated
+SBPruebaCiclica			Cycle all valves
+LBEjecTestManualMode		Manual mode	
+LBEjecTestActivate		Activate
+
+#------
+
+CAP_EXITS			Exit
+
+BtnCopyToDevice			Copy to device
+BtnEjectDevice			Eject device
+NO_EXIST_EXTERNAL_DEVICE	Don't find external device
+FILE_ACCESS_FORM_CAPTION	Files management
+
+#------
+NoCamAssistant			This camera has no assistant available
+NoCamSelected			Please select a camera
+
+#-------
+FormUnlock			Unlock screen
+LabelUnLock			Unlock the touch screen?
+BitBtnUnLock			Ok
+
+#-------
+LABEL_EXIT			Exit:
+SAVE_TO_DISK		Save to disk
+LABEL_PATH_SAVE		Path to save:
+BTN_RETAIN			Retain
+BTN_CLIPBOARD		Copy
+
+#-------
+CyclesValvesButton				Valve assistant
+CHART_TRACK						Track
+CHART_BANK						Exit
+BtnResetAllChart				Reset all valves
+BtnResetChart					Reset selected valve
+BtnCloseFormChart				Close
+ERROR_CHART_CONVEYOR_RUNING		Stop the machine to restart the valves
+WARN_RESET_VALVE				It is going to restart the valve
+QUESTION_RESET_VALVE			Do you want to restart it?
+WARN_RESET_ALL_VALVE			All valves are going to restart
+QUESTION_RESET_ALL_VALVE		Do you want to restart them?
+EV_RESET_VALVE					Reset of valve cycles
+EV_RESET_VALVES					Reset all valves cycles
+ 
+#-------
+INVERTERS_CONFIGURING1		The inverters are being configured
+INVERTERS_CONFIGURING2		Try again in a few seconds

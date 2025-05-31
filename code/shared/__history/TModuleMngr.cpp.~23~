@@ -1,0 +1,3276 @@
+﻿//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+/*
+                  Lyra Techs Artificial Intelligence Software
+*/
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+/*
+   File:                      TModuleMngr.cpp
+   Compilation group:         LyraTechsArtificial Intelligence.exe
+   Subgroup                   shared
+   Version:                   1.0
+   Author:                    Daniel Ivorra
+   Date Created:              15/03/2021
+   Date Last Modification:
+*/
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+#pragma hdrstop
+
+#include <iostream>
+#include "windows.h"
+#include "psapi.h"
+
+#include "process.h"
+
+#include "TAux.h"
+#include "TCapturerMngr.h"
+#include "TCommInterfaceMngr.h"
+#include "TDataInt64.h"
+#include "TDispatcher.h"
+#include "THardlockChecker.h"
+#include "THaspLog.h"
+#include "TImgSaver.h"
+#include "TInfoSaver.h"
+#include "TObjViewsCounter.h"
+#include "LTInit.h"
+#include "TIObjectAnalizerMngr.h"
+#include "TIObjectAnalizerMngrSimple.h"
+#include "TLinearDistCoordMn.h"
+#include "TModule.h"
+#include "TModuleMngr.h"
+#include "TSaver.h"
+#include "TShowMsgForm.h"
+#include "TObjViewsViewer.h"
+#include "TVirtualCamera.h"
+#include "TVirtualCameraEx.h"
+#include "TZoneClassifier.h"
+
+#include "TComputeImg.h"
+#include "TBackgroundSeparationBase.h"
+#include "TBackgroundSeparation.h"
+#include "TBackgroundSeparationContinuous.h"
+#include "TGetViews.h"
+#include "TGetViewsMngr.h"
+#include "TGetViewsMngrNThreads.h"
+#include "TGetHiddenViewsInVoids.h"
+#include "TViewAnalizerMngr.h"
+#include "TPreclassific.h"
+#include "TZoneClassifierDrawer.h"
+#include "TZoneClassifierDrawerVym.h"
+#include "TEjectorManDrawer.h"
+#include "TErodeBackground.h"
+#include "TMorphoFilterBackground.h"
+
+#include "TDefectClassification.h"
+#include "TDefectClassificationObj.h"
+
+#include "TCharacLinearConv.h"
+#include "TAnalizeDef.h"
+
+#include "TIObjWithViewsAnalizer.h"
+#include "TBackgroundSeparationContinuous.h"
+#include "TGetViewsMngrContinuous.h"
+
+
+#include "TCyclesReport.h"
+#include "TWarningNotify.h"
+#include "TInfoProdReport.h"
+#include "TEmailConfiguration.h"
+#include "TCounterByCategory.h"
+#include "TCounterByCatAndCharacteristics.h"
+
+
+#include "TDemosaic.h"
+#include "TFillRGBFromPlanes.h"
+#include "TGetViewsContinuous.h"
+#include "TImageSignalMngr.h"
+#include "TImageSignalEmbededMngr.h"
+#include "LTBeltDiscr_RGBIS.h"
+#include "LTBeltDiscr_RGBHSI.h"
+#include "LTProductDiscr_RGBHSI.h"
+#include "LTProductDiscrMngr_RGBHSI.h"
+#include "LTBeltOcupation.h"
+#include "LTViewAverageMethod.h"
+#include "LTColorByRangeMethod.h"
+#include "LTShowAnalizedPoints.h"
+#include "TAdvantechMonitor.h"
+#include "LTErodeAndDilate.h"
+
+#include "TCalcCompactness.h"
+#include "TFPedunculo.h"
+#include "TCalcAverageValues.h"
+#include "TAbsDefect.h"
+#include "TCalcTwoContours.h"
+#include "TCaliberCalc.h"
+#include "TMarkDefect.h"
+#include "TAnaDefCommonMethods.h"
+#include "TMoveCtrlView.h"
+#include "TCalcBadPositioned.h"
+#include "EPOD8Driver.h"
+
+
+#pragma package(smart_init)
+
+      //100*1024*1024
+#define MIN_AVALIABLE_MEMORY_TO_NOTIFY   104857600
+      // 2800*1024*1024
+//#define MAX_PROCCESS_MEMORY_TO_NOTIFY 2936012800
+
+#define NUMLINESLOGCHANGES 50000
+
+
+//------------------------------------------------------------------------------
+/**
+*  Logs memory usage of the current processs and machine
+*/
+void LogMemoryInfo(  )        {
+
+   HANDLE hProcess;
+   PROCESS_MEMORY_COUNTERS_EX pmc;
+
+   hProcess = GetCurrentProcess();
+   if (NULL == hProcess)   {
+      return;
+   }
+   if ( GetProcessMemoryInfo( GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS *) &pmc, sizeof(pmc) ) )
+   {
+      wchar_t str[512];
+
+      MEMORYSTATUSEX memInfo;
+      memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+      if ( GlobalMemoryStatusEx(&memInfo) )  {
+         _snwprintf( str,511 , L"AvaliableMem: %u", memInfo.ullAvailPhys/1024);
+         str[511] = 0;
+      }
+      _snwprintf( str,511 , L"PhysMemUsedByMe: %u",pmc.WorkingSetSize / 1024);
+      str[511] = 0;
+      LOG_INFO( str);
+      _snwprintf( str,511 , L"QuotaPeakPagedPoolUsage: %u", pmc.QuotaPeakPagedPoolUsage / 1024);
+      str[511] = 0;
+      LOG_INFO( str);
+      _snwprintf( str,511 , L"QuotaPagedPoolUsage: %u", pmc.QuotaPagedPoolUsage / 1024);
+      str[511] = 0;
+      LOG_INFO( str);
+      _snwprintf( str,511 , L"QuotaPeakNonPagedPoolUsage: %u", pmc.QuotaPeakNonPagedPoolUsage / 1024 );
+      str[511] = 0;
+      LOG_INFO( str);
+      _snwprintf( str,511 , L"QuotaNonPagedPoolUsage: %u", pmc.QuotaNonPagedPoolUsage / 1024);
+      str[511] = 0;
+      LOG_INFO( str);
+      _snwprintf( str,511 , L"PagefileUsage: %u", pmc.PagefileUsage  / 1024 );
+      str[511] = 0;
+      LOG_INFO( str);
+      _snwprintf( str,511 , L"PeakPagefileUsage: %u",  pmc.PeakPagefileUsage / 1024 );
+      str[511] = 0;
+      LOG_INFO( str);
+      _snwprintf( str,511 , L"cb: %u", pmc.cb / 1024);
+      str[511] = 0;
+      LOG_INFO( str);
+   }
+
+   CloseHandle( hProcess );
+
+}
+
+
+//------------------------------------------------------------------------------
+
+/**
+*  CALLBACK for the "Queue Timer"
+*/
+void CALLBACK TModuleMngr::TimerPeriodic(PVOID parameter, BOOLEAN timerOrWaitFired)  {
+
+      static int contador = 0;
+      TModuleMngr *mm = ( TModuleMngr*)parameter;
+      if ( mm->Status() >= configured)                                        {
+
+         __int64 time = LT::Time::GetTimeMs();
+
+         SYSTEMTIME st;
+         LT::Time::LocalTimeFromTimeStamp( time, &st);
+
+         swprintf( mm->m_periodicMilisec, L"cont= %d, Init time=%dh%d''%d'%dms", contador, st.wHour, st.wMinute, st.wMinute, st.wMilliseconds );
+
+         mm->Periodic( time);
+         swprintf( mm->m_periodicMilisec, L"cont= %d", contador);
+         contador++;
+      }
+}
+
+//------------------------------------------------------------------------------
+
+// ----------------------------------------------------------------------------
+/**
+ Constructor
+ */
+TModuleMngr::TModuleMngr(const wchar_t *name, TProcess *_parent)
+    : TProcess(name, _parent), m_dllmngr(this) {
+
+
+   m_blockAutoSave = true;
+
+   SetAttribValue(cAttribNames[ATTR_ALLOWED_MNGRS], FIRST_LEVEL_MANAGER);
+   SetAttribValue(cAttribNames[ATTR_DLL_NAME], "");
+
+   m_daLoadedDlls = new TData( this, L"LoadedDlls", NULL, L"", 512,  FLAG_LEVEL_0 | FLAG_NOTIFY | FLAG_SAVE_NO_VALUE );
+   m_daLoadedDlls->SetDeleteMe( false);
+
+   m_daAssist =  new TData(this, L"Technical Assistance",NULL, 0, 0,1, NULL, FLAG_LEVEL_0 | FLAG_NOTIFY | FLAG_SAVE_NO_VALUE);
+   m_daAssist->SetDeleteMe( false);
+
+   m_daAssistDir = new TData(  this, L"Technical Assistance Directory", m_directory, L"c:\\usr\\logmein\\ejecutable\\CallingCard.exe", SIZEOF_CHAR( m_directory),  FLAG_NORMAL );
+   m_daAssistDir->SetDeleteMe( false);
+   m_daAssistExe = new TData(  this, L"Technical Assistance Exe",       m_exeAssist, L"CallingCard.exe", SIZEOF_CHAR( m_exeAssist),  FLAG_NORMAL );
+   m_daAssistExe->SetDeleteMe( false);
+
+   m_daExplorer =  new TData(this, L"Explorer",NULL, 0, 0,1, NULL, FLAG_LEVEL_0 | FLAG_NOTIFY | FLAG_SAVE_NO_VALUE);
+   m_daExplorer->SetDeleteMe( false);
+   m_daExplorerExe = new TData(  this, L"ExplorerExe",  m_exeExplorer, L"explorer.exe", SIZEOF_CHAR( m_exeExplorer),  FLAG_NORMAL );
+   m_daExplorerExe->SetDeleteMe( false);
+
+   m_daRegedit =  new TData(this, L"Regedit",NULL, 0, 0,1, NULL, FLAG_LEVEL_0 | FLAG_NOTIFY | FLAG_SAVE_NO_VALUE);
+   m_daRegedit->SetDeleteMe( false);
+   m_daRegeditExe =  new TData(  this, L"RegeditExe",  m_exeRegedit, L"regedit.exe", SIZEOF_CHAR( m_exeRegedit),  FLAG_NORMAL );
+   m_daRegeditExe->SetDeleteMe( false);
+
+   m_daMsDos =  new TData(this, L"MsDos",NULL, 0, 0,1, NULL, FLAG_LEVEL_0 | FLAG_NOTIFY | FLAG_SAVE_NO_VALUE);
+   m_daMsDos->SetDeleteMe( false);
+   m_daMsDosExe = new TData(  this, L"MsDosExe",  m_exeMsDos, L"cmd.exe", SIZEOF_CHAR( m_exeMsDos),  FLAG_NORMAL );
+   m_daMsDosExe->SetDeleteMe( false);
+
+   m_daKey =  new TData(this, L"KeyBoard",NULL, 0, 0,1, NULL, FLAG_LEVEL_0 | FLAG_NOTIFY | FLAG_SAVE_NO_VALUE);
+   m_daKey->SetDeleteMe( false);
+   m_daKeyExe = new TData(  this, L"KeyBoardExe",  m_exeKey, L"osk.exe", SIZEOF_CHAR( m_exeKey),  FLAG_NORMAL );
+   m_daKeyExe->SetDeleteMe( false);
+
+   m_daExtract =  new TData(this, L"ExtractHardware",NULL, 0, 0,1, NULL, FLAG_LEVEL_0 | FLAG_NOTIFY | FLAG_SAVE_NO_VALUE);
+   m_daExtract->SetDeleteMe( false);
+   m_daExtractExe = new TData(  this, L"ExtractHardDir",       m_exeExtract, L"rundll32", SIZEOF_CHAR( m_exeExtract),  FLAG_NORMAL );
+   m_daExtractExe->SetDeleteMe( false);
+   m_daExtractParam = new TData(  this, L"ExtractHardPara",      m_parExtract, L"shell32.dll,Control_RunDLL hotplug.dll", SIZEOF_CHAR( m_parExtract),  FLAG_NORMAL );
+   m_daExtractParam->SetDeleteMe( false);
+
+   m_daTouch =  new TData(this, L"Touch",NULL, 0, 0,1, NULL, FLAG_LEVEL_0 | FLAG_NOTIFY | FLAG_SAVE_NO_VALUE);
+   m_daTouch->SetDeleteMe( false);
+   m_daTouchDir = new TData(  this, L"TouchDir",       m_dirTouch, L"C:\\Program Files\\TouchKit", SIZEOF_CHAR( m_dirTouch),  FLAG_NORMAL );
+   m_daTouchDir->SetDeleteMe( false);
+   m_daTouchExe = new TData(  this, L"TouchExe",       m_exeTouch, L"Touchkit.exe", SIZEOF_CHAR( m_exeTouch),  FLAG_NORMAL );
+   m_daTouchExe->SetDeleteMe( false);
+
+   m_daMaintenance =  new TData(this, L"Maintenance",NULL, 0, 0,1, NULL, FLAG_LEVEL_0 | FLAG_NOTIFY | FLAG_SAVE_NO_VALUE);
+   m_daMaintenance->SetDeleteMe( false);
+   m_daMaintenanceExe = new TData(  this, L"MaintenanceExe",  m_exeMaintenance, L"C:\\USR\\Maintenance\\Maintenance.exe", SIZEOF_CHAR( m_exeMaintenance),  FLAG_NORMAL );
+   m_daMaintenanceExe->SetDeleteMe( false);
+
+   m_daLang =  new TData(this, L"Language",NULL, 0,   L"English=1;Español=2;Français=3;Deutsch=4;العربية=5;Português=6;中国=7;Dutch=8;עברית=9;日本語=10;русский=11;Türkçe=12;Italiano=13;Polski=14;Español(Chileno)=15", FLAG_NORMAL );
+   m_daLang->AddAttrib(new TAttrib(cAttribNames[ATTR_NAME], L"#EN=Language#ES=Idioma"));
+   m_daLang->SetDeleteMe(false);
+
+   m_daConfigVersion = new TData(  this, L"ConfigurationVersion",   m_configVersion, L"0.0.0.0", SIZEOF_CHAR( m_configVersion),  FLAG_NORMAL, L"Configuration version" );
+   m_daConfigVersion->SetDeleteMe( false);
+
+   m_daPeriode = new TData(this, L"Periode", &m_periode, 2000, 500, 10000, NULL, FLAG_NORMAL3, L"( in ms) To call periodic method for all childs");
+   m_daPeriode->SetDeleteMe(false);
+
+   m_daPeriodeTime = new TData(this, L"LastPeriodicInit", m_periodicMilisec, L"0", SIZEOF_CHAR( m_periodicMilisec), FLAG_NORMAL2 & ~FLAG_NOTIFY, L"Init time of last Periodic");
+   m_daPeriodeTime->SetDeleteMe( false);
+
+   m_daResyncPeriode = new TData(this, L"ResyncPeriode", NULL, 2000, 2000, 10000, NULL, FLAG_NORMAL3, L"( in ms) Periode to resync LT time with system time");
+   m_daResyncPeriode->SetDeleteMe(false);
+
+   m_dataAutoSaveResets = new TData(this, L"AutoSaveResetsCons", &m_autoSaveResetsCons, 0, 0, 100000, NULL, FLAG_LEVEL_2 | FLAG_SAVE_NO_VALUE | FLAG_RDONLY, L"Number of consecutive times AutoSave timer has been reseted");
+   m_dataAutoSaveResets->SetDeleteMe(false);
+
+   m_dataAutoSaveResetN = new TData(this, L"AutoSaveResetName", m_autoSaveResetName, L"0", SIZEOF_CHAR( m_autoSaveResetName), FLAG_LEVEL_2 | FLAG_SAVE_NO_VALUE | FLAG_RDONLY, L"Name of the last node that provoqued AutoSave Reset");
+   m_dataAutoSaveResetN->SetDeleteMe(false);
+
+   m_daInfoComm = new TData(this, L"Communications Info", NULL, 0, 0, 1, NULL, FLAG_NORMAL3&~FLAG_SAVE);
+   m_daInfoComm->SetDeleteMe(false);
+
+   m_daClearCommStat = new TData(this, L"Reset Comm. Statistics", NULL, 0, 0, 1,
+       NULL, FLAG_NORMAL3&~FLAG_SAVE);
+   m_daClearCommStat->SetDeleteMe(false);
+
+   m_daInfoSubs = new TData(this, L"Subscriptions Info", NULL, 0, 0, 1, NULL,
+       FLAG_NORMAL3&~FLAG_SAVE);
+   m_daInfoSubs->SetDeleteMe(false);
+
+   m_dataRequestCfg = new TData(this, L"RequestCfg", NULL, 0, 0, 1, NULL,
+       (FLAG_NORMAL3)&~FLAG_SAVE);
+   m_dataRequestCfg->SetDeleteMe(false);
+
+   m_dataSaveCfg = new TData(this, L"SaveCfg", NULL, 0, 0, 1, NULL,
+       (FLAG_NORMAL3)&~FLAG_SAVE);
+   m_dataSaveCfg->SetDeleteMe(false);
+
+   m_dataInit = new TData(this, L"Init", NULL, 0, 0, 1, NULL,
+       (FLAG_NORMAL3)&~FLAG_SAVE);
+   m_dataInit->SetDeleteMe(false);
+
+   m_dataGo = new TData(this, L"Go", NULL, 0, 0, 1, NULL,
+       (FLAG_NORMAL3)&~FLAG_SAVE);
+   m_dataGo->SetDeleteMe(false);
+
+   m_dataStop = new TData(this, L"Stop", NULL, 0, 0, 1, NULL,
+       (FLAG_NORMAL3)&~FLAG_SAVE);
+   m_dataStop->SetDeleteMe(false);
+
+   m_dataClose = new TData(this, L"Close", NULL, 0, 0, 1, NULL,
+       (FLAG_NORMAL3)&~FLAG_SAVE, NULL, L"Cerrar=1");
+   m_dataClose->SetDeleteMe(false);
+
+   m_daEnaDiagnose = new TData(this, L"Enable Diagnose", &m_enableDiag, 0, 0, 1,
+       NULL, (FLAG_NORMAL)&~FLAG_SAVE);
+   m_daEnaDiagnose->SetDeleteMe(false);
+
+   m_daDiagnose = new TData(this, L"Diagnose is:", m_diagnose, L"",
+       SIZEOF_CHAR(m_diagnose), (FLAG_NORMAL | FLAG_RDONLY)&~FLAG_SAVE);
+   m_daDiagnose->SetDeleteMe(false);
+
+   m_accessManager = new TAccessLevel(L"Users", this);
+   m_accessManager->SetDeleteMe(false);
+
+   m_daCfgDir              = new TData(  this, L"CfgDirectory",NULL,  L"saved_configs", 1024,  FLAG_NORMAL, L"Both relative and absolute paths can be used. If a relative path is entered, take into account the current working directory.");
+   m_daCfgDir->SetDeleteMe(false );
+
+   m_daExternalCfgDir              = new TData(  this, L"DiskDirectory",NULL, L"D:\\HYPERION_RGB_app", 1024,  FLAG_NORMAL, L"Both relative and absolute paths can be used. If a relative path is entered, take into a count the current working directory (/bin)." );
+   m_daExternalCfgDir->SetDeleteMe(false );
+
+   // Create TData for Events.
+   m_events = new TData( this, L"Events", NULL, L"", 1024,
+       (FLAG_NORMAL3 | FLAG_RDONLY)&~FLAG_SAVE);
+   m_events->SetDeleteMe(false);
+
+   m_faultyMachineState = new TData(this, MACHINE_FAULTY_STATE, NULL, 0, 0, 2,
+       NULL, (FLAG_LEVEL_0 | FLAG_RDONLY | FLAG_NOTIFY | FLAG_SAVE_NO_VALUE));
+   m_faultyMachineState->SetDeleteMe(false);
+
+   m_faultyMachineText = new TData(this, MACHINE_FAULTY_TEXT, NULL, L"", 2048,
+       (FLAG_LEVEL_0 | FLAG_RDONLY | FLAG_NOTIFY | FLAG_SAVE_NO_VALUE));
+   m_faultyMachineText->SetDeleteMe(false);
+
+   m_delayTimeData = new TData(this, LBL_DELAY_TIME, &m_delayTime, 0, 0, 500000,
+       L"%.1f", FLAG_LEVEL_0 | FLAG_SAVE_NO_VALUE | FLAG_RDONLY,
+       L"Time spent while analyzing, in miliseconds");
+   m_delayTimeData->SetDeleteMe(false);
+
+//   m_testSaveCfg =   new TData(this, L"TestSaveCfg", NULL, 0, 0, 1,
+//       NULL, FLAG_LEVEL_0 | FLAG_SAVE_NO_VALUE | FLAG_NOTIFY, NULL);
+//
+//   m_testSaveCfg->SetDeleteMe( false);
+
+   m_checkNotAllowedTDatas = new TData(this, L"Check Not Allowed Tdatas", NULL, 0, 0, 1, NULL, FLAG_LEVEL_0 | FLAG_SAVE_NO_VALUE);
+   m_checkNotAllowedTDatas->SetDeleteMe(false);
+
+   m_daActiveType = new TData( this, LBL_ACTIVE_TYPE_NAME, NULL , L"", 64, ( FLAG_NORMAL3 | FLAG_RDONLY | FLAG_SAVE_NO_VALUE) & ~FLAG_SAVE);
+   m_daActiveType->SetDeleteMe( false);
+
+   m_subtypesMngr = new SubtypesManager( L"SubtypesMngr", this);
+   m_subtypesMngr->SetDeleteMe( false);
+
+   m_daLogChangesNameAndDir       = new TData(  this, L"Log Changes Path and Prefix Name", m_logChangesNameAndDir, L"E:\\Changes", SIZEOF_CHAR( m_logChangesNameAndDir),  FLAG_NORMAL );
+   m_daLogChangesNameAndDir->SetDeleteMe( false);
+
+   m_daLogMemoryEveryXMyPeriodics = new TData(  this, L"LogMemoryEveryXMyPeriodics", &m_logMemoryEveryXMyPeriodics, 30*60*5, 1, 50000, NULL, FLAG_LEVEL_0 | FLAG_SAVE);
+   m_daLogMemoryEveryXMyPeriodics->SetDeleteMe( false);
+
+#ifdef _DEBUG
+   m_daLogMemoryOnSet = new TData(  this, L"LogMemoryOnSet", &m_logMemoryOnSet, 0, 0, 1, NULL, FLAG_LEVEL_0 );
+   m_daLogMemoryOnSet->SetDeleteMe( false);
+#endif
+
+   int maxMemory = 2800; // 2800 MegaBytes
+   int is64bits = 0;
+
+   IsWow64Process(GetCurrentProcess(),&is64bits);
+   if ( is64bits ) {
+      maxMemory = 3300; // 3300 MegaBytes
+   }
+
+   m_daMaxMemoryToNotify = new TData(this,L"MaxProcessMemoryToNotify", &m_maxProcessMemoryToNotify, maxMemory, 1000, 3500, NULL, FLAG_NORMAL3 | FLAG_SAVE, L"Max process memory to notify in megabytes  ");
+   m_daMaxMemoryToNotify->SetDeleteMe(false);
+   m_maxProcessMemoryToNotify64 = m_daMaxMemoryToNotify->AsInt();
+   // desplazamos 20 bits a izda para convertir de megasBytes a bytes
+   m_maxProcessMemoryToNotify64 <<= 20;
+
+   DataModEventPost = DataModifiedPost;
+   m_idTimerAutoSave = NULL;
+   // m_loading = false;
+
+   // Enable thread and block with RDONLY
+   TData* dataThread = (GetDataObject(LBL_THREAD));
+   if (dataThread) {
+      dataThread->SetAsInt(1);
+      dataThread->SetRdOnly(true);
+   }
+
+//   m_periodicTimer   = NULL;
+   m_module          = NULL;
+   m_mutex           = CreateMutex(NULL, false, NULL);
+
+   m_hTimerQueue = NULL;
+   m_hTimerQueue = CreateTimerQueue();
+   if(!m_hTimerQueue)                                                         {
+      LOG_ERROR2( L"MODMNGR_TIMER_FAILED", L"Couldnt create timer for Periodic function in MouleMngr");
+   }
+   m_timerHandle     = NULL;
+
+
+   m_mutexAutoSave  = CreateMutex(NULL, false, NULL);
+
+   m_timeManager.InitReysncThread( m_daResyncPeriode->AsInt(), this, true, false);
+
+   m_maxDelayTime       = 0;
+   m_autoSavePending    = 0;
+
+   m_mutexChanges = CreateMutex(NULL, false, NULL);
+   m_lastSavedName = L"";
+   m_changedLog    = L"";
+
+};
+
+// ----------------------------------------------------------------------------
+/**
+ Destructor
+ */
+TModuleMngr::~TModuleMngr() {
+   LOG_INFO1( L"Begin TModuleMngr destructor");
+   if ( WaitForSingleObject( m_mutexAutoSave, 50) == WAIT_OBJECT_0)                {
+         try               {
+            KillTimerAutoSave();
+         }
+         __finally            {
+            ReleaseMutex( m_mutexAutoSave);
+         }
+   }
+   else
+      KillTimerAutoSave();
+
+   ReleaseMutex( m_mutexAutoSave);
+   CloseHandle( m_mutexAutoSave);
+
+
+   if( m_hTimerQueue)                                        {
+      DeleteTimerQueueEx( m_hTimerQueue, INVALID_HANDLE_VALUE);
+      m_hTimerQueue = NULL;
+      m_timerHandle = NULL;
+   }
+   m_timeManager.StopThread();
+   LOG_INFO1( L"TModuleMngr destructor: time manager stopped");
+
+   //check if there is some change log to be saved
+   WriteToFileLogProt();
+
+   CloseHandle( m_mutexChanges);
+
+   // Tdatas created in constructor method are destroyed here,
+   // because of "DeleteMe" flags of these Tdatas are set to "False", so
+   // TDatamangers dont't destroy them.
+
+//   RecursiveUnsubscribe(this); ToDo: cambiar esto a otro sitio
+
+   if ( m_subtypesMngr)
+      delete m_subtypesMngr;
+
+   if ( m_checkNotAllowedTDatas)
+      delete m_checkNotAllowedTDatas;
+
+   if ( m_daResyncPeriode)
+      delete m_daResyncPeriode;
+
+   if (m_daPeriodeTime)
+      delete m_daPeriodeTime;
+
+   if (m_daPeriode)
+      delete m_daPeriode;
+
+   if (m_daInfoComm)
+      delete m_daInfoComm;
+
+   if ( m_dataAutoSaveResetN)
+      delete m_dataAutoSaveResetN;
+
+   if ( m_dataAutoSaveResets)
+      delete m_dataAutoSaveResets;
+
+   if (m_daClearCommStat)
+      delete m_daClearCommStat;
+
+   if (m_daInfoSubs)
+      delete m_daInfoSubs;
+
+   if (m_dataRequestCfg)
+      delete m_dataRequestCfg;
+
+   if (m_dataSaveCfg)
+      delete m_dataSaveCfg;
+
+   if (m_dataInit)
+      delete m_dataInit;
+
+   if (m_dataGo)
+      delete m_dataGo;
+
+   if (m_dataStop)
+      delete m_dataStop;
+
+   if (m_dataClose)
+      delete m_dataClose;
+
+   if (m_daEnaDiagnose)
+      delete m_daEnaDiagnose;
+
+   if (m_daDiagnose)
+      delete m_daDiagnose;
+
+   if (m_accessManager)
+      delete m_accessManager;
+
+   if (m_events)
+      delete m_events;
+
+   if (m_daLang)
+      delete m_daLang;
+
+   if (m_daConfigVersion)
+      delete m_daConfigVersion;
+
+   if (m_daCfgDir)
+      delete m_daCfgDir;
+
+   if (m_daExternalCfgDir)
+      delete m_daExternalCfgDir;
+
+   if (m_faultyMachineState)
+      delete m_faultyMachineState;
+
+   if (m_faultyMachineText)
+      delete m_faultyMachineText;
+
+   if (m_delayTimeData)
+      delete m_delayTimeData;
+
+   if (m_daAssist)
+      delete m_daAssist;
+
+   if (m_daAssistDir)
+      delete m_daAssistDir;
+
+   if (m_daAssistExe)
+      delete m_daAssistExe;
+
+   if (m_daExplorer)
+      delete m_daExplorer;
+
+   if ( m_daRegedit)
+      delete m_daRegedit;
+
+   if ( m_daMsDos)
+      delete m_daMsDos;
+
+   if ( m_daExtract)
+      delete m_daExtract;
+
+   if ( m_daTouch)
+      delete m_daTouch;
+
+   if ( m_daKey)
+      delete m_daKey;
+
+   if ( m_daKeyExe)
+      delete m_daKeyExe;
+
+   if ( m_daExplorerExe)
+      delete m_daExplorerExe;
+
+   if ( m_daMsDosExe)
+      delete m_daMsDosExe;
+
+   if ( m_daTouchDir)
+      delete m_daTouchDir;
+
+   if ( m_daTouchExe)
+      delete m_daTouchExe;
+
+   if ( m_daExtractExe)
+      delete m_daExtractExe;
+
+   if ( m_daExtractParam)
+      delete m_daExtractParam;
+
+   if ( m_daRegeditExe)
+      delete m_daRegeditExe;
+
+   if ( m_daLoadedDlls)
+      delete m_daLoadedDlls;
+
+   if ( m_daMaintenance)
+      delete m_daMaintenance;
+
+   if ( m_daMaintenanceExe)
+      delete m_daMaintenanceExe;
+
+   if ( m_daLogMemoryEveryXMyPeriodics)
+      delete m_daLogMemoryEveryXMyPeriodics;
+
+   if ( m_daMaxMemoryToNotify ) {
+      delete m_daMaxMemoryToNotify;
+      m_daMaxMemoryToNotify = NULL;
+   }
+
+#ifdef _DEBUG
+   if ( m_daLogMemoryOnSet )
+      delete m_daLogMemoryOnSet;
+#endif
+   if ( m_daLogChangesNameAndDir)
+      delete m_daLogChangesNameAndDir;
+
+   //delete managers that weren't deleted because of SetDeleteMe= false that were not created by code
+   std::list<TDataManager*>::iterator i_mn = m_listDataMngr.begin();
+   while (i_mn != m_listDataMngr.end())   {
+      if ((*i_mn) && !( (*i_mn)->GetFlags() & FLAG_FROM_CODE)) {
+         TDataManager *mn = *i_mn;
+         i_mn = m_listDataMngr.erase(i_mn);
+         if (mn)  {
+            delete(mn);
+         }
+      }
+      else  {
+         i_mn++;
+      }
+   }
+
+   m_module = NULL;
+
+   ReleaseMutex(m_mutex);
+   CloseHandle(m_mutex);
+   LOG_INFO1( L"End TModuleMngr destructor");
+
+};
+
+// ----------------------------------------------------------------------------
+/**
+ To be called from the class that inherits from this one, in its overriden method
+ WhatCanYouCreate. Provides creation of managers in inherited classes and dynamic libraries
+
+ @param   list container list of;  code and name of manager which can be created.
+ @param   name name of manager to be included to the list
+ @param   manager flag to indicate
+ */
+void TModuleMngr::WhatCanYouCreate(std::list<s_wcyc_container_class> &list,
+    char *name, bool manager)                                                 {
+
+   bool firstLevel = (stricmp(name, FIRST_LEVEL_MANAGER) == 0);
+   if (manager)                                                               {
+
+      // -- Manager Controls
+
+      if ((stricmp(name, typeid(TCalcCompactness).name()) == 0) || firstLevel) {
+         s_wcyc_container_class s1(typeid(TCalcCompactness).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TCalcCircularity).name()) == 0) || firstLevel){
+         s_wcyc_container_class s1(typeid(TCalcCircularity).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TCalcAngle).name()) == 0)|| firstLevel )      {
+         s_wcyc_container_class s1(typeid(TCalcAngle).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TVirtualCamera2).name()) == 0) || firstLevel) {
+         s_wcyc_container_class s1(typeid(TVirtualCamera2).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(THaspLog).name()) == 0) || firstLevel)        {
+         s_wcyc_container_class s1(typeid(THaspLog).name());
+         s1.AddToList(list);
+
+      }
+      if ((stricmp(name, typeid(TCapturerMngr).name()) == 0) || firstLevel)   {
+         s_wcyc_container_class s1(typeid(TCapturerMngr).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TDispatcher).name()) == 0) || firstLevel)     {
+         s_wcyc_container_class s2(typeid(TDispatcher).name());
+         s2.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TZoneClassifier).name()) == 0) || firstLevel) {
+         s_wcyc_container_class s3(typeid(TZoneClassifier).name());
+         s3.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TSaver).name()) == 0) || firstLevel)          {
+         s_wcyc_container_class s1(typeid(TSaver).name());
+         s1.AddToList(list);
+         s_wcyc_container_class s2(typeid(TCaptureSaver).name());
+         s2.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TIObjectAnalizerMngr).name()) == 0) || firstLevel)  {
+         s_wcyc_container_class s1(typeid(TIObjectAnalizerMngr).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TIObjectAnalizerMngrSimple).name()) == 0) || firstLevel)  {
+         s_wcyc_container_class s1(typeid(TIObjectAnalizerMngrSimple).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TCommInterfaceMngr).name()) == 0) || firstLevel)    {
+         s_wcyc_container_class s1(typeid(TCommInterfaceMngr).name());
+         s1.AddToList(list);
+         s_wcyc_container_class s2(typeid(TCommInterfaceMngr).name());
+         s2.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TImgSaver).name()) == 0) || firstLevel)       {
+         s_wcyc_container_class s1(typeid(TImgSaver).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TInfoSaver).name()) == 0) || firstLevel)      {
+         s_wcyc_container_class s1(typeid(TInfoSaver).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TObjViewsCounter).name()) == 0) || firstLevel){
+         s_wcyc_container_class s1 (typeid(TObjViewsCounter).name());
+         s1.AddToList(list);
+      }
+      if ( stricmp( name, typeid(TObjViewsViewer).name() )==0 || firstLevel ) {
+         s_wcyc_container_class s1( typeid( TObjViewsViewer).name() );
+         s1.AddToList( list );
+      }
+	  if ((stricmp(name, typeid(TAdvantechMonitor).name()) == 0 || firstLevel) )            {
+		 s_wcyc_container_class s1(typeid(TAdvantechMonitor).name());
+		 s1.AddToList(list);
+	  }
+	  if ((stricmp(name, typeid(EPOD8Driver).name()) == 0 || firstLevel) )            {
+		 s_wcyc_container_class s1(typeid(EPOD8Driver).name());
+		 s1.AddToList(list);
+	  }
+
+
+      if ((stricmp(name, typeid(TLinearDistCoordMn).name()) == 0) )           {
+         s_wcyc_container_class s1(typeid(TLinearDistCoordMn).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TVirtualCamera).name()) == 0) )               {
+         s_wcyc_container_class s1(typeid(TVirtualCamera).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TVirtualCameraEx).name()) == 0) )             {
+         s_wcyc_container_class s1(typeid(TVirtualCameraEx).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(LTViewAverageMethod).name()) == 0) )          {
+         s_wcyc_container_class s1(typeid(LTViewAverageMethod).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TMarkDefect_16b).name()) == 0) )              {
+         s_wcyc_container_class s1(typeid(TMarkDefect_16b).name());
+         s1.AddToList(list);
+      }
+//      if ((stricmp(name, typeid(TCharacLinearConv).name()) == 0) )            {
+//         s_wcyc_container_class s1(typeid(TCharacLinearConv).name());
+//         s1.AddToList(list);
+//      }
+//      if ((stricmp(name, typeid(TAnalizeDef).name()) == 0) )                  {
+//         s_wcyc_container_class s1(typeid(TAnalizeDef).name());
+//         s1.AddToList(list);
+//      }
+      if ((stricmp(name, typeid(LTColorByRangeMethod).name()) == 0) )         {
+         s_wcyc_container_class s1(typeid(LTColorByRangeMethod).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TIObjWithViewsAnalizer).name()) == 0) )       {
+         s_wcyc_container_class s1(typeid(TIObjWithViewsAnalizer).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TCyclesReport).name()) == 0) )                {
+         s_wcyc_container_class s1(typeid(TCyclesReport).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TCounterByCategory).name()) == 0) )           {
+         s_wcyc_container_class s1(typeid(TCounterByCategory).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TCounterByCatAndCharacteristics).name()) == 0) )           {
+         s_wcyc_container_class s1(typeid(TCounterByCatAndCharacteristics).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TInfoProdReport).name()) == 0) )              {
+         s_wcyc_container_class s1(typeid(TInfoProdReport).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TWarningNotifyMngr).name()) == 0) )           {
+         s_wcyc_container_class s1(typeid(TWarningNotifyMngr).name());
+         s1.AddToList(list);
+      }
+      if ((stricmp(name, typeid(TEmailConfiguration).name()) == 0) )          {
+         s_wcyc_container_class s1(typeid(TEmailConfiguration).name());
+         s1.AddToList(list);
+      }
+
+
+
+      // -- Processes
+      if ( stricmp(name, typeid( TComputeImg).name()) == 0 || firstLevel)     {
+         s_wcyc_container_class s1( typeid( TComputeImg).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TBackgroundSeparationMngr).name()) == 0 || firstLevel)     {
+         s_wcyc_container_class s1( typeid( TBackgroundSeparationMngr).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TBackgroundMetValAbsItem).name()) == 0 || firstLevel)      {
+         s_wcyc_container_class s1( typeid( TBackgroundMetValAbsItem).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TGetViews).name()) == 0 || firstLevel)                     {
+         s_wcyc_container_class s1( typeid( TGetViews).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TGetViewsMngr).name()) == 0 || firstLevel)                 {
+         s_wcyc_container_class s1( typeid( TGetViewsMngr).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TGetViewsMngrNThreads).name()) == 0 || firstLevel)          {
+         s_wcyc_container_class s1( typeid( TGetViewsMngrNThreads).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TViewAnalizerParalelMngr).name()) == 0 || firstLevel)      {
+         s_wcyc_container_class s1( typeid( TViewAnalizerParalelMngr).name() );
+         s1.AddToList( list );
+
+         s_wcyc_container_class s2( typeid(TFiltPedunculo).name() );
+         s2.AddToList( list );
+
+         s_wcyc_container_class s3( typeid(TCalcAverageValues).name() );
+         s3.AddToList( list );
+
+         s_wcyc_container_class s4( typeid(TAbsDefect).name() );
+         s4.AddToList( list );
+
+         s_wcyc_container_class s5(typeid(TCharacLinearConv).name());
+         s5.AddToList(list);
+
+         s_wcyc_container_class s6(typeid(TCalcTwoContours).name());
+         s6.AddToList(list);
+
+         s_wcyc_container_class s7(typeid(TCaliberCalc).name());
+         s7.AddToList(list);
+
+         s_wcyc_container_class s8(typeid(TMarkDefect).name());
+         s8.AddToList(list);
+
+         s_wcyc_container_class s9(typeid(TAnalizeDef).name());
+         s9.AddToList(list);
+
+      }
+      if ( stricmp(name, typeid( TZoneClassifierDrawer).name()) == 0 || firstLevel)         {
+         s_wcyc_container_class s1( typeid( TZoneClassifierDrawer).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TZoneClassifierDrawerVym).name()) == 0 || firstLevel)      {
+         s_wcyc_container_class s1( typeid( TZoneClassifierDrawerVym).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TErodeBackground).name()) == 0 || firstLevel)             {
+         s_wcyc_container_class s1( typeid( TErodeBackground).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TMorphoFilterBackground).name()) == 0 || firstLevel)       {
+         s_wcyc_container_class s1( typeid( TMorphoFilterBackground).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TEjectorManDrawer).name()) == 0 || firstLevel)             {
+         s_wcyc_container_class s1( typeid( TEjectorManDrawer).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TDefectClasAndCompute).name()) == 0 || firstLevel)         {
+         s_wcyc_container_class s1( typeid( TDefectClasAndCompute).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TDefectClasAndComputeObj).name()) == 0 || firstLevel)      {
+         s_wcyc_container_class s1( typeid( TDefectClasAndComputeObj).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TBackgroundSepMngr_Continuous).name()) == 0 || firstLevel ){
+         s_wcyc_container_class s1( typeid( TBackgroundSepMngr_Continuous).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TPreclassificMngr).name()) == 0 || firstLevel ){
+         s_wcyc_container_class s1( typeid( TPreclassificMngr).name() );
+         s1.AddToList( list );
+      }
+
+      if (stricmp(typeid(TMoveCtrl).name() , name) == 0  || firstLevel)       {
+         s_wcyc_container_class s1(typeid(TMoveCtrl).name() );
+         s1.AddToList(list);
+         s_wcyc_container_class s2(typeid(TMoveCtrlView).name() );
+         s2.AddToList(list);
+      }
+
+      // lineal cameras
+      if ( stricmp(name, typeid( TDemosaic).name()) == 0 || firstLevel)                     {
+         s_wcyc_container_class s1( typeid( TDemosaic).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TFillRGBFromPlanes).name()) == 0 || firstLevel)            {
+         s_wcyc_container_class s1( typeid( TFillRGBFromPlanes).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TGetViewsContinuous).name()) == 0 || firstLevel)           {
+         s_wcyc_container_class s1( typeid( TGetViewsContinuous).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TImageSignalMngr).name()) == 0  || firstLevel )            {
+         s_wcyc_container_class s1( typeid( TImageSignalMngr).name());
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TImageSignalEmbededMngr).name()) == 0  || firstLevel )     {
+         s_wcyc_container_class s1( typeid( TImageSignalEmbededMngr).name());
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( LTBeltDiscr_RGBIS).name()) == 0 || firstLevel ){
+         s_wcyc_container_class s1( typeid( LTBeltDiscr_RGBIS).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( LTBeltDiscr_RGBHSI).name()) == 0 || firstLevel ){
+         s_wcyc_container_class s1( typeid( LTBeltDiscr_RGBHSI).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( LTBeltOcupation).name()) == 0 || firstLevel ){
+         s_wcyc_container_class s1( typeid( LTBeltOcupation).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TGetViewsMngrContinuous).name()) == 0 || firstLevel)      {
+         s_wcyc_container_class s1( typeid( TGetViewsMngrContinuous).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( LTProductDiscr_RGBHSI).name()) == 0 || firstLevel ){
+         s_wcyc_container_class s1( typeid( LTProductDiscr_RGBHSI).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( LTProductDiscrMngr_RGBHSI).name()) == 0 || firstLevel ){
+         s_wcyc_container_class s1( typeid( LTProductDiscrMngr_RGBHSI).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( ErodeAndDilate).name()) == 0 || firstLevel ) {
+         s_wcyc_container_class s1( typeid( ErodeAndDilate).name() );
+         s1.AddToList( list );
+      }
+
+      if ( stricmp( name, typeid( TBackgroundSeparationBase).name() )==0)     {
+         s_wcyc_container_class s2( typeid( TBackgroundSeparation).name() );
+         s2.AddToList( list );
+         s_wcyc_container_class s3( typeid( TBackgroundSeparationHSINIR).name() );
+         s3.AddToList( list );
+//         s_wcyc_container_class s4( typeid( TFiltDistCinta).name() );
+//         s4.AddToList( list );
+         s_wcyc_container_class s5( typeid( TBackgroundSepHSINIR_Continuous).name() );
+         s5.AddToList( list );
+      }
+      if ( stricmp( name, typeid(TGetViewsBase).name() )==0)                  {
+         s_wcyc_container_class s1( typeid(TGetViews).name() );
+         s1.AddToList( list );
+         s_wcyc_container_class s2( typeid(TGetHiddenViewsInVoids).name() );
+         s2.AddToList( list );
+      }
+
+      if ( stricmp(name, typeid( TAnaDefCommonMethods).name()) == 0 )         {
+         s_wcyc_container_class s1( typeid( TAnaDefCommonMethods).name() );
+         s1.AddToList( list );
+      }
+
+      if ( stricmp(name, typeid( TIObjectAnalizer).name()) == 0 )             {
+         s_wcyc_container_class s1( typeid( TCalcBadPositioned).name() );
+         s1.AddToList( list );
+      }
+
+
+
+
+
+      //-------
+
+   }
+   else                                                                       {
+      if ((stricmp(name, typeid(TData).name()) == 0) || firstLevel)           {
+         s_wcyc_container_class s1(typeid(TData).name());
+         s1.AddToList(list);
+      }
+   }
+
+   m_dllmngr.WhatCanDllsCreate(list, name, manager);
+}
+
+// ----------------------------------------------------------------------------
+/**
+ This method is called when a TData of this manager is modified
+
+ @param   da    Pointer to modified TData
+ */
+void __fastcall TModuleMngr::DataModifiedPost(TData* da)                      {
+
+   static bool execInfoCom  = false;
+   static bool execInfoSubs = false;
+
+   if (da && (da == m_daEnaDiagnose) && m_enableDiag)                         {
+      // Enable diagnose
+      *m_diagnose = 0;
+
+      TBasicDiagnose *diag= new TBasicDiagnose();
+
+      wchar_t txt2[128];
+      swprintf( txt2, L"%s", LoadText(L"MSG_DIAG"));
+      e_diagnose_type diganoseType;
+      if (ShowMsg (txt2, L"INFO", MY_MB_OKCANCEL) == mrOk)
+         diganoseType = e_diagnose_type::hot;
+      else
+         diganoseType = e_diagnose_type::normal;
+
+      //Diagnose called by User
+      if (!CheckDiagnose( diganoseType, diag))                                {
+         //diagnose aborted
+         wchar_t txt[128];
+         swprintf( txt, L"\r\n%s\r\n", LoadText(L"DIAG_ABORTED"));
+         diag->Add(txt, wcslen( txt) * sizeof(wchar_t));
+      }
+
+      //Write result of diagnose
+      diag->WriteResult();
+
+      if( diag->Retrieve(m_diagnose,SIZEOF_CHAR( m_diagnose)))
+         m_daDiagnose->NotifyModified(NULL);
+
+      // Notify
+      m_daEnaDiagnose->SetAsInt(0);
+
+      delete diag;
+   }
+
+   if (da == NULL)                                                            {
+      // the manager itself has been modified
+      char dllNames[256];
+      unsigned int count = SIZEOF_CHAR(dllNames);
+
+      if (GetAttribValue(cAttribNames[ATTR_DLL_NAME], dllNames, count))       {
+         std::wstring loadedDlls;
+         m_dllmngr.SetDlls(dllNames, loadedDlls);
+         m_daLoadedDlls->SetAsText( loadedDlls.c_str());
+
+      }
+   }
+//   else if (da->AreYou(LBL_STATE_FAULTY)) {
+   else if (da->AreYou( LBL_FAULTY_FLAGS))                                    {
+
+      FaultyModified(da);
+
+   }
+   else if (da && da->AreYou(LBL_THREAD)) {
+      if (m_updating)
+         return;
+      m_updating = true;
+      int val;
+      // Caution: as root is notified in Modified, and root has also a
+      // TData called "thread", we must verify that parent of modified TData
+      // is this manager
+      if (da->GetParent() == (TDataManager*)this)
+         if (da->AsInt(val))
+            if (!(val && Enabled()))
+               StopThread();
+
+      m_updating = false;
+   }
+   else if (da == m_daInfoComm && !execInfoCom) {
+      if (m_daInfoComm->AsInt()) {
+         execInfoCom = true;
+         TCommMngr *commMngr = m_module?m_module->GetCommMngr():NULL;
+         if (commMngr) {
+            wchar_t text[4096];
+            text[SIZEOF_CHAR(text)-1] = 0;
+            commMngr->GetInfoComm(text, SIZEOF_CHAR(text)-1);
+            MessageBox(NULL, text, L"Communications Info", MB_OK);
+            // ShowMsg( NULL, text, L"Communications Info", MB_OK);
+         }
+         m_daInfoComm->SetAsInt(0);
+         execInfoCom = false;
+      }
+   }
+   else if (da == m_daClearCommStat) {
+      // if ( da->AsInt())                                                       {
+      // TCommMngr *commMngr = m_module->GetCommMngr();
+      // if( commMngr)
+      // commMngr->ClearTimeStat();
+      // m_daClearCommStat->SetAsInt(0);
+      // }
+   }
+   else if (da == m_daInfoSubs && !execInfoSubs) {
+      if (m_daInfoSubs->AsInt()) {
+         execInfoSubs = true;
+         TCommInterface *intf = m_module?m_module->GetCommIfc():NULL;
+         if (intf) {
+            wchar_t text[2048];
+            intf->GetInfoSubs(text, sizeof(text));
+            MessageBox(NULL, text, L"Communications Info", MB_OK);
+            // ShowMsg( NULL, text, L"Subs Info", MB_OK);
+         }
+         m_daInfoSubs->SetAsInt(0);
+         execInfoSubs = false;
+      }
+   }
+   else if (da == m_dataInit) {
+      if (m_dataInit->AsInt()) {
+         if (m_module)
+            m_module->Init();
+         m_dataInit->SetAsInt(0);
+      }
+   }
+   else if (da == m_dataGo) {
+      if (m_dataGo->AsInt()) {
+         if (m_module)
+            m_module->Go();
+         m_dataGo->SetAsInt(0);
+      }
+   }
+   else if (da == m_dataStop) {
+      if (m_dataStop->AsInt()) {
+         if (m_module)
+            m_module->Stop();
+         m_dataStop->SetAsInt(0);
+      }
+   }
+   else if (da == m_dataClose) {
+      if (m_dataClose->AsInt()) {
+         if (m_module)
+            m_module->Close();
+         m_dataClose->SetAsInt(0);
+      }
+   }
+   else if (da == m_dataRequestCfg) {
+      if (m_dataRequestCfg->AsInt()) {
+         if (m_module)
+            m_module->RequestCfg();
+         m_dataRequestCfg->SetAsInt(0);
+      }
+   }
+   else if (da == m_dataSaveCfg) {
+      if (m_dataSaveCfg->AsInt()) {
+         if (m_module)
+            m_module->SendCfg( );
+         m_dataSaveCfg->SetAsInt(0);
+      }
+   }
+   else if (da == m_daLang)
+      SetLang();
+   else if (da == m_daAssist)                                                 {
+      if (da->AsInt())                                                        {
+         KillProcessByName(m_exeAssist);
+         if (_wspawnlp(P_NOWAIT, m_directory, m_exeAssist, NULL) < 0)
+            LOG_WARN1(L"Could not launch on CallingCard");
+         da->SetAsInt(0);
+      }
+   }
+   else if (da == m_daExplorer)                                               {
+      if (da->AsInt())                                                        {
+         if (_wspawnlp(P_NOWAIT, m_exeExplorer, m_exeExplorer, NULL) < 0)
+            LOG_WARN1(L"Could not launch on Windows Explorer");
+         da->SetAsInt(0);
+      }
+   }
+   else if (da == m_daRegedit)                                                {
+      if (da->AsInt())                                                        {
+         if (_wspawnlp(P_NOWAIT, m_exeRegedit, m_exeRegedit, NULL) < 0)
+            LOG_WARN1(L"Could not launch on Regedit");
+         da->SetAsInt(0);
+      }
+   }
+   else if (da == m_daMsDos)                                                  {
+      if (da->AsInt())                                                        {
+         if (_wspawnlp(P_NOWAIT, m_exeMsDos, m_exeMsDos, NULL) < 0)
+            LOG_WARN1(L"Could not launch on MSDOS");
+         da->SetAsInt(0);
+      }
+   }
+   else if (da == m_daExtract)                                                {
+      if (da->AsInt())                                                        {
+         if (_wspawnlp(P_NOWAIT, m_exeExtract,L"",m_parExtract, NULL) < 0)
+            LOG_WARN1(L"Could not launch on Extract Hardware");
+         da->SetAsInt(0);
+      }
+   }
+   else if (da == m_daTouch)                                                  {
+      if (da->AsInt())                                                        {
+         if (_wspawnlp(P_NOWAIT, m_dirTouch, m_exeTouch, NULL) < 0)
+            LOG_WARN1(L"Could not launch on Touch");
+         da->SetAsInt(0);
+      }
+   }
+   else if (da == m_daMaintenance)                                            {
+      if (da->AsInt())                                                        {
+         if (_wspawnlp(P_NOWAIT, m_exeMaintenance, m_exeMaintenance, NULL) < 0)
+            LOG_WARN1(L"Could not launch on Maintenance");
+         da->SetAsInt(0);
+      }
+   }
+   else if (da == m_daKey)                                                    {
+      if (da->AsInt())                                                        {
+        // KillProcessByName(m_exeKey);
+//         if (_wspawnlp(P_NOWAIT, L"c:\\Windows\\system32\\osk.exe", m_exeKey, NULL) < 0)
+         if (_wspawnlp(P_NOWAIT, m_exeKey, m_exeKey, NULL) < 0)
+
+            LOG_WARN1(L"Could not launch Keyboard");
+         da->SetAsInt(0);
+      }
+
+    /*
+      if (da->AsInt())                                                        {
+//         if (_wspawnlp(P_NOWAIT, m_exeKey, m_exeKey, NULL) < 0)
+//            LOG_WARN1(L"Could not launch on KeyBoard");
+
+         switch (KillProcessByName(m_exeKey))                                 {
+            case 1:  //success killing process
+            case 0:  //didn't find process
+               {
+               wchar_t *code = new wchar_t[3];
+               code[0] =    LANG_CODE[ACTIVE_LANG][1];
+               code[1] =    LANG_CODE[ACTIVE_LANG][2];
+               code[2] =    L'\0';
+
+               if( _wspawnlp( P_NOWAIT, m_exeKey, m_exeKey, code, NULL) < 0)
+                  LOG_WARN1(L"Could not launch  on screen keyboard");
+
+               delete [] code;
+               }
+               break;
+            case -1:
+               LOG_WARN1(L"Could not close on screen keyBoard");
+            break;
+         }
+         da->SetAsInt(0);
+      }
+
+      */
+   }
+   else if( da == m_checkNotAllowedTDatas && da->AsInt())                                        {
+      da->SetAsInt(0);
+      TDataManager *mngr = this;
+      char     str[128];
+      wchar_t  fullName[256];
+      unsigned int count = sizeof(str);
+      unsigned int total = 0;
+      bool includeWhenAllowed = false;
+      if( MessageBox(NULL, L"Include Managers with TDatas allowed?", L"INFO", MB_YESNO) == ID_YES)
+         includeWhenAllowed = true;
+
+      bool cancel = false;
+
+      while( mngr && !cancel)                                                 {
+         bool allowed = mngr->GetAttribValue(cAttribNames[ATTR_ALLOWED_DATAS], str, count);
+         mngr->GetFullName( fullName, SIZEOF_CHAR( fullName));
+         if( !allowed || includeWhenAllowed)
+            for (std::list<TData*>::iterator i_data = mngr->DataBegin(); i_data != mngr->DataEnd(); i_data++)
+               if (*i_data && !((*i_data)->GetFlags() & FLAG_FROM_CODE))      {
+                  const char *codeClass = typeid( (*i_data)).name();
+                  if( !TAux::IsInList( codeClass, str))                       {
+                     wchar_t txt[128];
+                     wsprintf( txt, L"TData:\t \"%s\"\nManager:\t \"%s\"\nNot allowed, Would you like to delete it?", (*i_data)->GetName(), fullName);
+                     int res = MessageBox(NULL, txt, L"INFO", MB_YESNOCANCEL);
+                     if( res == ID_YES)     {
+                        total++;
+                        delete (*i_data);
+                     }
+                     else if( res == ID_CANCEL)                               {
+                        cancel = true;
+                        break;
+                     }
+                  }
+               }
+         mngr = mngr->GetNextMngr();
+      }
+      if( total)                                                              {
+         wchar_t txt[128];
+         wsprintf( txt, L"%d TDatas has been deleted. Would you like to save your configuration", total);
+         if( m_module && MessageBox(NULL, txt, L"INFO", MB_YESNO) == ID_YES)
+            m_module->SendCfg( );
+      }
+   }
+   else if (da == m_daMaxMemoryToNotify) {
+      m_maxProcessMemoryToNotify64 = da->AsInt();
+      // desplazamos 20 bits a izda para convertir de megasBytes a bytes
+      m_maxProcessMemoryToNotify64 <<= 20;
+   }
+
+#ifdef _DEBUG
+   if ( da == m_daLogMemoryOnSet && da->AsInt() ) {
+      da->SetAsInt(0);
+      LogMemoryInfo();
+
+   }
+#endif
+
+   if (da == m_daPeriode)                                                     {
+      if( m_hTimerQueue && m_timerHandle)                                     {
+         //If exists the timer queue timer, we change the period
+         ChangeTimerQueueTimer(  m_hTimerQueue,
+                                 m_timerHandle,
+                                 0,
+                                 m_periode );
+      }
+   }
+   if ( da == m_daResyncPeriode)                                                    {
+      m_timeManager.ChangePeriode(  m_daResyncPeriode->AsInt());
+   }
+
+//   else if ( da == m_testSaveCfg)                                             {
+//      if ( da->AsInt())                                                       {
+//         TestSaveCfg();
+//         da->SetAsInt( 0);
+//      }
+//   }
+
+}
+
+void TModuleMngr::LaunchKeyboard()                                            {
+   if ( m_daKey)
+      m_daKey->SetAsInt( 1);
+}
+
+//------------------------------------------------------------------------------
+
+void TModuleMngr::SetLang()                                                   {
+
+   unsigned int lang = m_daLang->AsInt();
+   if (lang == ACTIVE_LANG)
+      return; ; // No change
+
+   if ((lang == _ZZ) && (GetAccessLevel() < Master))
+      return; // Only master can open in _ZZ lang
+
+   if (!SetActiveLang((wchar_t*)LANG_CODE[lang]))
+      return;
+
+   Init_Lang( lang);
+   if ( Application->MainForm )  {
+      LOAD_TRANSLATIONS(Application->MainForm);
+   }
+   m_dllmngr.SetLangDlls();
+   // update dll's
+
+}
+
+// ------------------------------------------------------------------------------
+/**
+ @return  -1 if couldn't get new value
+ in other case, maximum state found for all managers
+ */
+eFaultyLevel TModuleMngr::FaultyModified(TData *data)                         {
+
+   if ( data==NULL || WaitForSingleObject( m_mutex, 50) != WAIT_OBJECT_0)                   {
+      LOG_WARN1( L"FAULTY_MODIFIED_LOCKED");
+      return eFaultyLevel::unknown;
+   }
+   unsigned int max = 0;
+   eFaultyLevel state = eFaultyLevel::correct;
+
+   try         {
+   unsigned int value;
+   unsigned int size = sizeof( value);
+
+   if ( !data->AsBin( (void*) &value, size))  {
+      return eFaultyLevel::unknown;
+   }
+
+   std::list<TData*>::iterator it = m_faultyList.begin();
+   while (it != m_faultyList.end())                                           {
+      int direc;
+      if ( (*it)->GetAttribValue(  L"OriDataDir", direc) && (void*)direc == (void*)data)    {
+//      if (*it == data)                                                        {
+         if ( value==0)          {  // no hay flags, hay que borrar
+            TData *toDelete = *it;
+            //borrar de la lista
+            it = m_faultyList.erase(it);
+            //destruir la copia del tdata
+            delete toDelete;
+
+         }
+         break;
+      }
+      else
+         it++;
+   }
+
+   bool justAdded = false;
+   if ( value && it == m_faultyList.end())                                    {
+      //hay flags y el tdata no esta en la lista
+      //hacer una copia, para no meter en la lista el tdata original
+      //lo cual es fuente de problemas, porque puede que cuando se repase
+      //la lista el tdata ya se haya destruido, con lo cual obtendremos access violations
+      TData *pFaultyFlags = new TData( NULL, LBL_FAULTY_FLAGS, (void *)NULL, sizeof(unsigned int),   (FLAG_NORMAL | FLAG_RDONLY | FLAG_SAVE_NO_VALUE) & ~FLAG_SAVE, L"FaultyFlags");
+      if ( data->AsBin( (void*) &value, size))      {
+         pFaultyFlags->SetAsBin( (void*)&value, size, NULL, false);
+         //añadimos atributo con la direccion fisica del tdata original
+         //para poder desengancharlo
+         int dataDirec = ( int) data;
+         pFaultyFlags->SetAttribValue( L"OriDataDir", dataDirec);
+         //leer error de texto del padre
+
+         TDataManagerControl *parent = dynamic_cast<TDataManagerControl*>( data->GetParent());
+         if ( parent)                                                         {
+            const wchar_t *faultyText = parent->GetFaultyText();
+            pFaultyFlags->SetAttribValue( L"FaultyText", faultyText, NULL, false);
+
+         }
+         m_faultyList.push_back( pFaultyFlags);
+         justAdded = true;
+      }
+   }
+
+
+   // recorrer lista, obtener maximo y generar texto
+
+
+   std::wstring faultyText = L"";
+   std::list<TData*>::reverse_iterator it2;
+   for (it2 = m_faultyList.rbegin(); it2 != m_faultyList.rend(); it2++) {
+      if ( *it2 ) {
+         if ( !justAdded ) {
+            int dataDirec=0;
+            (*it2)->GetAttribValue( L"OriDataDir", dataDirec);
+            if ( dataDirec == (int)data && value != (*it2)->AsInt() )   {
+               TDataManagerControl *parentControl = dynamic_cast<TDataManagerControl*>(data->GetParent());
+               if ( parentControl )  {
+                  const wchar_t *faultyText = parentControl->GetFaultyText();
+                  (*it2)->SetAsBin( (void*)&value, size, NULL, false);
+                  (*it2)->SetAttribValue( L"FaultyText", faultyText,NULL, false);
+               }
+            }
+         }
+
+         if ( (*it2)->AsBin( (void*) &value, size))                            {
+            //int val = (*it)->AsInt();
+            if (value > max)
+               max = value;
+            wchar_t t[500];
+            unsigned int size = SIZEOF_CHAR( t);
+            if ( (*it2)->GetAttribValue( L"FaultyText",  t, size))             {
+               faultyText.append(t);
+//               faultyText.append(L"\r\n");
+            }
+         }
+      }
+   }
+
+   m_faultyMachineText->SetAsText(faultyText.c_str(), NULL, false);
+   // don't notify
+
+
+   if ( max & 0xFFFF0000)
+      state = eFaultyLevel::error;
+   else if ( max & 0xFFFF)
+      state = eFaultyLevel::warning;
+   else
+      state = eFaultyLevel::correct;
+
+   m_faultyMachineState->SetAsInt(state, NULL, false);
+
+   m_faultyMachineText->NotifyModified();
+   // notify now, when text is already set
+   }
+   __finally                                                                  {
+      ReleaseMutex( m_mutex);
+   }
+   return state;
+}
+
+//------------------------------------------------------------------------------
+
+/**
+   AllFaultiesLevel
+   iterates thorugh faulties in list, and returns the maximum level
+*/
+
+eFaultyLevel TModuleMngr::AllFaultiesLevel()                                  {
+
+   if ( WaitForSingleObject( m_mutex, 50) != WAIT_OBJECT_0)                   {
+      LOG_WARN1( L"FAULTY_MODIFIED_LOCKED");
+      return eFaultyLevel::unknown;
+   }
+
+   unsigned int max = 0;
+   eFaultyLevel state = eFaultyLevel::correct;
+   try         {
+   unsigned int value;
+   unsigned int size = sizeof( value);
+
+
+   // recorrer lista, obtener maximo y generar texto
+
+
+   std::wstring faultyText = L"";
+
+   std::list<TData*>::iterator it = m_faultyList.begin();
+   for (it = m_faultyList.begin(); it != m_faultyList.end(); it++) {
+
+      if (*it) {
+         if ( (*it)->AsBin( (void*) &value, size))                          {
+            //int val = (*it)->AsInt();
+            if (value > max)
+               max = value;
+
+            wchar_t t[500];
+            unsigned int size = SIZEOF_CHAR( t);
+            if ( (*it)->GetAttribValue( L"FaultyText",  t, size))             {
+               faultyText.append(t);
+            }
+
+
+         }
+      }
+   }
+
+   m_faultyMachineText->SetAsText(faultyText.c_str(), NULL, false);
+   // don't notify
+
+
+   if ( max & 0xFFFF0000)
+      state = eFaultyLevel::error;
+   else if ( max & 0xFFFF)
+      state = eFaultyLevel::warning;
+   else
+      state = eFaultyLevel::correct;
+
+   m_faultyMachineState->SetAsInt(state, NULL, false);
+
+   m_faultyMachineText->NotifyModified();
+   // notify now, when text is already set
+   }
+   __finally                                                                  {
+      ReleaseMutex( m_mutex);
+   }
+   return state;
+
+
+}
+
+// ----------------------------------------------------------------------------
+/**
+ Load ProcessData from stream.
+
+ @param stream to serialized.
+ @return A ProcessData to be processed.
+ */
+TProcessData* TModuleMngr::LoadProcessData(LT::TStream* stream) {
+
+   if (!stream)
+      return NULL;
+
+   // stream->SaveToFile(L"LoadProcessData.txt");
+   TDataManager* mn = (TDataManager*)CreateFromStream(stream, NULL);
+
+   if (!mn) {
+      LOG_WARN1(L"Manager Created but Process Data could not be unserialized.");
+      return NULL;
+   }
+
+   TProcessData* newProcessData = (TProcessData*)(mn);
+   if (newProcessData) {
+//      LOG_INFO1(L"Object correctly serialized.");
+      return newProcessData;
+   }
+
+   LOG_WARN1(L"Casting to ProcessData no DONE.");
+   return NULL;
+}
+
+//-----------------------------------------------------------------------------
+/**
+   MyAutoSaveCfg
+   method that is called when autosave timer arrives to timeout
+   in normal conditions, it sends a partial configuration
+   if only tdatas with external file flag are pending, and state is running, then
+   it doesn't send partialconfiguration, Instead they are saved to disk
+*/
+bool TModuleMngr::MyAutoSaveCfg()                                             {
+
+   //check if there is some change log to be saved
+   WriteToFileLogProt();
+
+   if (m_blockAutoSave)                                                      {
+      return false;
+   }
+   if ( WaitForSingleObject( m_mutexAutoSave, 50) == WAIT_OBJECT_0)           {
+      try                                                                     {
+
+         m_autoSaveResetsCons   = 0;
+         m_autoSavePending      = 0;
+         if (m_module)                                                        {
+            m_module->SendPartialCfg();
+         }
+      }
+      __finally                                                               {
+         ReleaseMutex( m_mutexAutoSave);
+
+      }
+      return true;
+   }
+   return false;
+
+
+}
+
+// ----------------------------------------------------------------------------
+/**
+ */
+void CALLBACK TModuleMngr::AutoSaveCfg(UINT uTimerID, UINT uMsg,
+    DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2) {
+
+#ifndef _DEBUG
+   try                                                                        {
+#endif
+   TModule *module = (TModule*)dwUser;
+   if (module) {
+      TModuleMngr *mm = module->GetMngr();
+      if ( mm)
+         mm->MyAutoSaveCfg();
+   }
+#ifndef _DEBUG
+   }
+   __except(EXCEPTION_EXECUTE_HANDLER)                                        {
+      //Hardwaare Exceptions
+      unsigned long code = GetExceptionCode();
+      wchar_t msg [1024];
+      swprintf(msg, L"TModuleMngr::AutoSaveCfg code: %x",code);
+      LOG_ERROR(msg);
+   }
+#endif
+}
+
+//
+//bool TModuleMngr::ReadCfg( LT::TStream *stream)                              {
+//
+//   //deshabilitar interfaces, para que no se procesen nodos que pueden
+//   std::list<TDataInterface*>::iterator i2;
+//   for (i2 = m_listIntf.begin(); i2 != m_listIntf.end(); i2++)
+//      (*i2)->SetEnabled( false);
+//   bool ret = TProcess::ReadCfg( stream);
+//   //habilitar interfaces
+//   for (i2 = m_listIntf.begin(); i2 != m_listIntf.end(); i2++)
+//      (*i2)->SetEnabled( true);
+//   return ret;
+//}
+
+// ----------------------------------------------------------------------------
+
+bool TModuleMngr::Init ()                                                     {
+   bool ret = TProcess::Init();
+//   RefreshAll();
+   return ret;
+}
+
+/**
+ mark thread to be launched
+ */
+bool TModuleMngr::MyInit() {
+
+   m_tdataThread->SetAsInt(1);
+   bool ret = TProcess::MyInit();
+
+   if ( m_checkNotAllowedTDatas)
+      m_checkNotAllowedTDatas->SetRdOnly( true, NULL, false);
+
+   m_maxDelayTime       = 0;
+   m_autoSaveResetsCons = 0;
+   m_autoSavePending    = 0;
+
+   return ret;
+}
+
+// ----------------------------------------------------------------------------
+/**
+ Doesn't stop its own thread thread.
+ That's why it doesn't call TProcess::MyStop
+ */
+bool TModuleMngr::MyStop() {
+
+//   timeKillEvent( m_periodicTimer);
+//   m_periodicTimer = NULL;
+   //Deletes a timer queue to finish the MyPeridic process
+   if( m_hTimerQueue && m_timerHandle)                                                          {
+
+      DeleteTimerQueueTimer(m_hTimerQueue, m_timerHandle, INVALID_HANDLE_VALUE);
+      m_timerHandle = NULL;
+   }
+
+   // wait for list to be empty
+   while (!m_list.Empty())  {
+      ::Sleep(50);
+   }
+   bool ret =  TProcess::MyStop();
+
+   if ( m_checkNotAllowedTDatas)
+      m_checkNotAllowedTDatas->SetRdOnly( false, NULL, false);
+
+   return ret;
+
+}
+
+// ----------------------------------------------------------------------------
+/**
+ Create managers of TModule type
+
+ @param   name    Name of manager
+ @param   code    Code for manager
+ @param   parent  parent for this manager
+ */
+TDataManager *TModuleMngr::CreateDataMngr(wchar_t *name, char* code,
+    TDataManager *dparent)                                                    {
+
+
+
+
+
+   // -- Manager controls
+   TDataManagerControl *mnc = dynamic_cast<TDataManagerControl*>(dparent);
+
+   if (stricmp(code, typeid(TDataManager).name()) == 0)
+      if (mnc)
+         return new TDataManager(name, dparent);
+
+   if (stricmp(code, typeid(THaspLog).name()) == 0)
+      if (mnc)
+         return new THaspLog(name, mnc);
+
+   if (stricmp(code, typeid(TCalcCompactness).name()) == 0)
+      if (mnc)
+         return new TCalcCompactness(name, mnc);
+
+   if (stricmp(code, typeid(TCalcCircularity).name()) == 0)
+      if (mnc)
+         return new TCalcCircularity(name, mnc);
+
+     if (stricmp(code, typeid(TCalcAngle).name()) == 0)
+      if (mnc)
+         return new TCalcAngle(name, mnc);
+
+   if (stricmp(code, typeid(LTViewAverageMethod).name()) == 0)
+      if (mnc)
+         return new LTViewAverageMethod(name, mnc);
+
+   if (stricmp(code, typeid(TMarkDefect_16b).name()) == 0)
+      if (mnc)
+         return new TMarkDefect_16b(name, mnc);
+
+   if (stricmp(code, typeid(TCharacLinearConv).name()) == 0)
+      if (mnc)
+         return new TCharacLinearConv(name, mnc);
+
+   if (stricmp(code, typeid(TAnalizeDef).name()) == 0)
+      if (mnc)
+         return new TAnalizeDef(name, mnc);
+
+   if (stricmp(code, typeid(LTColorByRangeMethod).name()) == 0)
+      if (mnc)
+         return new LTColorByRangeMethod(name, mnc);
+
+   if (stricmp(code, typeid(TLinearDistCoordMn).name()) == 0)
+      if (mnc)
+         return new TLinearDistCoordMn(name, mnc);
+
+   if (stricmp(code, typeid(TIObjWithViewsAnalizer).name()) == 0)
+      if (mnc)
+         return new TIObjWithViewsAnalizer(name, mnc);
+
+   if (stricmp(code, typeid(TInfoProdReport).name()) == 0)
+      if (mnc)
+         return new TInfoProdReport(name, mnc);
+
+   if (stricmp(code, typeid(TCounterByCategory).name()) == 0)
+      if (mnc)
+         return new TCounterByCategory(name, mnc);
+
+   if (stricmp(code, typeid(TCounterByCatAndCharacteristics).name()) == 0)
+      if (mnc)
+         return new TCounterByCatAndCharacteristics(name, mnc);
+
+   if (stricmp(code, typeid(TCyclesReport).name()) == 0)
+      if (mnc)
+         return new TCyclesReport(name, mnc);
+
+   if (stricmp(code, typeid(TWarningNotifyMngr).name()) == 0)
+      if (mnc)
+         return new TWarningNotifyMngr(name, mnc);
+
+   if (stricmp(code, typeid(TEmailConfiguration).name()) == 0)
+      if (mnc)
+         return new TEmailConfiguration(name, mnc);
+
+   if (stricmp(code, typeid(TAdvantechMonitor).name()) == 0)
+      if (mnc)
+         return new TAdvantechMonitor(name, mnc);
+
+   if (stricmp(code, typeid(TAnaDefCommonMethods).name()) == 0)
+      if (mnc)
+         return new TAnaDefCommonMethods(name, mnc);
+
+   if ( stricmp( code, typeid( TAbsDefect).name())==0)                        {
+      if ( mnc)
+         return new TAbsDefect( name, mnc);
+   }
+
+
+
+   // -- Manager control pump
+   TDataMngCtrlPump *dmcp = dynamic_cast<TDataMngCtrlPump*>(dparent);
+
+   if (stricmp(code, typeid(TVirtualCamera).name() ) == 0)
+      if ( dmcp)
+         return new TVirtualCamera(name, dmcp);
+
+   if (stricmp(code, typeid(TVirtualCamera2).name() ) == 0)
+      if ( dmcp)
+         return new TVirtualCamera2(name, dmcp);
+
+   if (stricmp(code, typeid(TVirtualCameraEx).name() ) == 0)
+      if ( dmcp)
+         return new TVirtualCameraEx(name, dmcp);
+
+   // -- Processes
+   TProcess *p = dynamic_cast<TProcess*>(dparent);
+
+   if (stricmp(code, typeid(TCapturerMngr).name()) == 0)
+      if (p)
+         return new TCapturerMngr(name, p);
+
+   if (stricmp(code, typeid(TZoneClassifier).name()) == 0)
+      if (p)
+         return new TZoneClassifier(name, p);
+
+   if (stricmp(code, typeid(TDispatcher).name()) == 0)
+      if (p)
+         return new TDispatcher(name, p);
+
+   if (stricmp(code, typeid(TSaver).name()) == 0)
+      if (p)
+         return new TSaver(name, p);
+
+   if (stricmp(code, typeid(TCaptureSaver).name()) == 0)
+      if (p)
+         return new TCaptureSaver(name, p);
+
+   if (stricmp(code, typeid(TIObjectAnalizerMngr).name()) == 0)
+      if (p)
+         return new TIObjectAnalizerMngr(name, p);
+
+   if (stricmp(code, typeid(TIObjectAnalizerMngrSimple).name()) == 0)
+      if (p)
+         return new TIObjectAnalizerMngrSimple(name, p);
+
+   if (stricmp(code, typeid(TIObjectGroup).name()) == 0)
+      return new TIObjectGroup(name, dparent);
+
+   if (stricmp(code, typeid(TImgSaver).name()) == 0)
+      if (p)
+         return new TImgSaver(name, p);
+
+   if ( stricmp (code,typeid(TInfoSaver).name() ) == 0 )                      {
+      if ( dparent == NULL )
+         return new TInfoSaver( name, NULL);
+      if ( p)
+         return new TInfoSaver( name, p);
+   }
+
+   if (stricmp(code, typeid(TObjViewsCounter).name()) == 0)                   {
+      if (dparent == NULL)
+         return new TObjViewsCounter(name, NULL);
+      if (p)
+         return new TObjViewsCounter(name, p);
+   }
+
+   if (stricmp (code,typeid(TObjViewsViewer).name() ) == 0 )                  {
+      if ( dparent==NULL)
+         return new TObjViewsViewer( name, NULL);
+      if ( p)
+         return new TObjViewsViewer( name, p);
+   }
+
+   if ( stricmp( code, typeid( TComputeImg).name())==0)                       {
+      if (p)
+         return new TComputeImg(name, p);
+   }
+   if ( stricmp( code, typeid( TBackgroundSeparationMngr).name())==0)         {
+      if ( p)
+         return new TBackgroundSeparationMngr( name, p);
+   }
+   if ( stricmp( code, typeid( TBackgroundSeparationHSINIR).name())==0)       {
+      if ( p)
+         return new TBackgroundSeparationHSINIR( name, p);
+   }
+   if ( stricmp( code, typeid( TBackgroundSepHSINIR_Continuous).name())==0)   {
+      if ( p)
+         return new TBackgroundSepHSINIR_Continuous( name, p);
+   }
+   if ( stricmp( code, typeid( TBackgroundMetValAbsItem).name())==0)          {
+      if ( p)
+         return new TBackgroundMetValAbsItem( name, p);
+   }
+   if ( stricmp( code, typeid( TBackgroundSeparation).name())==0)             {
+      if ( p)
+         return new TBackgroundSeparation( name, p);
+   }
+   if ( stricmp( code, typeid( TGetViews).name())==0)                         {
+      if ( p)
+         return new TGetViews( name, p);
+   }
+   if ( stricmp( code, typeid( TGetHiddenViewsInVoids).name())==0)            {
+      if ( p)
+         return new TGetHiddenViewsInVoids( name, p);
+   }
+   if ( stricmp( code, typeid( TGetViewsMngr).name())==0)                     {
+      if ( p)
+         return new TGetViewsMngr( name, p);
+   }
+   if ( stricmp( code, typeid( TGetViewsMngrNThreads).name())==0)             {
+      if ( p)
+         return new TGetViewsMngrNThreads( name, p);
+   }
+   if ( stricmp( code, typeid( TViewAnalizerParalelMngr).name())==0)          {
+      if ( p)
+         return new TViewAnalizerParalelMngr( name, p);
+   }
+   if ( stricmp( code, typeid( TZoneClassifierDrawer).name())==0)             {
+      if ( p)
+         return new TZoneClassifierDrawer( name, p);
+   }
+   if ( stricmp( code, typeid( TZoneClassifierDrawerVym).name())==0)          {
+      if ( p)
+         return new TZoneClassifierDrawerVym( name, p);
+   }
+   if ( stricmp( code, typeid( TEjectorManDrawer).name())==0)                 {
+      if ( p)
+         return new TEjectorManDrawer( name, p);
+   }
+   if ( stricmp( code, typeid( TErodeBackground).name())==0)                  {
+      if ( p)
+         return new TErodeBackground( name, p);
+   }
+   if ( stricmp( code, typeid( TMorphoFilterBackground).name())==0)           {
+      if ( p)
+         return new TMorphoFilterBackground( name, p);
+   }
+   if ( stricmp( code, typeid( TDefectClasAndCompute).name())==0)             {
+      if ( p)
+         return new TDefectClasAndCompute( name, p);
+   }
+   if ( stricmp( code, typeid( TDefectClasAndComputeObj).name())==0)          {
+      if ( p)
+         return new TDefectClasAndComputeObj( name, p);
+   }
+   if ( stricmp( code, typeid( TPreclassificMngr).name())==0)                 {
+      if ( p)
+         return new TPreclassificMngr( name, p);
+   }
+   if ( stricmp( code, typeid( TFiltPedunculo).name())==0)                    {
+      if ( p)
+         return new TFiltPedunculo( name, p);
+   }
+   if ( stricmp( code, typeid( TCalcAverageValues).name())==0)                {
+      if ( p)
+         return new TCalcAverageValues( name, p);
+   }
+   if ( stricmp( code, typeid( TCalcTwoContours).name())==0)                  {
+      if ( p)
+         return new TCalcTwoContours( name, p);
+   }
+   if ( stricmp( code, typeid( TCaliberCalc).name())==0)                      {
+      if ( p)
+         return new TCaliberCalc( name, p);
+   }
+   if ( stricmp( code, typeid( TMarkDefect).name())==0)                       {
+      if ( p)
+         return new TMarkDefect( name, p);
+   }
+   if ( stricmp( code, typeid( TMoveCtrl).name())==0)                         {
+      if ( p)
+         return new TMoveCtrl( name, p);
+   }
+   if ( stricmp( code, typeid( TMoveCtrlView).name())==0)                     {
+      if ( p)
+         return new TMoveCtrlView( name, p);
+   }
+
+   if ( stricmp( code, typeid( TCalcBadPositioned).name())==0)                {
+	  if ( p)
+		 return new TCalcBadPositioned( name, p);
+   }
+
+   if ( stricmp( code, typeid( EPOD8Driver).name())==0)                {
+	  if ( p)
+		 return new EPOD8Driver( name, p);
+   }
+
+
+
+
+   // lineal cameras processes
+   if ( stricmp( code, typeid( TBackgroundSepMngr_Continuous).name())==0)     {
+      if ( p)
+         return new TBackgroundSepMngr_Continuous( name, p);
+   }
+   if ( stricmp( code, typeid( TDemosaic).name())==0)                         {
+      if ( p)
+         return new TDemosaic( name, p);
+   }
+   if ( stricmp( code, typeid( TFillRGBFromPlanes).name())==0)                {
+      if ( p)
+         return new TFillRGBFromPlanes( name, p);
+   }
+   if ( stricmp( code, typeid( TGetViewsContinuous).name())==0)               {
+      if ( p)
+         return new TGetViewsContinuous( name, p);
+   }
+   if ( stricmp( code, typeid( TImageSignalMngr).name())==0)                  {
+      if ( p)
+         return new TImageSignalMngr( name, p);
+   }
+   if ( stricmp( code, typeid( TImageSignalEmbededMngr).name())==0)           {
+      if ( p)
+         return new TImageSignalEmbededMngr( name, p);
+   }
+   if ( stricmp( code, typeid( LTBeltDiscr_RGBHSI).name())==0)                {
+      if ( p)
+      return new LTBeltDiscr_RGBHSI( name, p);
+   }
+   if ( stricmp( code, typeid( LTBeltOcupation).name())==0)                   {
+      if ( p)
+      return new LTBeltOcupation( name, p);
+   }
+   if ( stricmp( code, typeid( LTBeltDiscr_RGBIS).name())==0)                 {
+      if ( p)
+         return new LTBeltDiscr_RGBIS( name, p);
+   }
+   if ( stricmp( code, typeid( LTProductDiscr_RGBHSI).name())==0)             {
+      if ( p)
+      return new LTProductDiscr_RGBHSI( name, p);
+   }
+   if ( stricmp( code, typeid( LTProductDiscrMngr_RGBHSI).name())==0)         {
+      if ( p)
+      return new LTProductDiscrMngr_RGBHSI( name, p);
+   }
+   if ( stricmp( code, typeid( ErodeAndDilate).name())==0)                    {
+      if ( p)
+      return new ErodeAndDilate( name, p);
+   }
+   if ( stricmp( code, typeid( TGetViewsMngrContinuous).name())==0)           {
+      if ( p)
+         return new TGetViewsMngrContinuous( name, p);
+   }
+
+   // -- Adding CommInterface
+   if (stricmp(code, typeid(TCommInterfaceMngr).name()) == 0)
+      if (mnc && m_module && m_module->GetCommMngr())
+         return new TCommInterfaceMngr(name, mnc, m_module->GetCommMngr());
+
+   // -- Create data managers from dll's
+   TDataManager *mn = m_dllmngr.CreateDataMngr(name, code, dparent);
+   if (mn == NULL) {
+      wchar_t *wcode = TAux::STR_TO_WSTR(code);
+      wchar_t text[512];
+      swprintf(text, L" %s->%s ", name, wcode);
+      //LOG_WARN1(text);
+      // Manager not found, a virtual manager with name and code is created.
+      // but state configured is never arrived.
+      mn = new TDataManager(name, code, dparent);
+      // todo: cambiar por TDAtamanager con M-code en constructor
+      DISPATCH_EVENT(WARN_CODE, L"EV_TYPE_NOT_FOUND", text, this);
+      LOG_WARN2( LoadText(L"EV_TYPE_NOT_FOUND"), text);
+      delete[]wcode;
+   }
+
+   return mn;
+}
+
+// ----------------------------------------------------------------------------
+/**
+ Create a parameter with name, code and parent values.
+
+ @param   name     Name of parameter
+ @param   code     Code of parameter
+ @param   parent   Manager Parent of parameter
+ */
+TData *TModuleMngr::CreateData(wchar_t *name, char* code, TDataManager *dparent)
+{
+
+   if (stricmp(code, typeid(TData).name()) == 0)
+      return new TData(dparent, name);
+
+   // try with dll's
+   TData *data = m_dllmngr.CreateData(name, code, dparent);
+
+   if (data == NULL) {
+      // remote subscription to unkwon types must be supported
+      data = new TData(dparent, name, code);
+      wchar_t text[512];
+      wchar_t *wcode = TAux::STR_TO_WSTR(code);
+      swprintf(text, L"Data with name %s and code: %s  not found in DLLs. ",
+          name, wcode);
+
+      DISPATCH_EVENT(WARN_CODE, L"EV_TYPE_NOT_FOUND", text, this);
+      LOG_WARN2( LoadText(L"EV_TYPE_NOT_FOUND"), text);
+      delete [] wcode;
+   }
+
+   return data;
+}
+
+// ----------------------------------------------------------------------------
+/**
+ Process Message
+
+ @param   msg   Message to be processed
+ */
+bool TModuleMngr::ProcDataMsg(LT::TMessage *msg)                                       {
+
+   switch (msg->Type()) {
+   case MSG_PROCESS_DATA: {
+         TProcessData* dataToProcess = LoadProcessData(msg->GetTStream());
+         if ( dataToProcess)                                                        {
+            wchar_t origen[addressSize];
+            if ( msg->GetOrg( origen, addressSize))                                 {
+               dataToProcess->SetAttribValue( LBL_ORIGIN_MODULE, origen);
+            }
+         }
+         s_ObjAndProc s_obj(dataToProcess, (TProcess*)NULL);
+         return Process(s_obj);
+      }
+   default:
+      break;
+   }
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+/**
+ This method is called when data from a parameter/manager have been modified.
+ This method reports all its interfaces of this change for them to be updated.
+
+ @param   node  node  changed. If NULL; it means the manager itself has been modified
+ @param   intf  interface  modified node
+ @param   forceUpdate forces update manager
+ */
+void TModuleMngr::Refresh(TNode *node, TDataInterface *_intf, bool forceUpdate)
+{
+
+   if (node == NULL)
+      return;
+
+   TProcess::Refresh(node, _intf, forceUpdate);
+
+   //added to log changes in tdatas
+   TData *data = dynamic_cast<TData*>(node);
+
+   if ( (!m_blockAutoSave) && data  && ( data->GetFlags() & FLAG_LOG_CHANGES_TO_FILE ) )   {
+      LogChangesInTData( data );
+   }
+
+   // if ( ( ! m_loading) && ( ! m_initialiting) && node->ToSave())           {
+   if ((!m_blockAutoSave) && node->ToSave() ) {
+      int flags = node->GetFlags();
+      if ( ! ( flags & ( FLAG_SAVE_NO_VALUE | FLAG_SAVE) ))  {
+         return;
+      }
+
+//      if ( node->GetParent())
+//         LOG_INFO3( L"TModule::Refresh", node->GetName(), node->GetParent()->GetName());
+//      else
+//         LOG_INFO2( L"TModule::Refresh", node->GetName());
+
+      //evitamos que hayan dos threads manipulando el temporizador
+      if ( WaitForSingleObject( m_mutexAutoSave, 50) == WAIT_OBJECT_0)        {
+         try               {
+            //si estamos en running, comprobar writeExternal
+            if ( ++m_autoSaveResetsCons > 100)                                 {
+               m_autoSaveResetsCons    = 0;
+               m_autoSavePending       = 1;
+
+            }
+            else if ( m_autoSavePending == 1 )                                {
+            }
+            else                                                              {
+               if ( KillTimerAutoSave())                                      {
+
+                  wcsncpy( m_autoSaveResetName, node->GetName(), SIZEOF_CHAR( m_autoSaveResetName) - 1);
+                  m_autoSaveResetName[SIZEOF_CHAR( m_autoSaveResetName) - 1]= L'\0';
+               }
+               m_idTimerAutoSave = timeSetEvent(10000, 200, AutoSaveCfg, (DWORD_PTR) m_module, TIME_ONESHOT);
+            }
+         }
+         __finally            {
+            ReleaseMutex( m_mutexAutoSave);
+         }
+      }
+   }
+
+}
+
+
+// ----------------------------------------------------------------------------
+/**
+ This method automathically sends the partial configuration
+ It disables timer for Autosave, and oly resotres it if the configuration could not be sent
+ */
+bool  TModuleMngr::SendPartialCfg()                                           {
+
+   if ( m_module)                                                             {
+      // as we are going to manipulate the timer and send message with partial configuration, better avoid problems with multithreading
+      if ( WaitForSingleObject( m_mutexAutoSave, 50) == WAIT_OBJECT_0)        {
+         try               {
+            KillTimerAutoSave();
+            bool ret = m_module?m_module->SendPartialCfg():false;
+            if ( m_module && ret == false)
+               m_idTimerAutoSave = timeSetEvent(10000, 200, AutoSaveCfg, (DWORD_PTR) m_module, TIME_ONESHOT);
+            return ret;
+
+         }
+         __finally            {
+            ReleaseMutex( m_mutexAutoSave);
+         }
+      }
+   }
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+bool TModuleMngr::SendCfg()                                                   {
+
+   if ( m_module)                                                             {
+      // as we are going to send message with configuration, better avoid problems with multithreading
+      if ( WaitForSingleObject( m_mutexAutoSave, 50) == WAIT_OBJECT_0)        {
+         try               {
+            return m_module?m_module->SendCfg( ):false;
+
+         }
+         __finally            {
+            ReleaseMutex( m_mutexAutoSave);
+         }
+      }
+   }
+   return false;
+
+
+}
+
+
+// ----------------------------------------------------------------------------
+/**
+ Set module //vic 26/10/2015
+ */
+void TModuleMngr::SetModule(TModule *module) {
+   m_module = module;
+   // m_commIfc   = module->GetCommIfc();
+}
+
+////----------------------------------------------------------------------------
+///**
+// Get communication manager
+// */
+// TCommMngr   *TModuleMngr::GetCommMngr()                                       {
+// return  m_module? m_module->GetCommMngr(): NULL;
+// };
+//
+////----------------------------------------------------------------------------
+///**
+// Get communication interface
+// */
+// TCommInterface *TModuleMngr::GetCommIfc()                                     {
+// return  m_module? m_module->GetCommIfc(): NULL;
+// };
+
+// ----------------------------------------------------------------------------
+/**
+ Load Configuration
+@param ms is the stream where to write the configuration
+//@param  saveBeforeClearToSave when true it saves the configuration (partial save) before clearing the flag toSave
+//used when configuration arrives from an embedded xml file, to deflate it and upgrade external files in disk
+ */
+bool TModuleMngr::LoadCfg( LT::TStream *ms /*, bool saveBeforeClearToSave*/)       {
+   m_blockAutoSave = true;
+   bool ret = ReadCfg(ms );
+
+
+   RefreshAll();
+   m_blockAutoSave = false;
+
+   SendPartialCfg();
+
+   if ( m_hTimerQueue)                                                        {
+
+      CreateTimerQueueTimer(&m_timerHandle,
+                        m_hTimerQueue,
+                        TimerPeriodic,
+                        (void *)this,// 0,    // &arg
+                        m_periode,
+                        m_periode,
+                        WT_EXECUTELONGFUNCTION); // option to be changed if there are problems with other timers
+   }
+
+   return ret;
+}
+
+// ----------------------------------------------------------------------------
+/**
+ */
+bool TModuleMngr::UpdateSubscriptors(TDataManager *mn, bool recursive) {
+
+   if (!mn)
+      return false;
+
+   std::list<TDataInterface*>::iterator i2;
+   for (i2 = m_listIntf.begin(); i2 != m_listIntf.end(); i2++) {
+      TCommInterface *comInt = dynamic_cast<TCommInterface*>(*i2);
+      if (comInt)
+         comInt->Refresh(mn, comInt, true, recursive);
+   }
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+/**
+ Send a Message
+
+ @param msg Message to be sent
+ @return true if message was sent sucessfully, false otherwise
+ */
+bool TModuleMngr::SendMsg(LT::TMessage *msg)                                 {
+
+   if (m_module)
+      return m_module->SendMsg( msg);
+   else
+      return false;
+}
+
+// ----------------------------------------------------------------------------
+/**
+ Subscription to a parameter
+
+ @param oriFullName   Parameter path to be subscribed
+ @param tLocalNode    Local node subscribed to oriFullName (remote node)
+ @param priority      Priority of subscription (NORMAL by default).
+ @return true if the subscription was sent sucessfully, false otherwise.
+ */
+bool TModuleMngr::Subscribe(const wchar_t *oriFullName, TNode *tLocalNode,
+    e_priority priority) {
+
+   if (m_module && m_module->GetCommIfc())
+      return m_module->GetCommIfc()->Subscribe(oriFullName, tLocalNode,
+       PRIOR_HIGH);
+
+   return false;
+};
+
+// ----------------------------------------------------------------------------
+/**
+ Subscription to a parameter without notification
+
+ @param oriFullName   Parameter path to be subscribed
+ @param tLocalNode    Local node subscribed to oriFullName (remote node)
+ @param priority      Priority of subscription (NORMAL by default).
+ @return true if the subscription was sent sucessfully, false otherwise.
+ */
+bool TModuleMngr::SubscribeWithoutNotification(const wchar_t *oriFullName, TNode *tLocalNode,
+    e_priority priority) {
+
+   if (m_module && m_module->GetCommIfc())
+      return m_module->GetCommIfc()->SubscribeWithoutNotification(oriFullName, tLocalNode,
+       PRIOR_HIGH);
+
+   return false;
+};
+
+// ----------------------------------------------------------------------------
+/**
+ Return access level of the user
+ */
+e_accessLevel TModuleMngr::GetAccessLevel() {
+   if (m_accessManager)
+      return m_accessManager->GetAccessLevel();
+   else
+      return None;
+}
+
+// ------------------------------------------------------------------------------
+
+int TModuleMngr::LoginUser(wchar_t *name, wchar_t *password) {
+
+   if (!m_accessManager)
+      return -1;
+
+   bool ret = m_accessManager->LoginUser(name, password);
+   if (ret > -1)
+      RefreshAll();
+   return ret;
+
+}
+
+// ------------------------------------------------------------------------------
+
+void TModuleMngr::LogoutUser() {
+   if (!m_accessManager)
+      return;
+
+   // Autosave is enforced if needed.
+   if (ToSave() && m_module)
+      m_module->SendCfg( );
+   m_accessManager->Logout();
+   RefreshAll();
+}
+
+// ------------------------------------------------------------------------------
+
+bool TModuleMngr::AddUser(wchar_t *name, wchar_t *password, int level, int subType) {
+
+   if (m_accessManager)
+      return m_accessManager->AddUser(name, password, level,subType );
+
+   return false;
+}
+
+bool TModuleMngr::DeleteUser(wchar_t *name) {
+
+   if (m_accessManager) {
+      bool ret = m_accessManager->DeleteUser(name);
+      if (ret && m_module)
+         m_module->SendCfg( );
+      return ret;
+   }
+
+   return false;
+
+}
+
+//------------------------------------------------------------------------------
+/**
+  GetSubtypeByUser
+*/
+bool  TModuleMngr::GetSubtypeByUser(const wchar_t* userName, int &subType, int &type)  {
+   if (m_accessManager)
+      return m_accessManager->GetSubtypeByUser(userName, subType, type);
+   return false;
+}
+
+// ------------------------------------------------------------------------------
+/**
+
+*/
+e_accessLevel TModuleMngr::GetAccessLevelByUser(const wchar_t * userName) {
+
+   if (m_accessManager)
+      return m_accessManager->GetAccessLevelByUser(userName);
+
+   return None;
+}
+
+// ------------------------------------------------------------------------------
+// Todo: ineficiente ¿?
+/**
+ */
+void TModuleMngr::RecursiveUnsubscribe(TNode *node) {
+
+   if (node == NULL)
+      return;
+
+   // if ((m_module) && m_module->GetCommIfc())
+   // m_module->GetCommIfc()->Unsubscribe(node);
+
+   if ((m_module) && m_module->GetCommIfc())
+      m_module->GetCommIfc()->UnsubscribeAll();
+
+   // // TDatas are unsubscribed
+   // std::list<TData*>::iterator i_data;
+   // for (i_data = m_listData.begin(); i_data != m_listData.end(); i_data++) {
+   // if (*i_data)
+   // RecursiveUnsubscribe((*i_data));
+   // }
+   // // Managers are unsubscribed
+   // std::list<TDataManager*>::iterator i;
+   // for (i = m_listDataMngr.begin(); i != m_listDataMngr.end(); i++) {
+   // if (*i)
+   // RecursiveUnsubscribe((*i));
+   // }
+
+}
+
+// ------------------------------------------------------------------------------
+/**
+ Close the module
+ */
+bool TModuleMngr::MyClose() {
+
+   LOG_INFO1( L"Begin TModuleMngr Close");
+   // 1.- Check state, and call "stop" when necessary
+   m_blockAutoSave = true;
+   if (Status() > configured)
+      Stop();
+
+   if (Status() > configured) {
+      LOG_WARN1(L"Stop Fail. Closed not done.");
+      return false;
+   }
+
+   // 2.- Set state to "close" value.
+   // todo: esto implica que no haya flujo
+   // de información dentro del árbol, es decir, no se produzcan notificaciones de
+   // ningún tipo (de hijos a padres),  ni de comunicaciones.
+
+   SetStatus(closed);
+
+   // 3.- Subscriptions for the whole tree are deleted.
+   // TODO; falta un recorrido de todo el árbol calling Unsubscribe.
+
+   // RecursiveUnsubscribe(this);
+
+   // 4.- Nodes with DeleteMe flag to "true" are unlinked and destroyed.
+   // Root node keeps the rest. These one will  destroyed in destructor method.
+
+   std::list<TDataInterface*>::iterator i_intf = m_listIntf.begin();
+   while (i_intf != m_listIntf.end()) {
+      if ((*i_intf) && (*i_intf)->GetDeleteMe()) {
+         TDataInterface *di = *i_intf;
+         i_intf = m_listIntf.erase(i_intf);
+         // di->DeleteFromList(this); // erase me from its list
+         if (di)
+            delete(di);
+      }
+      else
+         i_intf++;
+
+   }
+
+   std::list<TDataManager*>::iterator i_mn = m_listDataMngr.begin();
+   while (i_mn != m_listDataMngr.end()) {
+      if ((*i_mn) && (*i_mn)->GetDeleteMe()) {
+         TDataManager *mn = *i_mn;
+         i_mn = m_listDataMngr.erase(i_mn);
+         if (mn)
+            delete(mn);
+      }
+      else
+         i_mn++;
+
+   }
+
+   std::list<TData*>::iterator i_d = m_listData.begin();
+   while (i_d != m_listData.end()) {
+      if ((*i_d) && (*i_d)->GetDeleteMe()) {
+         TData *da = *i_d;
+         i_d = m_listData.erase(i_d);
+         if (da)
+            delete(da);
+      }
+      else
+         i_d++;
+
+   }
+
+
+   //check if there is some change log to be saved
+   WriteToFileLogProt();
+
+   // 4.4.- refresh interfaces...
+   RefreshAll();
+   LOG_INFO1( L"End TModuleMngr Close");
+
+   return true;
+}
+
+// ------------------------------------------------------------------------------
+
+void TModuleMngr::GetUserNames(std::list< const wchar_t*> &l)                 {
+
+   if (m_accessManager)
+      m_accessManager->GetUserNames(l);
+}
+
+//------------------------------------------------------------------------------
+
+void TModuleMngr::GetUsers(std::list<TUser*> &l)                              {
+
+   if (m_accessManager)
+      m_accessManager->GetUsers(l);
+}
+
+// ------------------------------------------------------------------------------
+
+int TModuleMngr::LoginTechnicalUser(wchar_t *password, int randomValue) {
+
+   if (m_accessManager) {
+      int ret = m_accessManager->LoginTechnicalUser(password, randomValue);
+      if (ret)
+         RefreshAll();
+      return ret;
+   }
+   else
+      return -1;
+
+}
+
+// ------------------------------------------------------------------------------
+
+int TModuleMngr::LoginMaster(wchar_t *password, int randomValue) {
+
+   if (m_accessManager) {
+      int ret = m_accessManager->LoginMaster(password, randomValue);
+      if (ret)
+         RefreshAll();
+      return ret;
+   }
+   else
+      return -1;
+
+}
+
+// ------------------------------------------------------------------------------
+
+bool TModuleMngr::GetCompleteAccessLevel(s_completeAccessLevel &cAL) {
+
+   if (m_accessManager) {
+      m_accessManager->GetCompleteAccessLevel(cAL);
+      return true;
+   }
+   else
+      return false;
+}
+
+//------------------------------------------------------------------------------
+
+bool TModuleMngr::ChangePasswordTo( wchar_t* name,  wchar_t *newpwd)          {
+
+   if (m_accessManager)
+      return m_accessManager->ChangePassword(name, newpwd);
+
+   return false;
+}
+
+
+//------------------------------------------------------------------------------
+/**
+   Launch thread of the current process  with THREAD_PRIORITY_HIGHEST
+   @return true if thread was sucessfully created, false otherwise
+*/
+bool TModuleMngr::LaunchThread()                                                 {
+
+   bool ret = TProcess::LaunchThread();
+   if ( ret && m_thread)                                             {
+      SetThreadPriority( m_thread, THREAD_PRIORITY_ABOVE_NORMAL);
+   }
+   return ret;
+}
+
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+
+
+bool TModuleMngr::MyGo()                                                      {
+
+   bool ret = TProcess::MyGo();
+
+   // Managers are unsubscribed
+   m_listProc.clear();
+   std::list<TDataManager*>::iterator i;
+   for (i = m_listDataMngr.begin(); i != m_listDataMngr.end(); i++)           {
+      TProcess *p = dynamic_cast<TProcess*>(*i);
+      if ( p && p->OwnThread())                                               {
+         m_listProc.push_back( p);
+      }
+   }
+
+
+//   __int64 time = LT::Time::GetTimeMs();
+//   MyPeriodic( time);
+
+//   m_periodicTimer = timeSetEvent( m_periode, 0, AutoPeriodic, (DWORD_PTR) this, TIME_ONESHOT | TIME_CALLBACK_FUNCTION);
+
+   //Creates a timer queue of the MyPeridic process
+
+   if ( m_hTimerQueue )                                                       {
+
+      if (!m_timerHandle)                                                     {
+
+         CreateTimerQueueTimer(&m_timerHandle,
+                           m_hTimerQueue,
+                           TimerPeriodic,
+                           (void *)this,// 0,    // &arg
+                           m_periode,
+                           m_periode,
+                           WT_EXECUTELONGFUNCTION); // option to be changed if there are problems with other timers
+      }
+   }
+
+   return ret;
+}
+
+//------------------------------------------------------------------------------
+
+//
+//void CALLBACK TModuleMngr::AutoPeriodic( UINT uID, UINT uMsg, DWORD dwUser, DWORD dw1, DWORD dw2) {
+//
+//   TModuleMngr *m = (TModuleMngr*)dwUser;         //ToDo: probar dynamic_cast
+//   if ( m )                               {
+////      LT::Time::Resync( m->GetName());
+////      m->m_periodicTimer = timeSetEvent( m->m_periode, 0, AutoPeriodic, (DWORD_PTR) m, TIME_ONESHOT | TIME_CALLBACK_FUNCTION);
+//
+//   }
+//
+//}
+
+
+
+//------------------------------------------------------------------------------
+
+TProcessData *TModuleMngr::MyPostProcess(   TProcessData  *obj)               {
+
+   TProcessData *ret = TProcess::MyPostProcess( obj);
+   if ( m_enableTime  )       {
+      TCapture *cap = dynamic_cast<TCapture*>(obj);
+      if ( cap)                                                               {
+         __int64 now       =  LT::Time::GetTimeMs(),
+                 capTime   =  cap->GetTime();
+
+         m_delayTime = (float)( ( (now  - capTime) ) / 1000.0 );
+         if ( m_delayTime > m_maxDelayTime)                                   {
+            m_maxDelayTime = m_delayTime;
+         }
+      }
+   }
+   return ret;
+
+}
+//------------------------------------------------------------------------------
+
+
+void TModuleMngr::AddProcInformation( std::wstring & str)                     {
+
+   TProcess::AddProcInformation( str);
+   std::list<TProcess*>::iterator it;
+   for ( it = m_listProc.begin(); it!=  m_listProc.end(); it++)               {
+      (*it)->AddProcInformation( str);
+   }
+
+
+}
+
+//----------------------------------------------------------------
+
+/**
+   resinchronizes LT time with system time and calls MyPeriodic
+*/
+void TModuleMngr::MyPeriodic( __int64 &time)                                  {
+
+   MEMORYSTATUSEX memInfo;
+   memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+   bool retMemInfo = GlobalMemoryStatusEx(&memInfo);
+//   DWORDLONG totalVirtualMem = memInfo.ullTotalPageFile;
+//   DWORDLONG virtualMemUsed = memInfo.ullTotalPageFile - memInfo.ullAvailPageFile;
+//
+//   DWORDLONG totalPhysMem = memInfo.ullTotalPhys;
+//   DWORDLONG physMemUsed = memInfo.ullTotalPhys - memInfo.ullAvailPhys;
+
+   PROCESS_MEMORY_COUNTERS pmc;
+   GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
+   SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
+
+   if ( physMemUsedByMe > m_maxProcessMemoryToNotify64 ||  memInfo.ullAvailPhys < MIN_AVALIABLE_MEMORY_TO_NOTIFY ) {
+      LOG_WARN1(L"El programa tiene poca memoria accesible");
+      DISPATCH_EVENT(WARN_CODE, L"EV_LOW_MEMORY", NULL, this);
+   }
+
+   static int count = 1;
+
+   if ( count >= m_logMemoryEveryXMyPeriodics )  {
+
+      PROCESS_MEMORY_COUNTERS_EX pmcx;
+      GetProcessMemoryInfo(GetCurrentProcess(),(PROCESS_MEMORY_COUNTERS *) &pmcx, sizeof(pmcx));
+      physMemUsedByMe = pmcx.WorkingSetSize;
+      SIZE_T privUsage = pmcx.PrivateUsage;
+
+      static SIZE_T prev = physMemUsedByMe;
+      wchar_t str[256];
+      snwprintf( str,255, L"PhysMemUsedByMe %lu bytes diff: %d bytes: %lu K available: %.0f K private: %.0f K ", physMemUsedByMe, physMemUsedByMe-prev, physMemUsedByMe/1024, memInfo.ullAvailPhys/1024.0, (SIZE_T) privUsage/1024.0 );
+      str[255] = 0;
+      LOG_INFO1( str);
+      prev = physMemUsedByMe;
+      count = 0 ;
+   }
+   count++;
+   TProcess::MyPeriodic( time);
+
+   //check if there is some change log to be saved
+   WriteToFileLogProt();
+}
+
+
+//-----------------------------------------------------------------------------
+//
+//void TModuleMngr::TestSaveCfg()                                               {
+//
+//   //lanzamos autosave. Previamente se ha de haber modificado algun TData que
+//   //tenga el flag de save activo, y pulsar en el tdata que realiza este test antes de que haya vencido el temporizador
+//   //Esto, ya que el temporizador habitual son 10 segundos
+//   KillTimerAutoSave();
+//   m_idTimerAutoSave = timeSetEvent(100, 50, AutoSaveCfg, (DWORD_PTR) m_module, TIME_ONESHOT);
+//
+//   for ( int i=0; i< 100; i++)                                                {
+//      ::Sleep( 50);
+//      if (m_dataSaveCfg)
+//         m_dataSaveCfg->SetAsInt( 1);
+//   }
+//
+//}
+bool TModuleMngr::Read( LT::TStream *stream, TDataInterface *intf, bool infoModif, bool *forceSave   )  {
+
+   bool ret = TProcess::Read(stream, intf, infoModif, forceSave );
+   //once all tree has been read, check subtypes and propagate subtype
+   m_subtypesMngr->SetSubtypes();
+
+   AddFlags(FLAG_FROM_CODE);  // Special case for the ModuleMngr
+
+   //count logchanges file lines
+   wchar_t oriName[512];
+   snwprintf(oriName,511,L"%s.txt",m_logChangesNameAndDir);
+   oriName[511] = 0;
+
+   std::wifstream logChanFile(oriName);
+   if ( logChanFile) {
+      // new lines will be skipped unless we stop it from happening:
+      logChanFile.unsetf(std::ios_base::skipws);
+
+      // count the newlines with an algorithm specialized for counting:
+      m_logChangesLinesToWrite = NUMLINESLOGCHANGES -
+         std::count( std::istreambuf_iterator<wchar_t>(logChanFile),
+          std::istreambuf_iterator<wchar_t>(),L'\n');
+
+      m_logChangesLinesToWrite = m_logChangesLinesToWrite < 0 ? 0 : m_logChangesLinesToWrite;
+   }
+   else  {
+      m_logChangesLinesToWrite = NUMLINESLOGCHANGES;
+   }
+
+
+   return ret;
+
+}
+
+
+//------------------------------------------------------------------------------
+/**
+   SetActiveType
+   sets the name of the active type to the specified one
+   @param activeType is the specified name for the active type
+   @return true if the name could be set and false if not
+*/
+bool TModuleMngr::SetActiveType( wchar_t *activeType)                            {
+
+   return m_daActiveType->SetAsText(activeType);
+}
+
+//------------------------------------------------------------------------------
+
+/**
+   GetActiveType
+   writes the name of the active type in a given array
+   @param activeType is the array where to write the name of the active type
+   @param size if the size of the given array
+   @return true if name could be written in givne array
+
+*/
+bool  TModuleMngr::GetActiveType( wchar_t *activeType, unsigned int &size)    {
+
+   return m_daActiveType->AsText( activeType, size);
+
+
+}
+
+//-----------------------------------------------------------------------------
+/**
+FindRT
+Looks recursively for an instance of IORealTime
+*/
+TIORealTime *TModuleMngr::FindRT( TDataManager* mn )                          {
+
+   std::list<TDataManager *>::const_iterator i;
+
+   for( i = mn->DataManagerBegin(); i!= mn->DataManagerEnd(); i++)            {
+      TIORealTime *rt = dynamic_cast<TIORealTime *>( *i);
+      if ( rt)
+         return  rt;
+
+   }
+   return NULL;
+}
+
+//-------------------------------------------------------------------------------
+
+/**
+   SetMaxNumThreadAllProcesses
+   recursively sets the numbr of threads in each process to its maximum allowed number
+*/
+void TModuleMngr::SetMaxNumThreadAllProcesses( TProcess *process)             {
+
+   process->SetMaxNumThreads();
+   std::list<TDataManager*>::iterator it = process->DataManagerBegin();
+   while ( it!= process->DataManagerEnd())                                   {
+      TProcess *p = dynamic_cast<TProcess*>(*it);
+      if (p) {
+         SetMaxNumThreadAllProcesses( p);
+
+      }
+      it++;
+   }
+
+}
+
+//-------------------------------------------------------------------------------
+
+/**
+   method to log tdata values to changes files
+*/
+void TModuleMngr::LogChangesInTData(TData * da)  {
+
+   if ( !m_accessManager) {
+      return;
+   }
+
+   const wchar_t* logName = m_accessManager->GetLoggedUserNameAdvanced();
+//   const wchar_t* logName  = m_accessManager->GetLoggedUserName();
+//   const wchar_t* whID     = m_accessManager->GetHardLockID();
+
+   wstring daName;
+   if ( !da->GetFullNameAsWString(daName))                                 {
+//      delete [] whID;
+      return;
+   }
+   wstring newVal;
+   if ( !da->AsWString( newVal))                                           {
+//      delete [] whID;
+      return;
+   }
+
+   if ( logName && daName != L"" ) {
+
+      SYSTEMTIME lt;
+      GetLocalTime(&lt);
+
+      wchar_t buff[128];
+      snwprintf(buff,SIZEOF_CHAR(buff)-1,L"%02d-%02d-%02d %02d:%02d:%02d:%03d",lt.wYear,lt.wMonth, lt.wDay,lt.wHour, lt.wMinute,lt.wSecond,lt.wMilliseconds);
+      buff[SIZEOF_CHAR(buff)-1] = 0;
+
+      wstring logEntry = buff;
+      logEntry += L" ";
+      logEntry += daName;
+      logEntry += L" ";
+      logEntry += logName;
+      logEntry += L" ";
+//      logEntry += whID;
+//      logEntry += L" ";
+      logEntry += newVal;
+
+
+      //mutex  m_mutexChanges acces
+      if ( WaitForSingleObject( m_mutexChanges, 50) == WAIT_OBJECT_0)   {
+         __try   {
+            try   {
+               //si el ultimo guardado es diferente al actual, grabamos directamente
+               if ( m_lastSavedName != daName )   {
+                  if ( m_changedLog != L"")  {
+                     WriteToFileLog( m_changedLog );
+                  }
+                  WriteToFileLog( logEntry );
+                  m_lastSavedName = daName;
+                  m_changedLog = L"";
+               }
+               else  {
+                  m_changedLog = logEntry;
+               }
+            }
+            catch(...)     {
+               LOG_WARN1( L"Exception happened");
+            }
+         }__except( EXCEPTION_EXECUTE_HANDLER)      {
+            //Exceptions
+            unsigned long code = GetExceptionCode();
+            wchar_t msg [1024];
+            swprintf(msg, L"TModuleMngr::LogChangesInTData code: %x",code);
+            LOG_ERROR(msg);
+
+         }
+         ReleaseMutex( m_mutexChanges);
+
+      }
+   }
+
+//   delete [] whID;
+
+}
+
+//-----------------------------------------------------------------------------------
+/**
+   WriteToFileLogProt
+   write m_changedLog variable to log files
+   protected with mutex
+*/
+void TModuleMngr::WriteToFileLogProt( )                                             {
+
+   //check if there is some change log to be saved
+   if ( WaitForSingleObject( m_mutexChanges, 50) == WAIT_OBJECT_0)                  {
+
+      __try   {
+         try   {
+
+            if ( m_changedLog != L"" ) {
+               WriteToFileLog( m_changedLog);
+               m_changedLog = L"";
+            }
+
+         }
+         catch(...)     {
+            LOG_WARN1( L"Exception happened");
+         }
+      }__except( EXCEPTION_EXECUTE_HANDLER)      {
+         //Exceptions
+         unsigned long code = GetExceptionCode();
+         wchar_t msg [1024];
+         swprintf(msg, L"TModuleMngr::WriteToFileLog code: %x",code);
+         LOG_ERROR(msg);
+
+      }
+
+
+   }
+   ReleaseMutex(m_mutexChanges);
+}
+//--------------------------------------------------------------------
+
+/**
+   WriteToFileLog
+   appends specified string (and a newline) at the end of file specified in configuration
+   when file is full (number of lines reaches maximum), it is renamed to a name with date , and the file is reseted
+*/
+void TModuleMngr::WriteToFileLog( std::wstring &entryLog)           {
+
+   wchar_t  oriName[MAX_PATH];
+   snwprintf( oriName, SIZEOF_CHAR(oriName)-1, L"%s.txt", m_logChangesNameAndDir);
+   oriName[ SIZEOF_CHAR(oriName)-1] = 0;
+
+   if ( m_logChangesLinesToWrite <= 0 ) {    //hemos llenado el fichero
+      SYSTEMTIME lt;
+      GetLocalTime(&lt);
+      wchar_t buffName[MAX_PATH];
+      snwprintf(buffName,SIZEOF_CHAR(buffName)-1,L"%s_%02d_%02d_%02d_%02d_%02d_%02d.txt",m_logChangesNameAndDir,lt.wYear, lt.wMonth,lt.wDay,lt.wHour, lt.wMinute,lt.wSecond);
+      buffName[SIZEOF_CHAR(buffName)-1] = 0;
+      _wrename(oriName,buffName);
+
+      m_logChangesLinesToWrite = NUMLINESLOGCHANGES;
+   }
+
+   FILE *fitx;
+   if ( _wfopen_s( &fitx, oriName, L"a") == 0 )             {
+      if( m_logChangesLinesToWrite == NUMLINESLOGCHANGES)   {
+         fwprintf(fitx, L"--------Date----------------------TData-------------------------------User--HID--newValue--\n");
+      }
+      fwprintf( fitx,  L"%s\n",entryLog.c_str());
+
+      fclose( fitx);
+      --m_logChangesLinesToWrite;
+   }
+}
+
+
+
+//---------------------------------------
+
+
+//---------------------------------------
+
+
+SubtypesManager::SubtypesManager(  wchar_t *name, TDataManager *parent)
+   : TDataManagerControl( name, parent) {
+
+
+   m_daSubtypes = new TData( this, L"Subtypes", NULL, 0, L"Default=0;", FLAG_NORMAL2 );
+   DataModEventPost =  DataModifiedPost;
+
+}
+
+//---------------------------------------
+
+
+SubtypesManager::~SubtypesManager() {
+
+}
+
+//---------------------------------------
+
+
+/**
+   Detects deleted subtypes and propagates deletetion
+*/
+void __fastcall  SubtypesManager::DataModifiedPost( TData *da)   {
+
+   if ( da == NULL)  {
+      return;
+   }
+   if ( da == m_daSubtypes)  {
+      SetSubtypes();
+   }
+}
+
+//-------------------------------------------------
+
+bool SubtypesManager::MyInit()   {
+   SetSubtypes();
+   return TDataManagerControl::MyInit();
+}
+
+//--------------------------------------------------
+
+bool SubtypesManager::MyStop()  {
+
+   bool ret = TDataManagerControl::MyStop();
+   FromValueToActiveSubtype( GetRootMngr());
+   return ret;
+}
+
+//----------------------------------------------------
+
+bool SubtypesManager::MyClose()  {
+
+   bool ret = TDataManagerControl::MyClose();
+   FromValueToActiveSubtype( GetRootMngr());
+   return ret;
+}
+
+
+//------------------------------------------
+
+/**
+   extracts integers form m_sbutypesList and fills specified list with them
+*/
+void SubtypesManager::ExtractStdListFromList( std::list<int> &list) {
+
+   list.clear();
+   wchar_t listParam[150] = L"";
+   unsigned int size = SIZEOF_CHAR( listParam);
+
+   m_daSubtypes->GetAttribValue( cAttribNames[ATTR_LIST], listParam, size);
+
+   wchar_t  *iT = listParam,
+         *nT,
+         txt[256],
+         txt2[256];
+   //buscamos el caracter #, porque si existe, solamente buscaremos ; hasta el primer #
+   wchar_t *sharp = wcschr( iT, L'#');
+   // Extract values
+   int counter = 0;
+   while (1)                                                                  {
+      memset( txt, 0x0, sizeof(txt));
+      memset( txt2, 0x0, sizeof(txt2));
+      // Look for the ;
+      if ( ((nT = wcschr( iT,L';')) == NULL)  || ( sharp!=NULL && nT>sharp) )   {
+         // There are no more
+         wcscpy( txt2, iT);
+         if ( txt2[0] == 0) {
+            break;
+         }
+         wchar_t *ig = wcschr( txt2,L'=');
+         if ( ig) {
+            int valInt = _wtoi(ig+1);
+            list.push_back( valInt);
+         }
+         else  {
+            list.push_back(counter);
+         }
+         break;
+      }
+      wcsncpy( txt2, iT, nT-iT);
+      wchar_t *ig = wcschr( txt2,L'=');
+      if ( ig) {
+         int valInt = _wtoi(ig+1);
+         list.push_back( valInt);
+      }
+      else  {
+         list.push_back(counter);
+      }
+      iT = nT+1;
+      ++counter;
+   }
+}
+
+//--------------------------------------------------------------------
+
+/**
+   Gets a list of declared sbutypes and gets active subtype and propagates both through all configuration
+*/
+void SubtypesManager::SetSubtypes( )   {
+
+   std::list<int> subtypesList;
+   ExtractStdListFromList( subtypesList);
+   SetSubtypes( GetRootMngr(), subtypesList, m_daSubtypes->AsInt());
+
+}
+
+/**
+   Propagates SetSubtypes
+*/
+void SubtypesManager::SetSubtypes( TDataManager *mn, std::list<int> &subtypesList, int activeSubtype)   {
+
+   std::list<TData *>::iterator it = mn->DataBegin ();                                         ///< Returns iterator to the first parameter contained into the list of parameters of current manager.
+   while ( it != mn->DataEnd())   {
+      TDataWithSubtypes *dws = dynamic_cast<TDataWithSubtypes*>(*it);
+      if ( dws)   {
+         dws->SetSubtypes( subtypesList, activeSubtype);
+      }
+      ++it;
+   }
+   std::list<TDataManager *>::iterator it2 = mn->DataManagerBegin ();                                         ///< Returns iterator to the first parameter contained into the list of parameters of current manager.
+   while ( it2 != mn->DataManagerEnd())   {
+
+      SetSubtypes( *it2, subtypesList, activeSubtype);
+      ++it2;
+   }
+
+}
+
+
+
+
+
+//-----------------------------------
+
+
+
+/**
+   Propagates SetActiveSubtype
+*/
+void SubtypesManager::FromValueToActiveSubtype( TDataManager *mn)   {
+
+   std::list<TData *>::iterator it = mn->DataBegin ();                                         ///< Returns iterator to the first parameter contained into the list of parameters of current manager.
+   while ( it != mn->DataEnd())   {
+      TDataWithSubtypes *dws = dynamic_cast<TDataWithSubtypes*>(*it);
+      if ( dws)   {
+         dws->FromValueToActiveSubtype();
+      }
+      ++it;
+   }
+   std::list<TDataManager *>::iterator it2 = mn->DataManagerBegin ();                                         ///< Returns iterator to the first parameter contained into the list of parameters of current manager.
+   while ( it2 != mn->DataManagerEnd())   {
+
+      FromValueToActiveSubtype( *it2);
+      ++it2;
+   }
+
+}
+
+
+
+//---------------------------

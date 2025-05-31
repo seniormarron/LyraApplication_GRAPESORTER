@@ -1,0 +1,135 @@
+﻿# English  Translations for MVS.
+
+#Code					Text
+#--------------------------------------------
+
+EV_WRONG_PLANE							Configuration fail.Missing or wrong plane size.
+EV_CHARACTERISTIC_NOT_FOUND				Configuration fail.In view not found the characteristic.
+
+FAULTY_NOT_ENOUGH_VIEWS					Analysis fail.
+EV_NOT_ENOUGH_VIEWS						Buffer views  too small. Too many views received in the image. 
+
+FAULTY_INCORRECT_DIMENSION				Incorrect Dimension.
+
+EV_TOO_MUCH_ANADEF_METHODS				Configuration fail.Too much defects analysis methods.
+EV_METHOD_WRONG_PLANE					Configuration fail.Missing or wrong plane size in defects analysis.
+EV_METHOD_WRONG_BITCOUNT_PLANE			Configuration fail.Wrong Bit count plane in defects analysis.
+EV_VELOCITY_NOT_EXIST					Don't exist attribute Y Velocity.
+
+EV_INCORRECT_DIMENSION					Incorrect dimension ( cols or rows). Use apply.
+
+EV_IMG_CAM_STOP_ERROR					Fail when stopping the camera.
+EV_CAMERAID_NOT_FOUND					Camera ID not found.
+EV_INVALID_TIFF_FILE					Invalid indentificator for TIFF file.
+EV_IMG_CAM_FILE_ERROR_FORMAT			Wrong format of image file.
+EV_NO_FILES_IN_LIST						Not more files in list.
+EV_IMG_CAM_INCORRECT_FRAMES_VALUE		Incorrect frames value.
+EV_NOT_FREE_IMG							Not free image.		
+EV_IMG_CAM_LOAD_FILE					Error loading file.
+
+
+EV_REPEATED_BANK_CODE		Configuration fail. Repeated bank code.	
+
+EV_HS_LIMITS_NOT_FOUND		Not found HS limits.
+
+EV_FINDVIEWS_LIMITED		Limited Find Views.	
+EV_FINDVIEWS_LIMITED2		Limited Find Views2.
+EV_FINDVIEWS_LIMITED3		Limited Find Views3.
+
+PreclassificForm			Assignations
+
+BATCH_NUMBER				Batch
+BATCH_TOTAL_OBJECTS			Nº Fruits
+BATCH_TOTAL_WEIGHT			Weight Analized
+BATCH_START					Start
+BATCH_TYPE					Type
+BATCH_TEXT_FIELD			Text Field
+
+BtnCloseInfoProd			Close
+LabelBatch					Batch:
+LabelCategory				Category
+LabelEndTime				End:
+LabelStartTime				Start:
+LabelTotalKg				Total Kg:
+LabelUnities				Units
+
+CutFlow						Stop object analizer
+OnlyWithViews				Save only objects
+LabelFolder					Directory
+LabelFile					File
+LabelNumImgs				Num. images
+LabelCameras				Cameras
+LabelIluminations			Iluminations
+Cancel						Exit
+TXT_SAVE					Save
+TXT_SAVING					Saving...
+TXT_ADVANCED				Advanced
+TXT_BACK					Back	
+
+MemoIlumCapture1			Cameras and Iluminations, if value
+MemoIlumCapture2			is blank, no filter applied. 
+MemoIlumCapture3			Separated by ;
+
+ChainAdjustement			Chain adjustement
+LblCamera					Camera
+LblZoom						Zoom
+LblOffset					Offset G
+LblOffsetParticular				Offset P
+BtnAceptar					Ok
+BtnCancelar					Cancel
+FAULTY_CHAIN_STRETCH		Check Chain Adjustement
+EV_CHAIN_STRETCH			Is necessary to start the chain adjustment wizard.
+MSG_CHAIN_ADJUSTEMENT		After to do the adjustment, check that the ejection works good
+
+FAULTY_LIMITS				Limiting:
+EV_LIMITED_IN				Limited output
+EV_RECEIVER_REQUIRED		Fail image fusion
+EV_DIFFERENT_WIDTH			Different width
+
+lbRGB_BS					RGB/Background Sep.
+lbIlum						Ilumination
+lbThreshold					Threshold
+btClose						Close
+
+FAULTY_SATURATED_EXIT		Excess ejection:
+EV_SATURATED_IN				Excessive ejection at exit
+
+EXIT_LBL					Exit
+COUNT_INS					Expelled Objects
+COUNT_OBJ					Cash Limit
+S_LIMITADA					Limited
+S_ALTERNATIVA				Alternative Exit
+BTN_RESET					Reset
+BTN_ACEPTAR					Ok
+BTN_CLOSE					Close
+ORDER_CHANGE_BOX			Box Change
+
+LabelThresholdConfigDist			Threshold
+LabelBlackConfigDist			Black Margin Lines		
+LabelLeftConfigDist			Left
+LabelRightConfigDist			Right
+LabelBottomConfigDist			Bottom
+LabelTopConfigDist			Top
+ViewsNeed				ViewsNeed
+ViewsHave				ViewsHave	
+
+
+MSG_INCORRECT_VIEWS	Check if the template is in the right position, in case that this message appears again, call to the tecnical service
+MSG_DIF_VALUES_I	Diferent values of intensity detected at the template
+MSG_AUTO_ADJUST 	Auto adjusting exposure and gain values, this step can late few minutes, press OK to continue with the auto adjust
+MSG_AUTO_ADJUST_FIN     Auto adjust of Exposure and Gain finished, press ok for continue with the adjust of distortion points, for this press AUTO button
+MSG_AUTO_ADJUST_LOG     Auto Adjusing Exposure and Gain
+MSG_AUTO_ADJUST_FIN_LOG Auto Adjusing Exposure and Gain finished
+
+Next_btn		Discard Img
+okbt			Close	
+AutoAdjustBtn		Auto
+ShowDiscoordGrid 	Show grid
+ImgPanelDistCoord	Loading...
+chbMModPointSel		Manual Move Point
+ForceManual		Force Manual
+chbMoveGrid		Move All Grid
+AdvSettings		Advanced Settings
+LabelAutoAdjust         Auto Adjust
+GainCheck		Gain Check
+ExposureCheck		Exposure Check

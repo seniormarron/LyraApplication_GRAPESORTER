@@ -1,0 +1,959 @@
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+/*
+                  Lyra Techs Artificial Intelligence Software
+*/
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+/*
+   File:                      TMyMachineModuleMngr.cpp
+   Compilation group:         LyraTechsArtificial Intelligence.exe
+   Subgroup
+   Version:                   1.0
+   Author:                    Daniel Ivorra
+   Date Created:              15/03/2021
+   Date Last Modification:
+*/
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+#pragma hdrstop
+
+#include "TMyMachineModuleMngr.h"
+#include "TUser.h"
+#include "mastermind_num_version.h"
+#include "LTAISForm.h"
+#include "LTAIS_version.h"
+#include "THardlockChecker.h"
+#include "TZoneClassifier.h"
+#include "THistZone.h"
+#include "TThresholdWithAdjust.h"
+#include "TViewMMInterface.h"
+#include "TXmlManager.h"
+#include "definesModulesModes.h"
+#include "TTXTEvent.h"
+#include <dir.h>
+
+// -- Includes classes for create managers
+#include "TStdElectricCabinet.h"
+#include "TEtherCATRT.h"
+#include "TStdElectricCabinetT3.h"
+#include "TEtherCATRT3.h"
+
+//---------------------------------------------------------------------------
+
+#pragma package(smart_init)
+
+UINT     msg_paint_maingraph      = RegisterWindowMessage( L"MSG_PAINT_MAINGRAPHS");
+
+TMyMachineModuleMngr::TMyMachineModuleMngr( wchar_t *_name, TProcess *_parent,  int _flags , wchar_t *des , wchar_t *_im )
+   : TModuleMngr( _name, _parent)                                              {
+
+
+   m_daMachineModel       =  new TData( this, L"MachineModel",    NULL,      0,  L"HYPERION=0;TEALABS=1",   (FLAG_NORMAL), L"Muestra en el formulario el nombre del modelo de máquina" );
+   m_daMachineModel->SetDeleteMe( false);
+
+   m_appName               = new TData( this,      L"AppName", m_AppName, L"MyApplication", SIZEOF_CHAR(m_AppName),  FLAG_NORMAL3 | FLAG_LEVEL_3, L"Nombre de la aplicacin. Corresponde con el nombre de la configuracion activa"  );
+   m_appName->SetDeleteMe( false);
+
+   m_daRejectMode       =  new TData( this, L"RejectMode",    NULL,      0,  L"TEST=0;PRODUCTION=1",   (FLAG_NORMAL), L"Modo de funcionamiento del bloque de expulsion TEST=0 , PRODUCTION=1" );
+   m_daRejectMode->SetDeleteMe( false);
+
+
+   m_version               = new TData( this,      L"Version", NULL , L"", 50,  ( FLAG_NORMAL3 | FLAG_RDONLY | FLAG_LEVEL_3 | FLAG_SAVE_NO_VALUE) & ~FLAG_SAVE );
+   m_version->SetDeleteMe( false);
+
+   m_serialNumber          = new TData( this,      L"SerialNumber", NULL, L"" , 50,  (FLAG_NORMAL3 | FLAG_RDONLY | FLAG_LEVEL_3 | FLAG_SAVE_NO_VALUE) & ~FLAG_SAVE );
+   m_serialNumber->SetDeleteMe( false);
+
+   m_daTimeLock     =  new TData( this,            L"TimeLock",     &m_timeLock,      300, 0, 1000,    NULL, FLAG_NORMAL, L"Time for Lock");
+   m_daTimeLock->SetDeleteMe( false);
+
+   // -- Managers
+   m_ejectorTest = new TEjectorTest( L"EjectorTest", this );
+   m_ejectorTest->SetDeleteMe( false);
+
+//   m_fileAccess = new TFileManagement( L"FileAccess", this );
+//   m_fileAccess->SetDeleteMe( false);
+
+
+   m_daShowFormEjectTest   = new TData( this, L"TestValvulas",    NULL,             0,  0, 1,      NULL,    FLAG_NORMAL, L"Muestra el fomrulario para el test de valvulas" );
+   m_daShowFormEjectTest->SetDeleteMe( false);
+
+/*
+   m_mnPaths             = new TDataManager( L"Paths", this);
+   m_mnPaths->SetDeleteMe( false);
+
+   new TData ( m_mnPaths,  L"PathToInverterForm",        m_pathToInverterForm,         L"LT\\USSControl\\ShowInverterForm",  SIZEOF_CHAR( m_pathToInverterForm), FLAG_NORMAL );
+   .....
+
+*/
+
+
+   // -- Setting Number of version
+   wchar_t versionumber[256];
+   swprintf(versionumber, L"Version:  %s", APP_VERSION);
+   m_version->SetAsText(versionumber);
+
+   // -- Setting interface
+   m_viewIfc = new TViewMMInterface(  this , FormLT);
+   m_viewIfc->SetDeleteMe( false);
+
+   // -- Init variables
+   m_electricCab           = NULL;
+   m_IORealTime            = NULL;
+   m_zoneClass             = NULL;
+   m_reportMngr            = NULL;
+   m_em                    = NULL;
+   m_daToExternalPerm      = NULL;
+   m_cyclesForm            = NULL;
+
+   m_status                = 0;
+   m_contBanks             = 0;
+
+   this->RefreshAll();
+
+   DataModEventPost        = DataModifiedPost;
+
+   m_accessLevel           = None;
+   UpdateAccessLevel( false);
+}
+
+//------------------------------------------------------------------------------
+// Destructor
+TMyMachineModuleMngr::~TMyMachineModuleMngr()                                 {
+
+   //---- delete TData's with DeleteMe set to false
+   if( m_appName)
+      delete m_appName;
+   if(m_version)
+      delete m_version;
+   if(m_serialNumber)
+      delete m_serialNumber;
+
+   if( m_daTimeLock)
+      delete m_daTimeLock;
+   if( m_ejectorTest)
+      delete m_ejectorTest;
+//   if ( m_mnPaths)
+//      delete m_mnPaths;
+//   if ( m_fileAccess)
+//      delete m_fileAccess;
+   if (m_viewIfc)
+	  delete m_viewIfc;
+   if(m_cyclesForm)
+	  delete m_cyclesForm;
+
+}
+
+//------------------------------------------------------------------------------
+
+int TMyMachineModuleMngr::GetLockMode()                                       {
+   return m_lockMode;
+}
+
+void __fastcall TMyMachineModuleMngr::DataModifiedPost( TData* da)            {
+
+   TModuleMngr::DataModifiedPost( da);
+
+   if ( da == NULL)
+      return;
+
+   if(  (da == m_pState) )                                                    {
+      switch ( da->AsInt())                                                   {
+         case 2: //inited
+            m_dataGo->SetAsInt(1);
+            break;
+      }
+   }
+   else if ( da ==  m_faultyMachineState || da== m_faultyMachineText)         {
+      //take decissions, as this class acts a machine controller
+   }
+
+   if ( da == m_daShowFormEjectTest)                                          {
+      if ( da->AsInt())                                                       {
+         // Abro formulario ejector test
+         ShowEjectorForm();
+         // Devuelvo el Tdata a cero
+         da->SetAsInt(0);
+      }
+   }
+}
+
+//------------------------------------------------------------------------------
+void TMyMachineModuleMngr::SetLang()                                          {
+
+   TModuleMngr::SetLang();
+
+}
+//------------------------------------------------------------------------------
+
+
+bool TMyMachineModuleMngr::MyInit()                                           {
+
+   if (FormLT)                                                                {
+      FormLT->IntroSplash->BeginUpdate();
+      FormLT->IntroSplash->ProgressBar->Position = 70;
+      FormLT->IntroSplash->EndUpdate();
+   }
+
+   m_zoneClass             = NULL;
+   m_reportMngr            = NULL;
+   m_em                    = NULL;
+   m_daToExternalPerm      = NULL;
+
+   m_contBanks       = 0;
+
+   // Create folder if not exist
+   _wmkdir(String(prodTrace.path).c_str());
+   _wmkdir(String(prodTrace.path2).c_str());
+   m_categoryList.clear();
+
+   bool ret = TModuleMngr::MyInit();
+   if ( ret)                                                                  {
+      LookForReportMngr( this);
+      LookForCategory( this);
+      LookForHistZone( this);
+      m_em = LookForEjectorMan (this);
+
+      if (m_em)   {
+         ContEjectorBanks( m_em);
+      }
+      else   {
+         m_contBanks = 0;
+      }
+
+      TDataManager *root = GetRootMngr();
+      if (root)                                                               {
+
+      }
+   }
+
+   if (FormLT)                                                                {
+      FormLT->IntroSplash->BeginUpdate();
+      FormLT->IntroSplash->ProgressBar->Position = 90;
+      FormLT->IntroSplash->EndUpdate();
+
+      TPersistence *pers = FormLT->GetPersistence();
+      if( pers)                                                               {
+         wchar_t activeType[256];
+         int size = SIZEOF_CHAR(activeType);
+         pers->GetActiveTypeConfig(activeType, size);
+
+         if (wcslen(activeType) > 0) {
+//            std::list<wchar_t*>typeList;
+//            pers->GetAvailableTypesNames(typeList);
+//
+//            std::list<wchar_t*>nameTranslationsList;
+//            pers->GetTranslationTypeNames(nameTranslationsList);
+//
+//            if ((typeList.size() > 0) && (nameTranslationsList.size() > 0)) {
+//
+//               std::list<wchar_t*>::iterator i = typeList.begin();
+//               std::list<wchar_t*>::iterator it = nameTranslationsList.begin();
+//
+//               while ((i != typeList.end()) && (it != nameTranslationsList.end())) {
+//                  if (wcscmp(*i, activeType) == 0)                                  {
+//                     UpdateTypeInReport( (*it));
+//                     break;
+//                  }
+//                  i++;
+//                  it++;
+//               }
+//            }
+            std::list<s_typeInfo> typeslist;
+            ((TXmlManager*)pers)->getTypesInfo(typeslist);
+            if ((typeslist.size() > 0))                                       {
+               std::list<s_typeInfo>::iterator it = typeslist.begin();
+               while (it != typeslist.end()) {
+                  if (wcscmp((*it).m_name.c_str(), activeType) == 0)  {
+                     UpdateTypeInReport((wchar_t *) (*it).m_translation.c_str());
+                     break;
+                  }
+                  it++;
+               }
+            }
+         }
+      }
+   }
+
+//   if (m_showEjectionPanel == 1)                                              {
+//      FormLT->Ejectionbtn->Visible = true;
+//   }
+//   else                                                                       {
+//      FormLT->Ejectionbtn->Visible = false;
+//   }
+
+
+   /*
+   if(m_cyclesForm){
+	  delete m_cyclesForm;
+	  m_cyclesForm = 0;
+   }
+
+   TCyclesReport *cr = dynamic_cast<TCyclesReport*>(this->GetManagerObject(L"LTAIS\\EjectorMan\\Reporters\\CyclesReport"));
+
+   if(cr) {
+	  m_cyclesForm = new TInfoCyclesForm(NULL, cr);
+
+	  if(m_cyclesForm) {
+		 m_cyclesForm->Show();
+	  }
+   }
+   */
+
+
+
+   RefreshAll();
+
+   //   FormLT->ModoLimpieza->Caption =  LoadText( L"CLEAN_MODE");
+
+   return ret;
+};
+
+//-----------------------------------------------------------------------------
+/**
+   This method looks for TReportMngr members and asks Main Form to set its production interfaces
+*/
+void TMyMachineModuleMngr::LookForReportMngr( TDataManager *mn)               {
+
+   std::list<TDataManager*>::iterator i, j;
+   for ( i= mn->DataManagerBegin(); i!= mn->DataManagerEnd();i++)             {
+
+      TInfoProdDrawer *rm = dynamic_cast<TInfoProdDrawer*>(*i);
+      if ( rm && rm->Enabled())                                               {
+         m_reportMngr = rm;
+         break;
+      }
+      else
+         LookForReportMngr( *i);
+   }
+}
+//------------------------------------------------------------------------------
+void TMyMachineModuleMngr::LookForCategory( TDataManager *mn)                 {
+
+   std::list<TDataManager*>::iterator i, j;
+   for ( i= mn->DataManagerBegin(); i!= mn->DataManagerEnd();i++)             {
+      TCategory *hz = dynamic_cast<TCategory*>(*i);
+      if ( hz && hz->Enabled())                                               {
+
+         //Añadir el id y el langName a la lista, para el formulario del EjectorMan
+         s_category categories;
+         categories.idCat = hz->GetIdCat();
+         wcscpy( categories.lang_name, hz->GetLangName());
+         m_categoryList.push_back( categories);
+      }
+      else
+         LookForCategory( *i);
+   }
+}
+//------------------------------------------------------------------------------
+/**
+*/
+TEjectorMan *TMyMachineModuleMngr::LookForEjectorMan( TDataManager *mn)        {
+
+   if ( mn==NULL)
+      return NULL;
+
+   TEjectorMan *em = dynamic_cast<TEjectorMan*>(mn);
+   if ( em && em->Enabled())
+      return em;
+   std::list<TDataManager*>::iterator i;
+   for ( i= mn->DataManagerBegin(); i!= mn->DataManagerEnd();i++)             {
+      TEjectorMan *mn2 = LookForEjectorMan( *i);
+      if ( mn2)
+         return mn2;
+   }
+   return NULL;
+}
+//------------------------------------------------------------------------------
+/**
+*/
+void TMyMachineModuleMngr::ContEjectorBanks( TEjectorMan *mn)                {
+
+   m_contBanks = 0;
+
+   if ( mn==NULL)  {
+      return;
+   }
+
+   std::list<TDataManager*>::iterator i;
+   for ( i= mn->DataManagerBegin(); i!= mn->DataManagerEnd();i++)             {
+      TEjectorBank *eb = dynamic_cast<TEjectorBank*>(*i);
+      if ( eb && eb->Enabled())                                               {
+         m_contBanks++;
+      }
+   }
+}
+
+
+//------------------------------------------------------------------------------
+TCamera* TMyMachineModuleMngr::GetCameraByID (int id)                                               {
+   TCamera *cam = NULL;
+   if(camList.size() > 0)                                                     {
+      std::list<TCamera*>::iterator it;
+      it = camList.begin();
+      do                                                                      {
+         cam = dynamic_cast<TCamera*>(*it);
+         if(cam->GetCapturerId() == id)
+            it = camList.end();
+         else                                                                 {
+            cam = NULL;
+            it++;
+         }
+      }while(it != camList.end());
+   }
+
+   return cam;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/**
+   This method looks for  THistCatLongTerm members and asks Main Form to set its production interfaces
+*/
+void TMyMachineModuleMngr::LookForHistZone( TDataManager *mn)                 {
+
+   std::list<TDataManager*>::iterator i;
+   for ( i= mn->DataManagerBegin(); i!= mn->DataManagerEnd();i++)             {
+      TZoneClassifier *hz = dynamic_cast<TZoneClassifier*>(*i);
+      if ( hz && hz->Enabled())                                               {
+         //get IdZone of hclt
+         THistZone *histZone = hz->GetHistZone();
+         if (histZone && histZone->Enabled())                                 {
+
+            FormLT->SetChartProduction( histZone);
+//            m_myViewIfc->Add( histZone);
+            m_zoneClass = hz;
+            return; //call to only once
+         }
+      }
+      else
+         LookForHistZone( *i);
+   }
+}
+
+//------------------------------------------------------------------------------
+/**
+   Send a Message
+
+   @param msg Message to be sent
+   @return true if message was sent sucessfully, false otherwise
+*/
+bool TMyMachineModuleMngr::SendMsg( LT::TMessage *msg)                       {
+
+   if ( msg->Type() == MSG_LT_EVENT)
+      ProcessLTEventMsg( msg);  // this class acts as a machine controller
+
+   bool ret = TModuleMngr::SendMsg( msg);
+   return ret;
+}
+
+
+//------------------------------------------------------------------------------
+
+
+/**
+   Process event messages
+*/
+
+void  TMyMachineModuleMngr::ProcessLTEventMsg( LT::TMessage *msg)           {
+
+}
+
+//------------------------------------------------------------------------------
+
+eFaultyLevel TMyMachineModuleMngr::FaultyModified( TData *data)               {
+
+   //get maximum faulty level for all managers
+   eFaultyLevel ret =   TModuleMngr::FaultyModified( data);
+
+   if ( m_electricCab)                                                        {
+
+      switch ( ret)                                                           {
+         case eFaultyLevel::warning:
+			m_status = FALLO_LEVE;    // FALLO_LEVE de momento los hacemos todos leves
+			break;
+		 case eFaultyLevel::error:
+			m_status = FALLO_LEVE;     // FALLO_GRAVE
+			break;
+         case eFaultyLevel::correct:
+         default:
+            m_status = 0x00;
+      }
+
+      // Actulziar estado en Ethercat
+      m_electricCab->SetSoftState( m_status );
+   }
+   return ret;
+}
+
+
+//------------------------------------------------------------------------------
+/**
+ Doesn't stop its own thread thread.
+ That's why it doesn't call TProcess::MyStop
+ */
+bool TMyMachineModuleMngr::MyStop() {
+   //wait for list to be empty
+   while ( !m_list.Empty())                                                   {
+      Application->ProcessMessages();
+   }
+
+//   if( m_conveyorControl)                                                     {
+//      m_conveyorControl->StopConveyors();
+//   }
+
+   //Hay un timer comprobando el estado, por lo que se pone a NULL, por si el timer
+   //no se para en el MyClose()
+   m_daToExternalPerm = NULL;
+
+   return TModuleMngr::MyStop();
+}
+
+
+//------------------------------------------------------------------------------
+/**
+*/
+bool TMyMachineModuleMngr::MyClose()                                          {
+
+   bool ret = TModuleMngr::MyClose();
+   if ( ret)                                                                  {
+      m_electricCab  = NULL;
+      m_IORealTime   = NULL;
+      m_zoneClass    = NULL;
+      m_reportMngr      = NULL;
+      m_viewIfc->SetEnabled( false);
+   }
+
+   return ret;
+}
+
+
+//------------------------------------------------------------------------------
+/**
+*/
+bool TMyMachineModuleMngr::Read( LT::TStream *stream, TDataInterface *intf, bool infoModif, bool *forceSave   )      {
+
+   if (FormLT)                                                                {
+      FormLT->IntroSplash->BeginUpdate();
+      FormLT->IntroSplash->ProgressBar->Position = 20;
+      FormLT->IntroSplash->EndUpdate();
+   }
+   // Espero unos segudnos a que arranquen todos los hardawares, cam, etc...
+   ::Sleep(10000);
+   if (FormLT)                                                                {
+      FormLT->IntroSplash->BeginUpdate();
+      FormLT->IntroSplash->ProgressBar->Position = 30;
+      FormLT->IntroSplash->EndUpdate();
+   }
+
+
+   ::Sleep(10000);
+   if (FormLT)                                                                {
+      FormLT->IntroSplash->BeginUpdate();
+      FormLT->IntroSplash->ProgressBar->Position = 40;
+      FormLT->IntroSplash->EndUpdate();
+   }
+
+   ::Sleep(10000);
+   if (FormLT)                                                                {
+      FormLT->IntroSplash->BeginUpdate();
+      FormLT->IntroSplash->ProgressBar->Position = 50;
+      FormLT->IntroSplash->EndUpdate();
+   }
+
+   bool ret = TModuleMngr::Read(stream, intf, infoModif, forceSave );
+
+   m_electricCab = NULL;
+   m_IORealTime  = NULL;
+
+   if ( ret)                                                                  {
+      std::list<TDataManager*>::iterator i;
+      for ( i= DataManagerBegin(); i!= DataManagerEnd();i++)                  {
+         if( !m_electricCab)                                                  {
+            TElectricCabinet *ec = dynamic_cast<TElectricCabinet*>(*i);
+            if ( ec)
+               m_electricCab = ec;
+         }
+         if( !m_IORealTime)                                                  {
+            TIORealTime *ec = dynamic_cast<TIORealTime*>(*i);
+            if ( ec)
+               m_IORealTime = ec;
+         }
+      }
+   }
+
+   if (FormLT)                                                                {
+      FormLT->IntroSplash->BeginUpdate();
+      FormLT->IntroSplash->ProgressBar->Position = 60;
+      FormLT->IntroSplash->EndUpdate();
+   }
+   m_viewIfc->SetEnabled( true);
+   return ret;
+
+}
+
+//------------------------------------------------------------------------------
+/**
+*/
+bool TMyMachineModuleMngr::LaunchAndShowDiagnose(TStrings *lines)             {
+   m_daEnaDiagnose->SetAsInt(1);
+
+   if( lines)                                                                 {
+      lines->Add( m_diagnose);
+      return true;
+   }
+   return false;
+}
+//-----------------------------------------------------------------------------
+void  TMyMachineModuleMngr::UpdateGraphs()                                    {
+
+}
+
+
+bool   TMyMachineModuleMngr::PaintGauge ( TThresholdBase *th, TProgressBar *pb)           {
+
+   return true;
+}
+
+//-----------------------------------------------------------------------------
+
+bool   TMyMachineModuleMngr::DeleteFromList ( TDataManager   *mngr)           {
+   if (     mngr  == m_zoneClass)
+      m_zoneClass = NULL;
+//   else if (mngr == m_conveyorControl)
+//      m_conveyorControl = NULL;
+   else if (mngr == m_electricCab)
+      m_electricCab = NULL;
+   else if( mngr == m_IORealTime)
+      m_IORealTime = NULL;
+   else if( mngr == m_reportMngr)
+      m_reportMngr = NULL;
+
+   return TProcess::DeleteFromList ( mngr);
+
+};
+
+bool   TMyMachineModuleMngr::DeleteFromList ( TData          *data)           {
+   return TProcess::DeleteFromList ( data);
+
+};
+
+
+// ----------------------------------------------------------------------------
+e_accessLevel TMyMachineModuleMngr::GetAccessLevel() {
+   return m_accessLevel;
+//   if (m_accessManager)
+//      return m_accessManager->GetAccessLevel();
+//   else
+//      return None;
+}
+
+void TMyMachineModuleMngr::SetAccessLevel(e_accessLevel level) {
+	 m_accessLevel = level;
+	 m_accessManager->SetAccessLevel(level);
+}
+//-----------------------------------------------------------------------------
+void TMyMachineModuleMngr::UpdateAccessLevel(bool lock)                                             {
+   e_accessLevel access = m_accessManager->GetAccessLevel();
+   if( lock)                                             {
+//      if( access < m_accessLevel)
+//         m_accessLevel = access;
+      if( access < TechnicalService)
+         m_accessLevel = None;
+   }
+   else
+      if( access > m_accessLevel)
+		 m_accessLevel = access;
+}
+
+
+//-----------------------------------------------------------------------------
+void TMyMachineModuleMngr::AddErrorText( std::wstring &errorText)                      {
+
+   TModuleMngr::AddErrorText( errorText);
+
+   if ( (m_state.faultyFlags & FAULTY_ENCODER_NO_PULSES) || (m_state.faultyFlags & (FAULTY_ENCODER_NO_PULSES << 16)))   {
+      errorText = errorText + LoadText( L"FAULTY_ENCODER");
+      errorText = errorText + L"\r\n";
+   }
+   if ( (m_state.faultyFlags & FAULTY_ENCODER_NO_ZERO) || (m_state.faultyFlags & (FAULTY_ENCODER_NO_ZERO << 16)))   {
+      errorText = errorText + LoadText( L"FAULTY_ENCODER");
+      errorText = errorText + L"\r\n";
+   }
+   if ( (m_state.faultyFlags & FAULTY_ENCODER_WRONG_ZERO) || (m_state.faultyFlags & (FAULTY_ENCODER_WRONG_ZERO << 16)))   {
+      errorText = errorText + LoadText( L"FAULTY_ENCODER");
+      errorText = errorText + L"\r\n";
+   }
+   if ( (m_state.faultyFlags & FAULTY_ENCODER_PULSES_NOT_RUNNING) || (m_state.faultyFlags & (FAULTY_ENCODER_PULSES_NOT_RUNNING << 16)))   {
+      errorText = errorText + LoadText( L"FAULTY_ENCODER");
+      errorText = errorText + L"\r\n";
+   }
+   if ( (m_state.faultyFlags & FAULTY_CLEAN_MODE) || (m_state.faultyFlags & (FAULTY_CLEAN_MODE << 16)))   {
+      errorText = errorText + LoadText( L"FAULTY_CLEAN_MODE");
+      errorText = errorText + L"\r\n";
+   }
+}
+
+//------------------------------------------------------------------------------
+/**
+*  EjectionPanel
+*/
+
+void TMyMachineModuleMngr::EjectionPanel()                                     {
+
+
+
+   UnicodeString        name_bank,  ///< bank name
+                        id_bank,    ///< string containing bank id
+                        lb_name,    ///< label name in ejection panel
+                        id_Cat,     ///< string containing category id
+                        lb_idCat;   ///< exended label name
+
+   wchar_t  idCats[64];  ///< string with id of categories, separated by ;
+
+
+   if( !m_em)                                                                 {
+      return;
+   }
+//   m_configuringEjectors = true;
+   //Tour the TEjectorMan
+   std::list<TDataManager *>::iterator it    = m_em->DataManagerBegin();
+   std::list<TDataManager *>::iterator itEnd = m_em->DataManagerEnd();
+   while( (it) != itEnd )                                                   {
+      TEjectorBank *bank = dynamic_cast<TEjectorBank*>( *it);
+      if(bank)                                                              {
+
+        //lang_name put in the corresponding label
+        name_bank = L"lb_bank";
+        id_bank = bank->GetId()+1;
+        lb_name= name_bank + id_bank ;
+
+        TComponent *c = FormLT->FindComponent( lb_name);
+        if ( dynamic_cast<TLabel*>(c))                                      {
+            TLabel &lab = *(TLabel *)c;
+            lab.Caption = (*it)->GetLangName();
+        }
+
+        bank->GetIdCats( idCats, SIZEOF_CHAR( idCats));
+
+        std::list<s_category>::iterator it2    = m_categoryList.begin();
+        std::list<s_category>::iterator it2End = m_categoryList.end();
+        while ( (it2) != it2End)                                            {
+
+           //lang_name put in the corresponding checkbox
+           id_Cat = (*it2).idCat;
+           lb_idCat= "_" + id_Cat ;
+
+           TComponent *c = FormLT->FindComponent( lb_name + lb_idCat);
+           if( dynamic_cast<TCheckBox*>(c))                                 {
+               TCheckBox   &cb   = *(TCheckBox *)c;
+               cb.Caption     = (*it2).lang_name;
+           }
+           TComponent *d = FormLT->FindComponent( name_bank+ lb_idCat);
+           if( dynamic_cast<TCheckBox*>(d))                                 {
+               TCheckBox   &cb   = *(TCheckBox *)d;
+               cb.Caption     = (*it2).lang_name;
+           }
+           //If the (*it2)->idCat is listed in the category that should be ejected by the bank (idCats)
+            //CheckBox mark
+            c  = FormLT->FindComponent( lb_name + lb_idCat);
+            if ( dynamic_cast<TCheckBox*>(c))                                 {
+               TCheckBox   &cb = *(TCheckBox *)c;
+               TNotifyEvent   e;
+               e  = cb.OnClick;
+               cb.OnClick   = NULL;
+               cb.Checked = (bool)TAux::IsInList( (*it2).idCat , idCats  );
+               cb.OnClick  = e;
+
+            }
+            it2++;
+         }
+      }
+      it++;
+   }
+//   m_configuringEjectors = false;
+
+
+}
+//------------------------------------------------------------------------------
+/**
+*  SetEjectionConfiguration
+*/
+void TMyMachineModuleMngr::SetEjectionConfiguration()                          {
+
+
+   UnicodeString        name_bank,  ///< bank name
+                        id_bank,    ///< string containing bank id
+                        lb_name,    ///< label name in ejection panel
+                        id_Cat,     ///< string containing category id
+                        lb_idCat,   ///< exended label name
+                        checked;    ///< auxiliar variable
+
+   if (  !m_em)                                                                {
+      return;
+   }
+
+   //Tour the TEjectorMan
+   std::list<TDataManager *>::iterator it3    = m_em->DataManagerBegin();
+   std::list<TDataManager *>::iterator it3End = m_em->DataManagerEnd();
+    while( (it3) != it3End )                                                {
+      TEjectorBank *bank = dynamic_cast<TEjectorBank*>( *it3);
+      if(bank)                                                              {
+
+        //lang_name put in the corresponding label
+        id_bank = bank->GetId()+1;
+        name_bank = L"lb_bank";
+        lb_name= name_bank + id_bank ;
+        checked =  "";
+
+        std::list<s_category>::iterator it4    = m_categoryList.begin();
+        std::list<s_category>::iterator it4End = m_categoryList.end();
+
+        while ( (it4) != it4End)                                              {
+           //lang_name put in the corresponding checkbox
+           id_Cat = (*it4).idCat;
+           lb_idCat= "_" + id_Cat ;
+
+           //look for checkBox
+           TComponent *c = FormLT->FindComponent( lb_name + lb_idCat);
+           TCheckBox   *cb   = dynamic_cast<TCheckBox*>(c);
+           if (c)                                                             {
+               if (cb->Checked)                                               {
+                  //included in the list of categories to the bank( *it4).idCat;
+                 checked = ( checked + id_Cat + L";");
+               }
+            }
+            it4++;
+         }
+         //Add the list of categories to the bank to make a set with the marked categories
+         bank->SetIdCats( checked.c_str());
+      }
+      it3++;
+   }
+}
+//------------------------------------------------------------------------------
+/**
+*  SetEjectionConfiguration
+*/
+void TMyMachineModuleMngr::EjectionAll( int bank)                          {
+
+   m_em-> EjectAll(bank) ;
+}
+//------------------------------------------------------------------------------
+/*
+*  CheckButtonStartState()
+*  Checks the status of the button
+*/
+
+void TMyMachineModuleMngr::CheckButtonStartState()                            {
+   //El botón es independiente de la marcha externa( hay que m_running del conveyorControl, que revisa el permiso externo).
+//   FormMM->StartButton->Caption = (m_conveyorControl && m_conveyorControl->Running()) ? LoadText(FormMM->StopButton->Name.c_str()) : LoadText(FormMM->StartButton->Name.c_str());
+}
+
+
+
+
+//------------------------------------------------------------------------------
+
+/**
+*  WhatCanYouCreate
+*
+**/
+void TMyMachineModuleMngr::WhatCanYouCreate( std::list<s_wcyc_container_class > &list , char *name , bool manager)    {
+
+   bool firstLevel = (stricmp(name, FIRST_LEVEL_MANAGER) == 0);
+   if ( manager)                                                                 {
+      if ( stricmp(name, typeid( TStdElectricCabinet).name())==0 || firstLevel)  {
+         s_wcyc_container_class s1( typeid( TStdElectricCabinet).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TEtherCATRT).name()) == 0 || firstLevel)        {
+         s_wcyc_container_class s1( typeid( TEtherCATRT).name());
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( TStdElectricCabinetT3).name())==0 || firstLevel){
+         s_wcyc_container_class s1( typeid( TStdElectricCabinetT3).name() );
+         s1.AddToList( list );
+	  }
+	  if ( stricmp(name, typeid( TEtherCATRT3).name()) == 0 || firstLevel){
+		 s_wcyc_container_class s1( typeid( TEtherCATRT3).name());
+		 s1.AddToList( list );
+	  }
+	  if ( stricmp(name, typeid( TColorAjustFormAux).name()) == 0 || firstLevel){
+		 s_wcyc_container_class s1( typeid( TColorAjustFormAux).name());
+		 s1.AddToList( list );
+	  }
+   }
+   else                                                                       {
+   }
+   TModuleMngr::WhatCanYouCreate( list, name, manager);
+}
+
+//------------------------------------------------------------------------------
+
+TDataManager* TMyMachineModuleMngr::CreateDataMngr( wchar_t *name,char* code, TDataManager *dparent   ) {
+
+   // -- TwinCat
+   if ( stricmp( code, typeid(TEtherCATRT).name())==0)                        {
+      TProcess *mnc = dynamic_cast<TProcess*>(dparent);
+      if (mnc)                                                                {
+         return new TEtherCATRT( name, mnc);
+      }
+      else                                                                    {
+         LOG_ERROR(L"Parent is not a Process");
+         return NULL;
+      }
+   }
+   if ( stricmp( code, typeid(TStdElectricCabinet).name())==0)                {
+      TDataManagerControl *mnc = dynamic_cast<TDataManagerControl*>(dparent);
+      if (mnc)                                                                {
+         return new TStdElectricCabinet( name, mnc);
+      }
+   else                                                                       {
+      LOG_ERROR(L"Parent is not a DataManagerControl");
+         return NULL;
+      }
+   }
+   if ( stricmp( code, typeid(TEtherCATRT3).name())==0)                       {
+      TProcess *mnc = dynamic_cast<TProcess*>(dparent);
+      if (mnc)                                                                {
+         return new TEtherCATRT3( name, mnc);
+      }
+      else                                                                    {
+         LOG_ERROR(L"Parent is not a Process");
+         return NULL;
+      }
+   }
+   if ( stricmp( code, typeid(TStdElectricCabinetT3).name())==0)              {
+	  TDataManagerControl *mnc = dynamic_cast<TDataManagerControl*>(dparent);
+	  if (mnc)                                                                {
+		 return new TStdElectricCabinetT3( name, mnc);
+	  }
+	  else                                                                    {
+		 LOG_ERROR(L"Parent is not a DataManagerControl");
+		 return NULL;
+	  }
+   }
+   if ( stricmp( code, typeid(TColorAjustFormAux).name())==0)              {
+	  return new TColorAjustFormAux( name, this);
+   }
+
+   return TModuleMngr::CreateDataMngr( name, code, dparent);
+}
+
+
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------
+/*
+   Lyra Techs Intellectual Property Copyright@2021.
+*/
+//-----------------------------------------------------------------------------

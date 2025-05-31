@@ -1,0 +1,748 @@
+//---------------------------------------------------------------------------
+
+
+#pragma hdrstop
+
+#include "RaydenBoard.h"
+#include "threadsDefs.h"
+
+//---------------------------------------------------------------------------
+
+#pragma package(smart_init)
+
+//---------------------------------------------------------------------------
+
+//Labels for the state
+
+#define LBL_GET "GET"
+#define LBL_RUN "RUN"
+#define LBL_OFF "OFF"
+#define LBL_CFG "CFG"
+
+//---------------------------------------------------------------------------
+
+
+/*******************************************************************************
+***********************RaydenBoard Class*********************************
+*******************************************************************************/
+//-----------------------------------------------------------------------------
+/**
+*  Thread to send commands to the RaydenBoard. All commands must be sent
+*  through this so there aren`t access conflicts to the RaydenBoard serial port.
+*/
+DWORD WINAPI RaydenBoardThread(LPVOID owner)                                     {
+
+   RaydenBoard      *pRaydenBoard     = (RaydenBoard*)owner;
+   HANDLE            events[2];
+   DWORD             ev;
+
+   events[0] = pRaydenBoard->m_evStopThread;
+   events[1] = pRaydenBoard->m_evSetStatus;
+
+   while((ev = WaitForMultipleObjects( sizeof(events)/sizeof(events[0]), events, false, 1000))!= WAIT_OBJECT_0){
+
+      switch (ev)                                                             {
+         case WAIT_OBJECT_0 + 1 :
+
+		   //	pRaydenBoard->m_pLastCmdResult->SetAsInt( pRaydenBoard->SendCmd());    // Sends values to Driver
+			pRaydenBoard->SendCmd();                                                   // Sends values to Driver
+			pRaydenBoard->m_pStatus->SetAsInt( pRaydenBoard->GetStatus());            // Receives values from Driver
+            ResetEvent(events[1]);
+         break;
+
+         case WAIT_TIMEOUT:
+			pRaydenBoard->m_pStatus->SetAsInt( pRaydenBoard->GetStatus());        // Ask status
+
+		 break;
+         case WAIT_FAILED:
+            LPVOID   lpMsgBuf;
+			LPVOID   lpDisplayBuf;
+			DWORD    dw ;
+
+            // En caso de error de los eventos/thread
+			dw = GetLastError();
+            FormatMessage(
+               FORMAT_MESSAGE_ALLOCATE_BUFFER |
+               FORMAT_MESSAGE_FROM_SYSTEM,
+               NULL,
+			   dw,
+               MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+               (LPTSTR) &lpMsgBuf,
+			   0, NULL );
+
+            lpDisplayBuf = (LPVOID)LocalAlloc(LMEM_ZEROINIT,
+               (lstrlen((LPCTSTR)lpMsgBuf)+40)*sizeof(TCHAR));
+               swprintf((LPTSTR)lpDisplayBuf,
+               TEXT("Error in RXSourceThread %d: %s"),
+               dw, lpMsgBuf);
+            DISPATCH_EVENT( ERROR_CODE,(wchar_t *)lpDisplayBuf, NULL , pRaydenBoard);
+            LocalFree(lpMsgBuf);
+            LocalFree(lpDisplayBuf);
+            break;
+      }
+   }
+
+   // Indicar que no hay más comunicación, y asegurar que se limpian los "estados"
+   pRaydenBoard->m_pStatus->SetAsInt( RaydenBoardStatus::UNKOWN);
+   return 0;
+};
+
+
+
+//-----------------------------------------------------------------------------------
+/**
+*  Creates its TDatas
+*  @param[in]   name     Name of manager
+*  @param[in]   parent   Parent for this manager
+*/
+RaydenBoard::RaydenBoard(const wchar_t *name, TDataManagerControl *_parent)
+   : TDataManagerControl( name, _parent)                                      {
+
+   m_com232  = new TCom232( L"Comm", this, 9600, 8);
+
+   m_pStatus           = new TData( this, L"Status", NULL, RaydenBoardStatus::UNKOWN, L"UNKOWN=-1;OFF=0;CFG=1;RUN=2", FLAG_NORMAL & ~FLAG_SAVE | FLAG_RDONLY, L"Current Status");
+   m_pNextCmd          = new TData( this, L"NextCmd", NULL, RaydenBoardNextCmd::NOTHING, L"NOTHING=-1;SETOFF=0;SETCFG=1;SETRUN=2", FLAG_NORMAL & ~FLAG_SAVE /*| FLAG_RDONLY*/, L"Next Command to Send");
+   m_pLastCmdResult    = new TData( this, L"LastCmdResult", NULL, RaydenBoardStatus::UNKOWN, L"NOTOK=0;OK=1", FLAG_NORMAL & ~FLAG_SAVE | FLAG_RDONLY, L"Last Command Result");
+
+   // TData para nueva configuracion ( no guardar en disco, no vinculado a variable)
+   m_typeNewCfg		   = new TData( this,  L"NexCfgType", NULL, 0, L"STRING=0;DATOS=1", FLAG_NORMAL, L" 'STRING' manda la config desde el parametro NewCfg.'DATOS' manda la config segun los parametros configurados en TDatas");
+   m_pNewCfgbyString   = new TData ( this, L"NewCfg_byString", NULL, L" ", 1000, FLAG_NORMAL, L"New config to send. Sin 'S' de inicio ni 'X' de cierre");
+   m_pNewCfgbyDatas    = new TData ( this, L"NewCfg_byDatos",  NULL, L" ", 1000, FLAG_NORMAL, L"New config to send. Sin 'S' de inicio ni 'X' de cierre");
+
+
+   // -- Parametros para montar la cadena que se enviará de configuracion a la placa  si seleccionamos la opción "DATOS m_typeNewCfg"
+   m_cycleTime         = new TData ( this, L"CycleTime",     NULL, L"00080", 50, FLAG_NORMAL, L"Formato 'XXXXX'");
+   m_numIlus           = new TData ( this, L"NumIlus", 	     NULL, L"08", 50, FLAG_NORMAL, L"Formato 'XX' (ej: 04). Número de iluminaciones a utilizar");
+   m_numSec            = new TData ( this, L"NumSecuencias", NULL, L"16", 50, FLAG_NORMAL, L"Formato 'XX' (ej: 08). Total configuraciones, donde se cuentan los disparos de la camara y los disparos de las iluminaciones");
+
+   m_nameCam           = new TData ( this, L"NameCam",    NULL, L"C1", 50, FLAG_NORMAL, L"Formato 'CX'");
+   m_offsetCam         = new TData ( this, L"OffsetCam", NULL, L"00000", 50, FLAG_NORMAL, L"Formato 'XXXXX'");
+   m_TimeCam           = new TData ( this, L"TimeCam",    NULL, L"00005", 50, FLAG_NORMAL, L"Formato 'XXXXX'");
+
+   m_name_Sec1Ilu      = new TData ( this, L"Sec1_NameIlu", NULL, L"I1",    50, FLAG_NORMAL, L"Formato 'IX'");
+   m_num_Sec1Ilu       = new TData ( this, L"Sec1_NumberIlu", NULL, L"00",    50, FLAG_NORMAL | FLAG_RDONLY, L"Formato 'XX'");
+   m_offset_Sec1Ilu    = new TData ( this, L"Sec1_OffsetIlu", NULL, L"00000", 50, FLAG_NORMAL, L"Formato 'XXXXX'");
+   m_time_Sec1Ilu      = new TData ( this, L"Sec1_TimeIlu",   NULL, L"00020", 50, FLAG_NORMAL, L"Formato 'XXXXX'");
+
+   m_name_Sec2Ilu      = new TData ( this, L"Sec2_NameIlu", NULL, L"I2",    50, FLAG_NORMAL, L"Formato 'IX'");
+   m_num_Sec2Ilu       = new TData ( this, L"Sec2_NumberIlu", NULL, L"01",    50, FLAG_NORMAL | FLAG_RDONLY, L"Formato 'XX'");
+   m_offset_Sec2Ilu    = new TData ( this, L"Sec2_OffsetIlu", NULL, L"00000", 50, FLAG_NORMAL, L"Formato 'XXXXX'");
+   m_time_Sec2Ilu      = new TData ( this, L"Sec2_TimeIlu",   NULL, L"00020", 50, FLAG_NORMAL, L"Formato 'XXXXX'");
+
+   m_name_Sec3Ilu      = new TData ( this, L"Sec3_NameIlu", NULL, L"I3",    50, FLAG_NORMAL, L"Formato 'IX'");
+   m_num_Sec3Ilu       = new TData ( this, L"Sec3_NumberIlu", NULL, L"02",    50, FLAG_NORMAL | FLAG_RDONLY, L"Formato 'XX'");
+   m_offset_Sec3Ilu    = new TData ( this, L"Sec3_OffsetIlu", NULL, L"00000", 50, FLAG_NORMAL, L"Formato 'XXXXX'");
+   m_time_Sec3Ilu      = new TData ( this, L"Sec3_TimeIlu",   NULL, L"00020", 50, FLAG_NORMAL, L"Formato 'XXXXX'");
+
+   m_name_Sec4Ilu      = new TData ( this, L"Sec4_NameIlu", NULL, L"I4",    50, FLAG_NORMAL, L"Formato 'IX'");
+   m_num_Sec4Ilu       = new TData ( this, L"Sec4_NumberIlu", NULL, L"03",    50, FLAG_NORMAL | FLAG_RDONLY, L"Formato 'XX'");
+   m_offset_Sec4Ilu    = new TData ( this, L"Sec4_OffsetIlu", NULL, L"00000", 50, FLAG_NORMAL, L"Formato 'XXXXX'");
+   m_time_Sec4Ilu      = new TData ( this, L"Sec4_TimeIlu",   NULL, L"00020", 50, FLAG_NORMAL, L"Formato 'XXXXX'");
+
+   m_name_Sec5Ilu      = new TData ( this, L"Sec5_NameIlu", NULL, L"I5",    50, FLAG_NORMAL, L"Formato 'IX'");
+   m_num_Sec5Ilu       = new TData ( this, L"Sec5_NumberIlu", NULL, L"04",    50, FLAG_NORMAL | FLAG_RDONLY, L"Formato 'XX'");
+   m_offset_Sec5Ilu    = new TData ( this, L"Sec5_OffsetIlu", NULL, L"00000", 50, FLAG_NORMAL, L"Formato 'XXXXX'");
+   m_time_Sec5Ilu      = new TData ( this, L"Sec5_TimeIlu",   NULL, L"00020", 50, FLAG_NORMAL, L"Formato 'XXXXX'");
+
+   m_name_Sec6Ilu      = new TData ( this, L"Sec6_NameIlu", NULL, L"I6",    50, FLAG_NORMAL, L"Formato 'IX'");
+   m_num_Sec6Ilu       = new TData ( this, L"Sec6_NumberIlu", NULL, L"05",    50, FLAG_NORMAL | FLAG_RDONLY, L"Formato 'XX'");
+   m_offset_Sec6Ilu    = new TData ( this, L"Sec6_OffsetIlu", NULL, L"00000", 50, FLAG_NORMAL, L"Formato 'XXXXX'");
+   m_time_Sec6Ilu      = new TData ( this, L"Sec6_TimeIlu",   NULL, L"00020", 50, FLAG_NORMAL, L"Formato 'XXXXX'");
+
+   m_name_Sec7Ilu      = new TData ( this, L"Sec7_NameIlu", NULL, L"I7",    50, FLAG_NORMAL, L"Formato 'IX'");
+   m_num_Sec7Ilu       = new TData ( this, L"Sec7_NumberIlu", NULL, L"06",    50, FLAG_NORMAL | FLAG_RDONLY, L"Formato 'XX'");
+   m_offset_Sec7Ilu    = new TData ( this, L"Sec7_OffsetIlu", NULL, L"00000", 50, FLAG_NORMAL, L"Formato 'XXXXX'");
+   m_time_Sec7Ilu      = new TData ( this, L"Sec7_TimeIlu",   NULL, L"00020", 50, FLAG_NORMAL, L"Formato 'XXXXX'");
+
+   m_name_Sec8Ilu      = new TData ( this, L"Sec8_NameIlu", NULL, L"I8",    50, FLAG_NORMAL, L"Formato 'IX'");
+   m_num_Sec8Ilu       = new TData ( this, L"Sec8_NumberIlu", NULL, L"07",    50, FLAG_NORMAL | FLAG_RDONLY, L"Formato 'XX'");
+   m_offset_Sec8Ilu    = new TData ( this, L"Sec8_OffsetIlu", NULL, L"00000", 50, FLAG_NORMAL, L"Formato 'XXXXX'");
+   m_time_Sec8Ilu      = new TData ( this, L"Sec8_TimeIlu",   NULL, L"00020", 50, FLAG_NORMAL, L"Formato 'XXXXX'");
+
+   m_hthread                     = NULL;
+   m_evStopThread                = NULL;
+   m_evSetStatus                 = NULL;
+
+   DataModEventPost = DataModifiedPost;
+}
+
+//------------------------------------------------------------------------------------
+/**
+*  Destructor of the class. It calls MyClose() function to stop the thread
+*/
+RaydenBoard::~RaydenBoard()                                                   {
+
+   // Se llama a MyClose para detener el thread antes de eliminarse, sino se la pega
+   // al eliminar el TDatamanager de esta clase
+   MyClose();
+}
+
+//----------------------------------------------------------------------------
+/**
+*  Launchs thread to control the RaydenBoard source
+*/
+bool RaydenBoard::StartThread()                                              {
+
+   DWORD id;
+
+   if (m_hthread)
+      return true;
+
+   m_evSetStatus     = CreateEvent( NULL, false, false, L"SetStatusEvent_cid");
+   m_evStopThread    = CreateEvent( NULL, false, false, L"StopThreadEvent_cid");
+
+   ResetEvent( m_evSetStatus);
+   ResetEvent( m_evStopThread);
+
+   m_hthread   = CreateThread(
+               NULL,                // Address of thread security attributes
+               (DWORD)0x10000,      // Initial thread stack  size, in bytes
+               RaydenBoardThread,      // Address of thread function
+               (LPVOID)this,        // Argument for new thread
+               0x0,                 // Creation flags
+               &id);                // Address of returned thread identifier
+
+   SetThreadName ( id,m_name);
+   // Return true if thread is created
+   return m_hthread ? true: false;
+}
+
+//----------------------------------------------------------------------------
+
+/**
+*  Sets to true the ReadOnly flag of the "Enable" parameter
+*/
+bool RaydenBoard::MyInit()                                                    {
+   StartThread();
+   if (!Enabled())
+      return false;
+   (GetDataObject(LBL_ENABLED))->SetRdOnly( true);
+
+   return TDataManagerControl::MyInit();
+}
+/*
+MyGo
+*/
+bool RaydenBoard::MyGo()                                                      {
+   SendSpecifiedCmd( RaydenBoardNextCmd::SETRUN);
+
+   return TDataManagerControl::MyGo();
+}
+
+//----------------------------------------------------------------------------
+/**
+*  Stops thread
+*/
+void RaydenBoard::StopThread()                                                {
+
+   // If thread is running, stop and wait until it's stopped
+   if (m_hthread)                                                             {
+      SetEvent(m_evStopThread);
+      if (WaitForSingleObject(m_hthread,3000)==WAIT_TIMEOUT)                  {
+         TerminateThread(m_hthread,0);
+         CloseHandle(m_hthread);
+      }
+      else
+         CloseHandle(m_hthread);
+   }
+   if (m_evSetStatus)                                                         {
+      ResetEvent( m_evSetStatus);
+      CloseHandle(m_evSetStatus);
+   }
+   if (m_evStopThread)                                                        {
+      ResetEvent(m_evStopThread);
+      CloseHandle(m_evStopThread);
+   }
+   m_hthread         = NULL;
+   m_evSetStatus     = NULL;
+   m_evStopThread    = NULL;
+}
+
+//------------------------------------------------------------------------------
+/**
+*  Stops the thread which is used to send comands to the generator
+*/
+bool RaydenBoard::MyClose()                                             {
+
+   if (TDataManagerControl::MyClose())                                        {
+      StopThread();
+      return true;
+   }
+   return false;
+}
+//------------------------------------------------------------------------------
+/**
+*  Stops the thread which is used to send comands to the generator
+*/
+bool RaydenBoard::MyStop()                                             {
+
+   SendSpecifiedCmd( RaydenBoardNextCmd::SETOFF);
+
+   if (TDataManagerControl::MyStop())                                        {
+      StopThread();
+      return true;
+   }
+   return false;
+}
+
+//----------------------------------------------------------------------------
+/**
+*  This function sends the command through the serial port to the generator and
+*  collect your answer. First we calculate the checksum of the command to send,
+*  send the command through the serial port and check the checksum of the response.
+*  @param[in]     comando     comand to send
+*  @param[out]    resp        response
+*  @param[in,out] size        response size
+*  @param[in]     nIntentos   number of attempts for the command to be sent successfully
+*  @return     true-> Comand has been send; false-> Comand hasn't been send
+*/
+
+//---------------------------------------------------------
+
+void __fastcall RaydenBoard::DataModifiedPost( TData *da)  {
+
+   if (!da) {
+      return;
+   }
+
+   if ( da && da==m_pNextCmd &&  m_hthread && m_evSetStatus) {
+	  if ( da->AsInt() != RaydenBoardNextCmd::NOTHING) {
+         SetEvent( m_evSetStatus);
+      }
+   }
+}
+//---------------------------------------------------------
+/*
+SetStatus
+Funtion to set wich status is selected
+*/
+
+bool RaydenBoard::SetStatus(RaydenBoardStatus newStatus)   {
+
+   int newCmd;
+   //force DataModifiedPost
+   m_pNextCmd->SetAsInt( RaydenBoardNextCmd::NOTHING);
+   return m_pNextCmd->SetAsInt( newStatus);
+
+}
+
+//---------------------------------------------------------
+/*
+SetStatus
+Funtion to get the status from RaydenBoard
+*/
+RaydenBoardStatus RaydenBoard::GetStatus(){
+
+   DWORD    bytesWritten;
+   int      bytesToSend= 5; //lo que ocupa + S + F
+   char     str[5];
+   char     resp[3];
+
+   resp[0]  = 0;
+   snprintf( str, bytesToSend,"S%sF", LBL_GET);
+   if( m_com232->WriteFile( str, bytesToSend, &bytesWritten))            {
+      if( m_com232->ReadFile( resp, sizeof( resp)))   {
+         if( strncmp( resp, LBL_RUN, sizeof( resp))==0)  {
+            return RaydenBoardStatus::RUN;
+         }
+         if( strncmp( resp, LBL_OFF, sizeof( resp))==0)  {
+            return RaydenBoardStatus::OFF;
+         }
+         if( strncmp( resp, LBL_CFG, sizeof( resp))==0)  {
+            return RaydenBoardStatus::CFG;
+         }
+      }
+   }
+   return RaydenBoardStatus::UNKOWN;
+}
+/*
+SendCmd
+Funtion to send Status selected
+*/
+
+bool  RaydenBoard::SendCmd( ) {
+   return SendSpecifiedCmd( m_pNextCmd->AsInt());
+}
+
+char *RaydenBoard::StringForCmd( RaydenBoardNextCmd cmd)   {
+
+   switch ( cmd)  {
+      case RaydenBoardNextCmd::SETOFF:
+         return LBL_OFF;
+      case RaydenBoardNextCmd::SETRUN:
+         return LBL_RUN;
+      case RaydenBoardNextCmd::SETCFG:
+         return LBL_CFG;
+   }
+   return NULL;
+
+}
+
+bool  RaydenBoard::SendSpecifiedCmd( RaydenBoardNextCmd cmd) {
+   bool ret = false;
+   char *strCmd =  StringForCmd(cmd);
+   if ( strCmd==NULL)   {
+      return false;
+   }
+   //mirar nextCmd en el TData m_pNextCmd y enviar comando correspondiente por el puerto serie
+   switch ( cmd) {
+	  case RaydenBoardNextCmd::SETOFF :
+			ret = SendCmdToRaydenBoard (strCmd );   // Send cmd
+			if (ret) 														  {
+				LOG_INFO2(L"RaydenBoard modo OFF", GetLangName());
+			}
+			else															  {
+				LOG_INFO2(L"RaydenBoard modo OFF ha fallado", GetLangName());
+			}
+			break;
+	  case RaydenBoardNextCmd::SETRUN :
+			ret = SendCmdToRaydenBoard( strCmd );   // Send cmd
+			if (ret) 														  {
+				LOG_INFO2(L"RaydenBoard modo RUN", GetLangName());
+			}
+			else															  {
+				LOG_INFO2(L"RaydenBoard modo RUN ha fallado", GetLangName());
+			}
+			break;
+      case RaydenBoardNextCmd::SETCFG :
+			{
+		   //	   RaydenBoardStatus prevStatus = GetStatus();
+		   //	   if( prevStatus !=  RaydenBoardStatus::UNKOWN){
+				  bool retCfg = SendCmdToRaydenBoard( strCmd);        		// Send cmd
+				  if ( retCfg)   											  {
+					 char cfg[1000];
+					 unsigned int size = sizeof( cfg);
+					 if (m_typeNewCfg->AsInt()== 0 ) {          // Cogemos el string m_pNewCfg
+						if ( m_pNewCfgbyDatas->AsText( cfg, size)) 				  {
+							ret = SendCmdToRaydenBoard( cfg, true);
+							LOG_INFO2(L"Se ha enviado una configuracion nueva a la RaydenBoard by 'String'", GetLangName());
+						}
+					 }
+					 else 							 { 	        // Montamos el string segun configuracion por Tdatas
+						SendNewCfgStringbyDatas();
+						LOG_INFO2(L"Se ha enviado una configuracion nueva a la RaydenBoard by 'Datos'", GetLangName());
+					 }
+				  }
+				  else              										  {
+					LOG_INFO2(L"RaydenBoard modo CFG ha fallado",GetLangName());
+                  }
+
+                  //restaurar estado anterior
+//                  switch (prevStatus) {
+//					 case RaydenBoardStatus::OFF :
+//
+//                        SendSpecifiedCmd( RaydenBoardNextCmd::SETOFF);
+//						break;
+//
+//					 case RaydenBoardStatus::RUN :
+//
+//						SendSpecifiedCmd( RaydenBoardNextCmd::SETRUN);
+//                        break;
+//
+//				  }
+//		       	}
+            }
+            break;
+
+   }
+   return ret;
+}
+
+////---------------------------------------------------------
+///*
+//SetNewCfg
+//Funtion to set new configuration
+//*/
+//bool RaydenBoard::SetNewCfg( char *cfg)   {
+//
+//   if ( m_pNewCfgbyDatas->SetAsText( cfg)) {
+//
+//	  return m_pNextCmd->SetAsInt( RaydenBoardNextCmd::SETCFG);
+//   }
+//   return false;
+//}
+
+
+//---------------------------------------------------------
+
+bool RaydenBoard::SendCmdToRaydenBoard( const char *characters, bool cfg) {
+
+   char     *toSend;
+   int      bytesToSend;
+   DWORD    bytesWritten;
+   bool     ret      = false;
+   char     resp[2];
+
+   resp[0]  = 0;
+
+   if ( !cfg)   {
+      bytesToSend = 5; // 3 caracteres + S + F
+   }
+   else  {
+      // + S + F + checkSum  ( suponiendo fin de linea en characters, y pirmer campo con numero de lineas)
+      bytesToSend = strlen( characters)+2+1;
+   }
+
+   toSend = new char[bytesToSend+1];
+   memset( toSend, 0x00, bytesToSend);
+
+//   Comunicación sin CheckSum.
+//   if ( !cfg)   {
+//      snprintf( toSend, bytesToSend, "S%sF", characters);
+//   }
+//   else  {
+//      snprintf( toSend, bytesToSend, "S%s%cF", characters, CheckSum( characters));
+//   }
+   std::string str = "S";
+   str.append( characters);
+   str.append( "X");
+   sprintf( toSend, "%s%c", str.c_str(), CheckSum( str.c_str()));
+
+   if( m_com232->WriteFile( toSend, bytesToSend, &bytesWritten))              {
+	  if( m_com232->ReadFile( resp, sizeof( resp)))   						  {
+
+		  if( strncmp( resp, "OK", 2 )==0 )   								  {
+			m_pLastCmdResult->SetAsInt(1);     //OK
+			ret = true;
+		  }
+
+		 else             													  {
+			m_pLastCmdResult->SetAsInt(0);     //NOTOK
+			ret = false;
+         }
+      }
+   }
+   delete [] toSend;
+   return ret;
+
+}
+
+//---------------------------------------------------------
+/*
+CheckSum
+Funtion to calculate CheckSum for strings
+*/
+unsigned char RaydenBoard::CheckSum( const char *characters) {
+
+ //Función para el calculo del CheckSum de la trama que se envía.
+   unsigned char sum = 0;
+   unsigned char *p = characters,
+                 *pF = &characters[strlen(characters)-1];
+
+   while ( p <= pF) {
+      sum += *p;
+      ++p;
+   }
+
+   return sum;
+
+}
+
+
+
+//---------------------------------------------------------
+/*
+SendNewCfgStringbyTdatas
+*/
+void RaydenBoard::SendNewCfgStringbyDatas()						  		  	{
+
+	char txt[1000];
+	unsigned int size = sizeof( txt);
+	std::string characters;
+
+	m_cycleTime->AsText(txt,size);
+	characters.append(txt);
+
+	m_numIlus->AsText(txt,size);
+	characters.append(txt);
+
+	int numIlus = atoi(txt);
+
+	m_numSec->AsText(txt,size);
+	characters.append(txt);
+
+	for (int i = 0; i < numIlus; i++) 										{
+		switch (i) 															{
+			case 0:         //Secuencuencia 0
+				// Sec Camara
+				m_nameCam->AsText(txt,size);
+				characters.append(txt);
+				m_num_Sec1Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_offsetCam->AsText(txt,size);
+				characters.append(txt);
+				m_TimeCam->AsText(txt,size);
+				characters.append(txt);
+				//Sec Iluminacion
+				m_name_Sec1Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_num_Sec1Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_offset_Sec1Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_time_Sec1Ilu->AsText(txt,size);
+				characters.append(txt);
+				break;
+			case 1:          //Secuencuencia 1
+				// Sec Camara
+				m_nameCam->AsText(txt,size);
+				characters.append(txt);
+				m_num_Sec2Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_offsetCam->AsText(txt,size);
+				characters.append(txt);
+				m_TimeCam->AsText(txt,size);
+				characters.append(txt);
+				//Sec Iluminacion
+				m_name_Sec2Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_num_Sec2Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_offset_Sec2Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_time_Sec2Ilu->AsText(txt,size);
+				characters.append(txt);
+				break;
+			case 2:           //Secuencuencia 2
+				// Sec Camara
+				m_nameCam->AsText(txt,size);
+				characters.append(txt);
+				m_num_Sec3Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_offsetCam->AsText(txt,size);
+				characters.append(txt);
+				m_TimeCam->AsText(txt,size);
+				characters.append(txt);
+				//Sec Iluminacion
+				m_name_Sec3Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_num_Sec3Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_offset_Sec3Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_time_Sec3Ilu->AsText(txt,size);
+				characters.append(txt);
+				break;
+			case 3:         //Secuencuencia 3
+				// Sec Camara
+				m_nameCam->AsText(txt,size);
+				characters.append(txt);
+				m_num_Sec4Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_offsetCam->AsText(txt,size);
+				characters.append(txt);
+				m_TimeCam->AsText(txt,size);
+				characters.append(txt);
+				//Sec Iluminacion
+				m_name_Sec4Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_num_Sec4Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_offset_Sec4Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_time_Sec4Ilu->AsText(txt,size);
+				characters.append(txt);
+				break;
+			case 4:         //Secuencuencia 4
+				// Sec Camara
+				m_nameCam->AsText(txt,size);
+				characters.append(txt);
+				m_num_Sec5Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_offsetCam->AsText(txt,size);
+				characters.append(txt);
+				m_TimeCam->AsText(txt,size);
+				characters.append(txt);
+				//Sec Iluminacion
+				m_name_Sec5Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_num_Sec5Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_offset_Sec5Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_time_Sec5Ilu->AsText(txt,size);
+				characters.append(txt);
+				break;
+			case 5:        //Secuencuencia 5
+				// Sec Camara
+				m_nameCam->AsText(txt,size);
+				characters.append(txt);
+				m_num_Sec6Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_offsetCam->AsText(txt,size);
+				characters.append(txt);
+				m_TimeCam->AsText(txt,size);
+				characters.append(txt);
+				//Sec Iluminacion
+				m_name_Sec6Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_num_Sec6Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_offset_Sec6Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_time_Sec6Ilu->AsText(txt,size);
+				characters.append(txt);
+				break;
+			case 6:        //Secuencuencia 6
+				// Sec Camara
+				m_nameCam->AsText(txt,size);
+				characters.append(txt);
+				m_num_Sec7Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_offsetCam->AsText(txt,size);
+				characters.append(txt);
+				m_TimeCam->AsText(txt,size);
+				characters.append(txt);
+				//Sec Iluminacion
+				m_name_Sec7Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_num_Sec7Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_offset_Sec7Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_time_Sec7Ilu->AsText(txt,size);
+				characters.append(txt);
+				break;
+			case 7:         //Secuencuencia 7
+				// Sec Camara
+				m_nameCam->AsText(txt,size);
+				characters.append(txt);
+				m_num_Sec8Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_offsetCam->AsText(txt,size);
+				characters.append(txt);
+				m_TimeCam->AsText(txt,size);
+				characters.append(txt);
+				//Sec Iluminacion
+				m_name_Sec8Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_num_Sec8Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_offset_Sec8Ilu->AsText(txt,size);
+				characters.append(txt);
+				m_time_Sec8Ilu->AsText(txt,size);
+				characters.append(txt);
+				break;
+			case 8:         //Secuencuencia 8
+				// Sec Camara
+				m_nameCam->AsText(txt,size);
+				characters.append(txt);
+				m_num_Sec1Ilu->AsText(txt,size);
+				characters.append("09");
+				m_offsetCam->AsText(txt,size);
+				characters.append(txt);
+				m_TimeCam->AsText(txt,size);
+				characters.append(txt);
+				//Sec Iluminacion
+				// -- No enchufamos ninguna Iluminacion para lanzar linea de SYNC
+
+				break;
+			 }
+	}
+
+
+   SendCmdToRaydenBoard( characters.c_str(), true);
+
+   return;
+}
+

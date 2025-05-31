@@ -1,0 +1,141 @@
+//---------------------------------------------------------------------------
+
+#ifndef EPOD8DriverH
+#define EPOD8DriverH
+//---------------------------------------------------------------------------
+
+#include "TComunic.h"
+#include "TDataMngControl.h"
+
+enum  class EPOD8DriverStatus: int {
+   UNKOWN=-1,
+   OFF=0,
+   CFG=1,
+   RUN=2
+};
+enum  class EPOD8DriverNextCmd : int {
+   NOTHING=-1,
+   SETOFF=0,
+   SETCFG=1,
+   SETRUN=2
+};
+enum  class EPOD8DriverLastCmdResult: int {
+   NOTOK=0,
+   OK=1
+};
+
+DWORD WINAPI EPOD8DriverThread(LPVOID owner);
+
+class EPOD8Driver : public TDataManagerControl  {
+
+
+    public:
+    EPOD8Driver( const wchar_t *name, TDataManagerControl *_parent = NULL);
+    virtual ~EPOD8Driver();
+    virtual bool MyInit();
+    virtual bool MyGo();
+    virtual bool MyStop();
+	virtual bool MyClose();
+	void __fastcall DataModifiedPost( TData* da);
+
+    bool StartThread();
+    void StopThread();
+
+    bool SetNewCfg( char *cfg);
+    const char *GetCfg(){
+      char *cfg = new char[1000];
+      unsigned int size = sizeof( cfg);
+      if ( m_pNewCfg->AsText( cfg, size)) {
+         return cfg;
+      }
+      return NULL;
+    }
+
+    bool SetRunStatus() {
+      return SetStatus( EPOD8DriverStatus::RUN);
+    }
+
+//    bool SetCfgStatus() {
+//      return SetStatus( CameraIlumDriverStatus::CFG);
+//    }
+
+    bool SetOffStatus() {
+      return SetStatus( EPOD8DriverStatus::OFF);
+    }
+
+          protected:
+   TCom232           *m_com232;              ///< Serial Port Object.
+
+   HANDLE            m_hthread,              ///< Handle to thread.
+                     m_evStopThread,         ///< Handle for stop the thread
+                     m_evSetStatus;          ///< Handle for launch a set Status.
+
+   TData             *m_pStatus,
+                     *m_pNextCmd,
+                     *m_pNewCfg,
+					 *m_pLastCmdResult;
+
+
+   TData           *m_typeNewCfg,
+				   *m_cycleTime,
+				   *m_numIlus,
+				   *m_numSec,
+				   *m_nameCam,
+				   *m_offsetCam,
+				   *m_TimeCam,
+
+				   *m_nameSec1Ilu,
+				   *m_numSec1Ilu,
+				   *m_numSec1OffsetIlu,
+				   *m_numSec1TimeIlu,
+
+				   *m_nameSec2Ilu,
+				   *m_numSec2Ilu,
+				   *m_numSec2OffsetIlu,
+				   *m_numSec2TimeIlu,
+
+				   *m_nameSec3Ilu,
+				   *m_numSec3Ilu,
+				   *m_numSec3OffsetIlu,
+				   *m_numSec3TimeIlu,
+
+				   *m_nameSec4Ilu,
+				   *m_numSec4Ilu,
+				   *m_numSec4OffsetIlu,
+				   *m_numSec4TimeIlu,
+
+				   *m_nameSec5Ilu,
+				   *m_numSec5Ilu,
+				   *m_numSec5OffsetIlu,
+				   *m_numSec5TimeIlu,
+
+				   *m_nameSec6Ilu,
+				   *m_numSec6Ilu,
+				   *m_numSec6OffsetIlu,
+				   *m_numSec6TimeIlu,
+
+				   *m_nameSec7Ilu,
+				   *m_numSec7Ilu,
+				   *m_numSec7OffsetIlu,
+				   *m_numSec7TimeIlu,
+
+				   *m_nameSec8Ilu,
+				   *m_numSec8Ilu,
+				   *m_numSec8OffsetIlu,
+				   *m_numSec8TimeIlu;
+
+
+   protected:
+    bool SendParam( char comando[], char resp[], int size, int nIntentos);
+    bool SetStatus( EPOD8DriverStatus newStatus);
+    bool  EPOD8Driver::SendCmd();
+    EPOD8DriverStatus GetStatus();
+    bool SendCmdToEPOT (char *status, bool checkSum=false);
+    friend DWORD WINAPI EPOD8DriverThread(LPVOID owner);
+    bool SendSpecifiedCmd(EPOD8DriverNextCmd cmd);
+	char *StringForCmd( EPOD8DriverNextCmd cmd);
+	unsigned char CheckSum( const char *characters);
+
+	void SendNewCfgStringbyTdatas();
+};
+#endif

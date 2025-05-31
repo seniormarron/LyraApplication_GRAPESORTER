@@ -1,0 +1,726 @@
+**********************************************************************
+Author: TMS Software
+        Copyright © 1996-2010
+        E-mail: info@tmssoftware.com
+        Web: http://www.tmssoftware.com
+**********************************************************************
+
+
+TMS Advanced Smooth Controls pack
+
+Files :
+-------
+  TMSSmoothControlsPackD6.zip    : component files for Delphi 6
+  TMSSmoothControlsPackD7.zip    : component files for Delphi 7
+  TMSSmoothControlsPackD2005.zip : component files for Delphi 2005
+  TMSSmoothControlsPackD2006.zip : component files for Delphi 2006 & C++Builder 2006
+  TMSSmoothControlsPackD2007.zip : component files for Delphi 2007 & C++Builder 2007
+  TMSSmoothControlsPackD2009.zip : component files for Delphi 2009 & C++Builder 2009
+  TMSSmoothControlsPackD2010.zip : component files for Delphi 2010 & C++Builder 2010
+  TMSSmoothControlsPack.zip      : component files for Delphi XE & C++Builder XE
+
+Release 3.6.0.1 :
+-----------------
+	
+History :
+---------
+  v1.0.0.0 : first release
+  v1.0.0.1 : Fixed : issue with default weekend style in TAdvSmoothCalendar / TAdvSmoothDatePicker
+  v1.1.0.0 : New : TAdvSmoothSpinner: Smoothly animated Iphone style spinner control
+  v1.1.0.1 : Improved : Single click to zoom out image in TAdvSmoothImageListBox
+           : Fixed : Memoryleak when calling TAdvSmoothImageListBox.Free at runtime
+           : Fixed : Delphi 7 Font name causes Repainting loop in TAdvSmoothImageListBox
+  v1.1.1.0 : New: Exposed Width and Height of Calendar in TAdvSmoothDatePicker
+           : Improved: formatting Number values with %0.2d to function as hours, minutes or seconds in TAdvSmoothSpinner
+	   : Fixed: issue with hiding dropdown calendar when selecting month or year in TAdvSmoothDatePicker
+  v1.1.1.1 : Fixed : Issue with font and fill changing in OnDateFill in TAdvSmoothCalendar
+  v1.1.1.2 : Improved : Calculating DateTime with IncMonth and IncYear in TAdvSmoothSpinner
+           : Fixed : Issue with OnItemInfoClick in TAdvSmoothListBox
+           : Fixed : issue with changing SelectedDate property not reflecting at runtime in TAdvSmoothCalendar
+           : Fixed : issue with OnMonthChanged, OnYearChanged not called when changing month or year with keyboard in TAdvSmoothCalendar
+           : Fixed : issue with ScrollToItem in column mode in TAdvSmoothImageListBox
+  v1.1.2.0 : New : SelectedItemIndex property in TAdvSmoothMenu
+           : New : Exposed Event OnItemChange in TAdvSmoothMenu
+           : New : Methods SelectAll, UnSelectAll, Select(AItems: array of Integer) and CountSelected in TAdvSmoothImageListBox
+           : Fixed : issue with Selected property of selected item in MouseUp in TAdvSmoothImageListBox
+  v1.1.2.1 : Fixed : issue with setting FileDate in AddImagesFromFolder in TAdvSmoothImageListBox
+  v1.1.2.2 : Fixed : List index out of bounds when hovering listbox and items.Count = 0 in TAdvSmoothListBox
+  v1.5.0.0 : New : Introducing new components: TAdvSmoothGauge, TAdvSmoothToggleButton, TAdvSmoothTrackBar, TAdvSmoothStatusIndicator, 
+                   TAdvSmoothJogWheel, TAdvSmoothProgressBar, TAdvSmoothLedLabel, TAdvSmoothTabPager
+           : New : SmoothButton and SmoothProgressBar in ListBoxItem in TAdvSmoothListBox
+           : New : Mode sPersistAlways to MultiSelect items without keyboard in TAdvSmoothListBox
+           : New : Exposed event OnButtonClick in TAdvSmoothListBox
+           : New : Visible property in TAdvSmoothListBox
+           : New : Item Grouping with Levels and Expanded State in TAdvSmoothListBox
+	   : New : Properties MaxDate, MinDate, Animation, ShowCurrentDate, ShowHint, StatusAppearance in TAdvSmoothDatePicker
+           : New : Calendar Day Status Indicator in TAdvSmoothDatePicker
+           : New : Exposed events OnDateFill, OnDateStatus, OnDateHint in TAdvSmoothDatePicker
+	   : New : Calendar Day Status Indicator in TAdvSmoothCalendar
+           : New : Status Indicator in TAdvSmoothButton
+           : Improved : GDI+ Drawing in seperate GDIPFill in TAdvSmoothButton
+           : Fixed : Issue with Resizing Calendar and first dropdown in TAdvSmoothCalendar
+	   : Fixed : Issue with hints on navigator in TAdvSmoothImageListBox
+  v1.5.1.0 : New : function AnimationInProgress returns true when progress bar is still animating in TAdvSmoothProgressbar
+           : Improved : Event OnPositionChanged called when user programmatically changes position or click above or under thumb in TAdvSmoothTrackBar
+           : Improved : Added lookupbar support for special characters (Ä, Ê, .. etc) in TAdvSmoothListBox
+           : Fixed : Issue with clearing Loading state in TAdvSmoothImageListBox
+  v1.6.0.0 : New : Days before and after current month with seperate fill and font in TAdvSmoothCalendar
+           : Fixed : Multi Selected Date fill disappearing when resizing calendar in TAdvSmoothCalendar
+  v1.6.1.0 : New: Wordwrapping in TAdvSmoothLabel
+           : Improved: Lookup support for special characters (Ä, Ê, .. etc) in TAdvSmoothListBox
+           : Improved: Item position after lookup click in TAdvSmoothListBox in TAdvSmoothListBox
+           : Improved: Bevel drawing when bevelwidth < 4 in TAdvSmoothToggleButton
+           : Fixed: Vertical line paint problem on right side of listbox in TAdvSmoothListBox
+           : Fixed: FHoveredItemIndex out of bounds when deleting item at runtime in TAdvSmoothListBox
+           : Fixed: GetTopIndex and GetBottomIndex always returning 0 and DisplayList.Count - 1 causing slow painting of items in TAdvSmoothListBox
+           : Fixed: Anchor click of Footer in TAdvSmoothListBox
+           : Fixed: Wrong itemindex when selecting in TAdvSmoothListBox
+           : Fixed: ProgressBar text value positioning in TAdvSmoothListBox
+           : Fixed: Memory leak in TAdvSmoothDatePicker
+           : Fixed: Multi Selected Date fill disappearing when resizing calendar in TAdvSmoothCalendar
+           : Fixed: Calendar disappearing when clicking on a day when animating month switch in TAdvSmoothCalendar
+           : Fixed : OnItemSelected Event not called when Graphic type is set to gtNone in TAdvSmoothListBox
+           : Fixed : Issue with component initialization during reparenting in TAdvSmoothListBox, TAdvSmoothTabPager, TAdvSmoothPanel, TAdvSmoothMenu, TAdvSmoothPanel
+  v1.7.0.0 : New : Introducing new component: TAdvSmoothComboBox
+	   : New : Exposed Properties TabOrder and TabStop in TAdvSmoothPanel
+           : New : Public property GraphicClicked which indicates if the graphic left or right is clicked in TAdvSmoothListBox
+           : Fixed : Issue when repeatedly resizing listbox in TAdvSmoothListBox
+           : Fixed : Issue with symbols ? < > = , ... in lookupbar in TAdvSmoothListBox
+           : Fixed : Issue with Initlookupbar when destroying component in TAdvSmoothListBox
+           : Fixed : Issue with Expanding / Collapsing items when total itemheight exceeds listbox height in TAdvSmoothListBox
+ v1.7.0.1  : Improved : Collapse/Expand state of items in TAdvSmoothListBox
+           : Fixed : Issue with Save and load from Clipboard in TAdvSmoothCalendar
+           : Fixed : StatusAppearance not assigned when displaying statusmessages in TAdvSmoothCalendar
+           : Fixed : Issue with background and Border color = clNone in TAdvSmoothPanel
+           : Fixed : Issue with font creation in Delphi7 in TAdvSmoothListBox
+           : Fixed : Issue with font creation in Delphi7 in TAdvSmoothComboBox
+           : Fixed : Issue with Tab line painting when PageMargin > 0 in TAdvSmoothTabPager
+  v1.7.5.0 : New : Property Digit.Visible to show / hide digits in TAdvSmoothGauge
+           : New : Property AnimationFactor in TAdvSmoothGauge
+           : New : StartValue and EndValue of threshold in TAdvSmoothGauge
+           : Fixed : C++ Builder for dynamic arrays in TAdvSmoothGauge
+  v1.8.0.0 : New : Focus indication in TAdvSmoothButton
+           : New : Keyboard support to handle click with SpaceBar and Enter keys in TAdvSmoothButton
+           : New : HotKey Support in TAdvSmoothButton
+	   : New : Focus indication in TAdvSmoothGauge
+           : New : Change value by clicking on scale in TAdvSmoothGauge
+	   : New : Added properties MinimumValue and MaximumValue to limit Continuous mode in TAdvSmoothJogWheel
+	   : New : Added IndicatorValue property to change the indicator start value in TAdvSmoothJogWheel
+	   : New : Enabled Checkbox with space key when item has focus in TAdvSmoothListBox
+	   : New : Focus indication in TAdvSmoothMenu
+           : New : property GlowShape in TAdvSmoothMenu
+           : New : property Enabled to disable an item in TAdvSmoothMenu
+  	   : New : ReadOnly property to Disable all user interactions in TAdvSmoothSpinner
+	   : New : Added spacing property in TAdvSmoothStatusIndicator
+	   : New : Focus indication on active tab in TAdvSmoothTabPager
+	   : New : Property GroupIndex to create radiogroup behaviour in TAdvSmoothToggleButton
+           : New : Focus indication in TAdvSmoothToggleButton
+           : New : HotKey Support in TAdvSmoothToggleButton
+	   : New : Keyboard support to increase or decrease value in TAdvSmoothTrackBar
+           : New : Focus indication on thumb fill in TAdvSmoothTrackBar
+	   : Fixed : Border issue with OnDateFill in TAdvSmoothCalendar
+           : Fixed : Issue with multiple group expanding / collapsing on same level in TAdvSmoothListBox
+	   : Fixed : Issue with focused item when detail item is animating in TAdvSmoothListBox
+	   : Fixed : Flicker when animating in TAdvSmoothProgressBar
+           : Fixed : Issue with setting ProgressAnimation := false when Animation is busy in TAdvSmoothProgressBar
+           : Fixed : Issue with Tab drawing when TabVisible is false in TAdvSmoothTabPager
+	   : Improved : Keyboard item selection in TAdvSmoothImageListBox 
+  V1.8.0.1 : Fixed : Disappearing items at designtime in TAdvSmoothImageListBox
+           : Fixed : Access violation when initializing events in TAdvSmoothDatePicker
+  v1.8.1.0 : New : OnMouseLeave and OnMouseEnter events for Delphi 7 in TAdvSmoothPanel
+           : New : OnItemAnchorClick event in TAdvSmoothImageListBox
+           : Improved : Cursor in TAdvSmoothPanel
+           : Fixed : Issue with Border rounding in TAdvSmoothListBox
+           : Fixed : Issue with Status Caption in TAdvSmoothToggleButton and TAdvSmoothButton
+           : Fixed : Picture and text position in TAdvSmoothButton
+  v2.0.0.0 : New : Introducing new components: AdvSmoothSlider, AdvSmoothTimeLine, 
+             AdvSmoothExpanderGroup, AdvSmoothExpanderPanel, AdvSmoothExpanderButtonPanel
+	     AdvSmoothDock, AdvSmoothMessageDialog, AdvSmoothSplashScreen, AdvSmoothScrollBar
+	   : New : Customizable threshold sections in TAdvSmoothGauge
+	   : New : SingleClickStep MouseWheelStep in TAdvSmoothJogWheel
+	   : New : Display value on Jogwheel in TAdvSmoothJogWheel
+           : New : Support DateTime in TAdvSmoothLedLabel
+	   : New : Property Format to format the led value in TAdvSmoothLedLabel
+	   : New : OnDraw Event to draw on the panel canvas in TAdvSmoothPanel
+	   : New : Property Transparent to hide background in TAdvSmoothProgressBar
+	   : New : Property top and bottom fill to show / hide overlay effect in TAdvSmoothSpinner
+	   : Improved : Gradient drawing when end color is clNone in TAdvSmoothLabel
+	   : Improved : Property Angle to use with gradienttype gtAngle in TAdvSmoothLedLabel
+	   : Fixed : Issue with FShowCurrentDate := true in SetSelectedDate in TAdvSmoothCalendar
+	   : Fixed : Issue with multi select date in multiple months in TAdvSmoothCalendar
+	   : Fixed: issue with saving width and height in TAdvSmoothJogWheel
+	   : Fixed : Small Memory leak in TAdvSmoothLabel
+	   : Fixed : Access violation when choosing gtNone in TAdvSmoothLedLabel
+	   : Fixed : Issue with Items.SelectedItem := nil in TAdvSmoothListBox
+	   : Fixed : Issue with VK_F4 in TAdvSmoothComboBox in TAdvSmoothListBox
+	   : Fixed : Issue with multiple group expanding / collapsing on same level in TAdvSmoothListBox
+	   : Fixed : Issue with Events and expanding after mouse move on graphic left in TAdvSmoothListBox
+	   : Fixed : Issue with caption rectangle with different fonts in TAdvSmoothMenu
+	   : Fixed : WMWindowPosChanged invalidate in TAdvSmoothPanel
+	   : Fixed : Animation returns to rangefrom when using cyclic and value is at maximum in TAdvSmoothSpinner
+	   : Fixed : Disable Onclick event when button is disabled in TAdvSmoothToggleButton
+	   : Fixed : issue with editing date in TAdvSmoothDatePicker
+	   : Fixed : issue with button enabled when ReadOnly in TAdvSmoothDatePicker
+	   : Fixed : issue when destroying in timer routine in TAdvSmoothImageListBox
+  v2.0.0.1 : Fixed : issue with Array length of Sinus calculation in TAdvSmoothDock
+  v2.0.0.2 : New : Exposed events OnMonthChanged, OnYearChanged, OnYearRangeChanged, OnCurrentDayClicked, OnDateModeChanged
+	   : Improved : Position changing with animation in TAdvSmoothProgressBar
+	   : Fixed : issue with infinitive jumping of item in TAdvSmoothDock
+	   : Fixed : issue with cursor on controls inside panel in TAdvSmoothPanel
+	   : Fixed : issue with modalresult when closing form in TAdvSmoothMessageDialog
+  v2.0.1.0 : New : Property ShiftDown to change the shift amount of text and image in down state in TAdvSmoothButton and TAdvSmoothToggleButton
+           : New : Property Fixed to set indicators to a fixed position in TAdvSmoothTimeLine
+           : Fixed : Issue with hiding / showing the dock at runtime in TAdvSmoothDock
+           : Fixed : Issue with destroying AdvSmoothDock at runtime in TAdvSmoothDock
+           : Fixed : Issue with WordWrapping HTML and Caption text in TAdvSmoothMessageDialog
+           : Fixed : Issue with font initialisation in Older Delphi versions in TAdvSmoothMessageDialog
+           : Fixed : Issue with MouseMove Double clicking and showing modal form in TAdvSmoothImageListBox
+           : Fixed : Issue with Calculating Week numbers in TAdvSmoothCalendar
+           : Fixed : issue with Assign method in DateAppearance in TAdvSmoothCalendar
+           : Fixed : Issue with cursor changing on controls in TAdvSmoothPanel
+           : Fixed : Issue with DrawFrameControl rectangle when XP themes disables in TAdvSmoothListBox
+           : Improved : speed of click & dbl click handling in TAdvSmoothButton
+           : Improved: HTML rectangle calculation in TAdvSmoothImageListBox
+  v2.0.2.0 : New : Added support for Actions in TAdvSmoothToggleButton and TAdvSmoothButton
+           : Improved : Bevel drawing in TAdvSmoothToggleButton
+	   : Fixed : Issue with calculating rectangle with formatted text in TAdvSmoothLabel
+           : Fixed : Issue with client aligned panel repaint in TAdvSmoothPanel
+           : Fixed : Issue with closing designtime preview dialog in TAdvSmoothMessageDialog
+	   : Fixed : issue with panel starting collapsed in TAdvsmoothExpanderPanel
+	   : Fixed : Issue with Mouse events in TAdvSmoothMenu
+	   : Fixed : Issue with MouseUp not calling after Application.Minimize in TAdvSmoothMenu
+           : Fixed : Issue with repaint loop in TadvSmoothToggleButton
+  V2.0.3.0 : New :  TextAlignment property in TAdvSmoothButton and TAdvSmoothToggleButton
+           : New : ParentFont property added in TAdvSmoothButton and TAdvSmoothToggleButton
+           : New : Exposed event OnItemStartDrag to enable / disable dragging in TAdvSmoothDock
+           : Improved: Text Rectangle drawing in TAdvSmoothButton and TAdvSmoothToggleButton
+           : Improved : Alt-Down key to show calendar in TAdvSmoothDatePicker
+           : Improved : VK_RETURN focused button ModalResult in TAdvSmoothMessageDialog
+           : Fixed : setting focus on parent form upon start in TAdvSmoothSplashScreen
+           : Fixed : Default state of properties in TAdvSmoothListBox
+           : Fixed : Issue with transparency with rounded corners in TAdvSmoothJogWheel and TAdvSmoothSlider
+  V2.5.0.0 : New : Introducing new components: TAdvSmoothMegaMenu, TAdvSmoothTouchKeyBoard and TAdvSmoothPopupTouchKeyBoard
+           : New : Added DropDownControlClass to use a drop down control on an item in TAdvSmoothListBox
+           : New : Exposed events OnItemDropDownSelect, OnItemDropDownHide, OnItemDropDownShow, OnItemCaptionRect, OnItemInfoRect, OnItemNotesRect in TAdvSmoothListBox
+           : New : Graphic left and right type gtDropDownButton to call the drop down control in TAdvSmoothListBox
+           : New : Added DefaultButton property in TAdvSmoothMessageDialog
+           : Fixed: Issue with Odd spacing value and text rectangle in TAdvSmoothButton
+           : Fixed : Issue with click triggered twice in TAdvSmoothToggleButton
+           : Fixed : Items.SelectedItem Access violation in TAdvSmoothComboBox
+           : Fixed: issue with destroying combobox and listbox in same project in TAdvSmoothListBox
+           : Fixed : Issue with SelectedValue returning larger and smaller numbers than Range in TAdvSmoothSpinner
+           : Fixed : Issue with OnItemClick when clicking outside Item area in TAdvSmoothImageListBox
+           : Fixed : Issue with disabled Navigator Buttons in TAdvSmoothImageListBox
+           : Fixed : Issue with Parent form show / hide dock in TAdvSmoothDock
+           : Fixed : Issue with destroying form at runtime in TAdvSmoothDock
+           : Fixed : issue with invalid pointer, invalid destroy order of objects in TAdvSmoothListBox
+           : Fixed : OnItemSelected event issue with VK_F4 key and after dropdown in TAdvSmoothComboBox
+	   : Fixed  : issue when animating / changing months when footer is not visible in TAdvSmoothCalendar
+	   : Improved : All Smooth controls support Windows Vista and Windows Seven Style
+  v2.6.0.0 : New : Built-in support for reduced color set for use with terminal servers (tsTerminal Style) in all smooth controls
+           : Fixed : issue with EmptyText property in TAdvSmoothDatePicker
+           : Fixed : issue with SetComponentStyle overriding values in TAdvSmoothDatePicker
+	   : Improved : Separator drawing when Separatorsize is < 4 in TAdvSmoothDock 
+	   : Improved: Led Display drawing and alignment in TAdvSmoothGauge
+	   : New : ItemObject and Tag property on image listbox item in TAdvSmoothImageListBox
+	   : Fixed : Issue with intializing ScrollBars in TAdvSmoothImageListBox
+	   : Fixed : Issue with scrolling when losing focus in TAdvSmoothListbox
+	   : Fixed : Issue with calculating item rectangles in TAdvSmoothListbox
+           : Fixed : Issue with Mega menu editor OnMouseLeave of PaintBox in TAdvSmoothMegaMenu
+           : Fixed : Issue with Mega menu gallery OnMouseLeave of PaintBox in TAdvSmoothMegaMenu
+	   : New : Support for adding ProgressBar in TAdvSmoothMessageDialog
+	   : New : Ability to show the dialog non-modal in TAdvSmoothMessageDialog
+	   : New : Exposed events OnClose and OnCanClose in case of non modal in TAdvSmoothMessageDialog
+	   : Fixed : Issue with Tab Line drawing after Tab reordering in TAdvSmoothTabPager
+	   : New : Zooming and scrolling in TAdvSmoothTimeline
+           : New : Draggable and Sizeable Sections in TAdvSmoothTimeLine
+           : New : Caption on section in TAdvSmoothTimeLine
+           : New : Customizable Annotations in TAdvSmoothTimeLine
+	   : Improved : Show and Hide, Assign of TAdvSmoothTouchKeyBoard
+	   : Fixed : Issue with cursor not showing in TAdvSmoothTrackbar
+  v2.6.1.0 : New : Support for Mouse wheel scrolling in TAdvSmoothTimeLine
+           : New : ItemObject and Tag property on Indicators and Sections in TAdvSmoothTimeLine
+           : Improved : issue with section caption in small sections in TAdvSmoothTimeLine
+           : Improved : OnIndicatorClick when indicator is fixed in TAdvSmoothTimeLine
+           : Improved : Automatic calculation of best possible width and height in TAdvSmoothMessageDialog
+           : Improved : ProgressBar position and calculation in TAdvSmoothMessageDialog
+           : Improved: Loading Images from ImageList with GetBitmap and Image.assign in TAdvSmoothImageListBox
+           : Fixed : Issue with initializing item notes and caption in TAdvSmoothMenu
+           : Fixed : issue with text alignment in TAdvSmoothButton
+           : Fixed : drawing issue with copy paste buttons at design time in TAdvSmoothButton
+           : Fixed : issue with Doublebuffering in WMPaint in TAdvSmoothButton
+           : Fixed : Issue with focus rectangle when hovering in TAdvSmoothImageListBox
+           : Fixed : Issue with clearing items when using threading in TAdvSmoothImageListBox
+           : Fixed : issue with calculating HTML notes rectangle in TAdvSmoothListBox
+           : Fixed : issue with keyboard lookup when typing multiple characters in TAdvSmoothListBox
+           : Fixed : issue with click position of anchors in TAdvSmoothListBox
+           : Fixed : Access violation when using Item Detail in TAdvSmoothListBox
+           : Fixed : Issue with automatically calculation of section hints in TAdvSmoothTimeLine
+           : Fixed : Issue with section handle animation in Mouse leave situation in TAdvSmoothTimeLine
+           : Fixed : issue with invalid argument to date encode in TAdvSmoothTimeLine
+           : Fixed : issue with datepicker change called during load in TAdvSmoothDatePicker
+           : Fixed : issue with Doublebuffering in WMPaint in TAdvSmoothToggleButton
+           : Fixed : Issue with calculation of minimum and maximum values in TAdvSmoothJogWheel
+ v2.6.2.0  : New : ScrollStep to define amount of mouse wheel scrolling in TAdvSmoothTimeLine
+           : Improved : Calculating division and subdivisions in TAdvSmoothTimeLine
+           : Fixed : Mousescrolling occurs when allowscrolling = false in TAdvSmoothTimeLine
+           : Fixed : Issue with readonly blocking hints in TAdvSmoothTimeLine
+           : Fixed : Issue with changing DefaultTopLayerItem with AutoSize = asCustom in TAdvSmoothMegaMenu
+           : Fixed : Issue with OnSectionClick, OnIndicatorClick in TAdvSmoothTimeLine
+ v2.6.3.0  : New : ExpandAll and CollapseAll in TAdvSmoothListBox	 
+           : Improved : Property ParentShowHint exposed in TAdvSmoothButton
+           : Improved : Text alignment in TAdvSmoothButton
+           : Improved : Property ParentShowHint exposed in TAdvSmoothToggleButton
+           : Improved : Text alignment in TAdvSmoothToggleButton
+           : Improved : Text alignment in TAdvSmoothTabPager 
+           : Improved : Issue with info rectangle and graphic right in TAdvSmoothListBox
+	   : Improved : Reparenting forms with FormHookInit and FormHookDone in TAdvSmoothDock
+	   : Fixed : Issue with default TabStop = true in TAdvSmoothTabPager
+	   : Fixed : Issue with changing DefaultTopLayerItem with AutoSize = asCustom in TAdvSmoothMegaMenu
+	   : Fixed : Issue with DropDownLocation of root menu item in TAdvSmoothMegaMenu
+	   : Fixed : Hints in Mega menu editor in TAdvSmoothMegaMenu
+	   : Fixed : Access violation when hovering empty section in TAdvSmoothMegaMenu
+	   : Fixed : Issue with redrawing child controls on resizing panel in TAdvSmoothPanel
+	   : Fixed : Issue with drawing child controls on first display in TAdvSmoothPanel
+	   : Fixed : Small issue with drawing shift caption on key in TAdvSmoothTouchKeyBoard
+	   : Fixed : Issue with resizing keyboard keys in combination with frames in TAdvSmoothTouchKeyBoard
+	   : Fixed : Exception with destroying defaultitems in TAdvSmoothListBox
+	   : Fixed : Issue with clicking info, notes and caption rectangle in TAdvSmoothListBox
+	   : Fixed : Issue with dblclick and mouse scrolling in TAdvSmoothListBox
+	   : Fixed : Issue with fixed indicators on the same position in TAdvSmoothTimeLine
+	   : Fixed : Invalid floating point operation when changing divisiontype when in TAdvSmoothTimeLine
+	     divisions / subdivisions are 0 
+ v2.6.4.0  : New : functions CurrentDay, CurrentMonth and CurrentYear in AdvSmoothCalendar
+	   : New : function GetImageRectangle in AdvSmoothImageListBox
+           : New : Functions IndexOfCaption, IndexOfNotes and IndexOfInfo Advsmoothlistbox                           
+           : New : OLE Drag Drop support Advsmoothlistbox                           
+           : New : VCL Drag drop support Advsmoothlistbox   
+           : Improved : Automatic width and height calculation combination with Margin property in AdvSmoothMessageDialog
+           : Improved : CaptionLocation of MenuItem in AdvSmoothMegaMenu
+           : Improved : Indicator click at equal positions in AdvSmoothTimeLine
+           : Improved : HTML notes calculation Advsmoothlistbox 
+           : Fixed : Issue with limit of mouse wheel scrolling in AdvSmoothJogWheel
+           : Fixed : Issue with Visible property in AdvSmoothDock
+           : Fixed : Issue with Separator TimeFormat in AdvSmoothLedLabel
+           : Fixed : Issue with Onindicator click in AdvSmoothTimeLine
+           : Fixed : Issue with Tab text drawing in AdvSmoothTabPager
+ v2.6.4.1  : Improved : Resizing KeyBoard issue with LoadKeybdLayout and SaveKeybdLayout in TAdvSmoothTouchKeyBoard
+           : Improved : Activate / Deactivate of Parent Form in TAdvSmoothDock
+           : Improved : Visual Space bar change in TAdvSmoothToggleButton
+           : Improved : WMPaint only executed with Transparent settings in TAdvSmoothProgressBar
+           : Improved : Focusing of Empty Menu Items in TAdvSmoothMegaMenu
+           : Fixed : Issue with expand / collapse after component loading in TAdvSmoothExpanderPanel
+           : Fixed : Issue with Down state in TAdvSmoothToggleButton
+           : Fixed : Issue with TimeLine , Indicator and Section Interaction in TAdvSmoothTimeLine
+ v2.7.0.0  : New Delphi 2010 Touch support 
+	   : New : Property BackColor to set the Popup form color in TAdvSmoothPopupTouchKeyBoard
+	   : New : introducing new component: TAdvSmoothCalculator and dropdown version
+	   : New : Change month with left to right or right to left mouse flick in TAdvSmoothCalendar
+           : New : QueryWindowHandle to dynamically focus a control in TAdvSmoothTouchKeyBoard
+           : New : Event OnDisplayValue in TAdvSmoothGauge
+           : Fixed : Issue with OnItemDblClick in TAdvSmoothImageListBox
+	   : Fixed : Issue in ScrollToItem in TAdvSmoothImageListBox
+	   : Fixed : Issue with KeyboardSizeChanged event recalculation of Width and Height in TAdvSmoothTouchKeyBoard
+	   : Fixed : Issue with UpperCase and LowerCase displaying special characters in TAdvSmoothTouchKeyBoard
+	   : Fixed : Issue with TimeLine Multiple Section sizing in TAdvSmoothTimeLine
+	   : Fixed : Issue with CMDialogChar and Tabstop in TAdvSmoothButton
+	   : Fixed : issue with HTML when collapsing in TAdvSmoothExpanderPanel
+	   : Fixed : Issue with Negative height or width drawing in TAdvSmoothLedLabel
+	   : Fixed : Issue with OnMenuItemClick and showing sub menu in TAdvSmoothMegaMenu
+ v2.7.1.0  : New : Exposed property Padding in TAdvSmoothPanel
+	   : New : Property AllowSelectedIndication to allow selected items to be indicated TAdvSmoothMenu
+           : Improved : Items jumping out of bounds (images not visible when jumping) in TAdvSmoothDock
+           : Fixed : Issue with Saving changes in editor in TAdvSmoothMegaMenu
+           : Fixed : Issue with floating menus and mousemove in TAdvSmoothMegaMenu
+           : Fixed : Issue with Background fill not drawing when active in TAdvSmoothDock
+           : Fixed : Issue with control size in combination with other controls in TAdvSmoothDock
+           : Fixed : Issue with scroll direction of jogwheel in TAdvSmoothJogWheel
+           : Fixed : Issue with HTML drawing in TAdvSmoothImageListBox
+           : Fixed : Issue with Index out of bounds in TAdvSmoothMenu
+ v2.7.1.5  : New : Property AutoSize in TAdvSmoothDock
+           : Fixed : Issue with setfocus when disabled in TAdvSmoothDatePicker
+           : Fixed : Issue with ctl3D in AdvSmoothEditButton.pas in TAdvSmoothDatePicker
+           : Fixed : Issue with animation in NextPosition in TAdvSmoothProgressBar
+           : Fixed : Issue with Aligned and control size in TAdvSmoothDock
+           : Fixed : Issue with visible / unvisible items in TAdvSmoothDock
+           : Fixed : Issue with Platform size in TAdvSmoothDock
+           : Fixed : Issue with Spacing in TAdvSmoothDock
+           : Fixed : Issue with BackGround size in TAdvSmoothDock
+ v2.7.2.0  : New : Property Format, to control the formatting of the date in TAdvSmoothDatePicker
+           : Fixed : Issue with Changing Parent form position in TAdvSmoothDock
+           : Fixed : Issue with Vertical direction in TAdvSmoothJogWheel
+           : Fixed : Issue with use on forms with WS_EX_APPWINDOW style in TAdvSmoothDatePicker
+           : Fixed : Access violation in older Delphi versions with custom categories in TAdvSmoothListBox
+           : Fixed : Issue with C++ Builder array declaration in TAdvSmoothTimeLine
+           : Fixed : Issue with indicator on top of fixed section in TAdvSmoothTimeLine
+ v2.7.3.0  : New : Event to customize drawing of numbers and tickmarks in TAdvSmoothTrackBar
+           : New : Exposed event OnPositionChanging in TAdvSmoothTrackBar
+           : Improved : Keyboard handling in TAdvSmoothDock
+           : Fixed : Issue with <BR> tag in HTML in TAdvSmoothMegaMenu
+           : Fixed : Issue with hovering in TAdvSmoothMegaMenu
+           : Fixed : Issue with unnecessary property FormStyle := fsStayOnTop in TAdvSmoothMessageDialog
+           : Fixed : Issue with Selection not showing in TAdvSmoothDock
+           : Fixed : Issue with repainting when activating/deactivating in TAdvSmoothDock
+           : Fixed : Issue with showing detail when double-clicking on header and footer in TAdvSmoothListBox
+           : Fixed : Issue with Access violation in Autosize in TAdvSmoothExpanderButtonPanel
+           : Fixed : Issue with owner when creating at runtime with nil in TAdvSmoothDatePicker
+ v2.7.4.0  : New : Exposed event OnGetDateText in TAdvSmoothCalendar
+           : New : Event OnDrawTimeLine in TAdvSmoothTimeLine
+           : Fixed : Small Memory Leak in TAdvSmoothGauge
+ v2.7.5.0  : New : BackGroundSize and BackGroundAutoSize properties to control the background fill size in TAdvSmoothDock
+	   : Improved : Text drawing in TAdvSmoothMegaMenu
+           : Fixed : Issues with accessing menuitems and submenuitems in different ways in TAdvSmoothMegaMenu
+           : Fixed : Issue with text drawing in TAdvSmoothMegaMenu
+           : Fixed : Issue accessing the default section items in TAdvSmoothMegaMenu
+           : Fixed : Issue with OnMouseEnter and OnMouseLeave not firing in TAdvSmoothMegaMenu
+	   : Fixed : Issue with 0 list items in TAdvSmoothComboBox
+ v2.7.6.0  : New : Property TextRendering (AntiAlias or Cleartype) in TAdvSmoothLabel
+           : New : Property ModalResult in TAdvSmoothButton
+           : New : Property TextRendering to change to cleartype or antialiasing in TAdvSmoothMegaMenu
+           : Improved : Public property Parent to create listbox at runtime in TAdvSmoothListBox
+           : Improved : Border and tabheight = 0 in TAdvSmoothTabPager
+           : Improved : Root menu caption in editor Form caption in TAdvSmoothMegaMenu
+           : Fixed : Issue with OnItemSelected and keyboard lookup in TAdvSmoothListBox
+           : Fixed : Issue with cursor in TAdvSmoothListBox
+           : Fixed : Issue with OnItemSelected and keyboard lookup in TAdvSmoothComboBox
+           : Fixed : issue with expanding when collapsed or creation in TAdvSmoothExpanderPanel
+  v2.7.7.0 : New : PositionToolTip / PositionToolTipFormat added in TAdvSmoothTrackBar
+           : New : OnItemDraw event to draw on top of each item in TAdvSmoothImageListBox 
+           : Improved : OnPositionChanging and OnPositionChanged with keyboard interaction in TAdvSmoothTrackBar
+           : Fixed : Issue with interaction when glowanimation is false in TAdvSmoothTrackBar
+           : Fixed : Issue with date initialization when text is cleared in TAdvSmoothDatePicker
+           : Fixed : Issue with onclick called twice in TAdvSmoothButton
+  v2.7.8.0 : New : Completely customizable Shadow support in TAdvSmoothLabel
+           : New : Added Event OnGetToolTipText in TAdvSmoothTrackBar
+           : Improved : ImageList support on root menu items in TAdvSmoothMegaMenu
+           : Improved : Added Color property to set background color of pager in TAdvSmoothTabPager
+           : Fixed : Issue with selected index when disabling items at runtime in TAdvSmoothMenu
+           : Fixed : Issues with Saving and Loading keyboard layout in TAdvSmoothTouchKeyBoard
+           : Fixed : issue with starting panel height when collapsed in TAdvSmoothExpanderPanel
+  v3.0.0.0 : New : Database aware version of TAdvSmoothListBox, TAdvSmoothImageListBox, TAdvSmoothComboBox & TAdvSmoothTimeLine
+           : New : Ole drag and drop support in TAdvSmoothImageListBox
+           : New : Property AnnotationTextColor in TAdvSmoothTimeLine
+           : New : ColorFocused property for each button in TAdvSmoothMessageDialog
+           : Improved : Exposed property Anchors in TAdvSmoothExpanderGroup
+           : Improved : OnItemSelected called when selecting item with SelectedItemIndex in TAdvSmoothDock
+           : Fixed:  Issue with GraphicLeft and GraphicRect calculation rectangle in TAdvSmoothListbox 
+           : Fixed : Issue with Selected count in TAdvSmoothListbox 
+           : Fixed : Issue with scrolling to selected item in TAdvSmoothImageListBox
+           : Fixed : Issue with overlapping shortcut keys in TAdvSmoothMegaMenu
+           : Fixed : Issue with GroupIndex and RadioButtons ini TAdvSmoothMegaMenu
+           : Fixed : Issue with KeyDistance in TAdvSmoothTouchKeyBoard
+           : Fixed : Issue with stay on top when hiding parent form in TAdvSmoothMessageDialog
+           : Fixed : Issue with auto calculation and htmllocation is hlcustom in TAdvSmoothMessageDialog
+  v3.0.1.0 : New : Database aware version of TAdvSmoothDatePicker 
+           : Improved : Transparency in TAdvSmoothTrackBar
+           : Improved : Transparency in TAdvSmoothProgressBar
+           : Improved : Add OnKeyUp event in TAdvSmoothImageListBox
+           : Fixed: Issue with OnItemSelected called twice in TAdvSmoothDock
+           : Fixed : Issue with enabled items count in TAdvSmoothMenu
+           : Fixed : Small Issue with Font changed in TAdvSmoothGauge
+           : Fixed : Issue with CaptionLocation in TAdvSmoothMegaMenu
+  v3.0.2.0 : Improved : Added property ExpandedHeight in TAdvSmoothExpanderPanel
+           : Improved : Added OnItemStartDrag event in TAdvSmoothImageListBox
+           : Improved : ScrollBar hide when no items are outside display rectangle in TAdvSmoothImageListBox
+           : Fixed : Issue with HTMLEditor  and Unicode characters
+           : Fixed : Issue with Disabled Buttons and keyboard in TAdvSmoothMessageDialog
+           : Fixed : Issue with Parent in C++Builder in TAdvSmoothListBox
+  v3.0.2.1 : Fixed : Issue with minimumpanelheight when loading form in TAdvSmoothExpanderPanel
+           : Fixed : Issue with setting Date := 0; in TAdvSmoothDatePicker
+  v3.0.3.0 : New : Property ShowValues in TAdvSmoothGauge
+	   : New : Event OnGetValueText in TAdvSmoothGauge
+	   : New : TextRendering property in TAdvSmoothGauge
+           : Improved : Multiselect drag & drop in TAdvSmoothListBox
+           : Improved : Get original image from item in TAdvSmoothImageListBox
+           : Fixed : Line visible when line is disabled in TAdvSmoothExpanderPanel
+           : Fixed : Fix for use with scripter studio in TAdvSmoothDatePicker
+  v3.0.4.0 : New : OnScrollTimeLine event in TAdvSmoothTimeLine
+	   : New : Property FocusColor in TAdvSmoothButton
+           : Improved : Procedure Click exposed in TAdvSmoothButton
+           : Fixed : Issue with reading date in OnChange after text change in TAdvSmoothDatePicker
+           : Fixed : Issue with selecting item in TAdvSmoothComboBox
+           : Fixed : Issue with while loop in TAdvSmoothTimeLine
+           : Fixed : Issue with font initialization in TAdvSmoothTouchKeyBoard
+  v3.0.5.0 : New : Glow property for Item Appearance in TAdvSmoothListBox
+	   : New : OnClick event in TAdvSmoothSplashScreen
+           : New : Event OnBeforeSelectDate in TAdvSmoothCalendar
+           : New : Property OpenMenusOnClick in TAdvSmoothMegaMenu
+           : New : Functions to get width and height of dialog in TAdvSmoothMessageDialog
+           : Improved : Event handling for drag and drop in TAdvSmoothDock
+           : Fixed : Issue in DB with setting nil dates in TAdvSmoothDatePicker / TDBAdvSmoothDatePicker
+           : Fixed : Issue with calculation of aperture minimum and maximum in TAdvSmoothJogWheel
+           : Fixed : Issue with Capslock key hanging in TAdvSmoothTouchKeyBoard
+  v3.0.5.1 : New : Property ShowFocus in TAdvSmoothButton
+	   : Improved : Cached drawing and Transparent property to control performance in TAdvSmoothPanel
+           : Fixed : Issue with clearing date in calendar in TAdvSmoothDatePicker
+           : Fixed : Issue with accessing other controls in TAdvSmoothExpanderGroup
+           : Fixed : Issue with splitters in TAdvSmoothImageListBox
+           : Fixed : Issue with focusing in TAdvSmoothSlider 
+  v3.0.5.2 : Fixed : Issue with Display Rectangle and Graphic interaction in TAdvSmoothListBox
+	   : Fixed : Issue with popupmenu and item select in TAdvSmoothListBox
+	   : Fixed : Issue with SelectedValue set to RangeFrom when loading in TAdvSmoothSpinner
+	   : Fixed : Issue with setting Step to 0 in TAdvSmoothTrackBar
+	   : Fixed : Issue with client aligned controls and maximized form in TAdvSmoothTabPager
+  v3.0.5.3 : Fixed : Issue with System parameter working area and dropdownheight in TAdvSmoothComboBox
+           : Fixed : Issue with dragging dialog with mouse in TAdvSmoothMessageDialog
+           : Fixed : Issue with multiple message dialogs in TAdvSmoothMessageDialog
+           : Fixed : Issue with ReadComponentState and dropdown window in TAdvSmoothToggleButton
+           : Fixed : Issue with disabled buttons and repainting in TAdvSmoothExpanderButtonPanel 
+  v3.0.6.0 : New : Reorder Section items inside the mega menu editor through drag / drop in TAdvsmoothMegaMenu
+           : New : Property TextRendering to control text quality with transparency of control in TAdvSmoothPanel
+           : Improved : Functions Year and Month returning the current Year and Current month after date change in TAdvSmoothCalendar
+           : Improved : Behavior when OpenMenusOnClick and AutoOpenMenus is true in TAdvsmoothMegaMenu
+           : Fixed : Issue with Setting SelectedItemIndex to -1 in TAdvSmoothImageListBox
+           : Fixed : Issue with Itemclick event called before selecting item in TAdvSmoothComboBox
+           : Fixed : Issue with flickering when setting Enabled property in TAdvSmoothDatePicker
+           : Fixed : Issue with Stay on top when using controls in TAdvsmoothMegaMenu
+  v3.0.7.0 : New : Textrendering property to change rendering of the text in TAdvSmoothListBox, TAdvSmoothImageListBox & TAdvSmoothSplashScreen
+           : Improved : OnItemAnchorClick triggered in MouseUp in TAdvSmoothImageListBox
+           : Fixed: Issue with GDIPFill default values in TAdvSmoothPanel
+           : Fixed : Issue with height when setting Minimumpanelheight in TAdvSmoothExpanderPanel
+           : Fixed : Issue with Notes rectangle calculation in TAdvSmoothListBox
+  v3.0.8.0 : New : Events OnMenuItemDropDown and OnMenuItemCloseUp in TAdvSmoothMegaMenu
+           : Improved : Calculation of item width with different font styles in TAdvSmoothMegaMenu
+           : Fixed : Issue with Adding non – wincontrol controls to a section item in TAdvSmoothMegaMenu
+  v3.0.9.0 : New : Property EnableDragging to enabled or disable drag drop in TAdvSmoothListBox
+	   : New : Property ShowFocus to show / hide the focus border in TAdvSmoothToggleButton
+           : Fixed : Small issue when performing mouseup after multiselect in TAdvSmoothListBox
+  v3.0.9.1 : New : Function SetFocusToForm in TAdvSmoothSplashScreen 
+	   : Fixed : Issue with ItemObject not accessible in TAdvSmoothListBox
+	   : Fixed : Workaround for OnGesture event called before click and setfocus in Windows XP and older in TAdvSmoothListBox
+  v3.1.0.0 : New : Introducing new component : TAdvSmoothSlideShow
+           : New : Shortcut support in TAdvSmoothMessageDialog
+           : Improved : Keyboard selection with visible and enabled only items in TAdvSmoothDock
+           : Fixed : Issue with keyboard scrolling direction of jogwheel in TAdvSmoothJogWheel
+           : Fixed : Issue when setting formstyle to fsMDIForm in TAdvSmoothDock
+           : Fixed : Issue with calling OnMouseMove event in TAdvSmoothMegaMenu
+           : Fixed : Issue with selectitemindex after deletion in TAdvSmoothListBox
+  v3.1.5.0 : New: Built-in support for Office 2010 colors in all Smooth controls
+           : Fixed : Issue with clipping HTML text in TAdvSmoothListbox
+           : Fixed : Recalculation issue when modifying properties when changing to float mode in TAdvSmoothMegaMenu
+           : Fixed : Issue with C++Builder and shobjidl.h include file in TAdvSmoothSlideShow
+           : Fixed : Issue with adding items at designtime with the image property in TAdvSmoothSlideShow
+  3.1.5.1  : Fixed : Issue in DB version calling OnSelectDate event in TAdvSmoothDatePicker
+           : Fixed : Issue with labels disappearing and incorrect positioning in TAdvSmoothTimeLine
+           : Fixed : Issue in older delphi versions with TMargins in TAdvSmoothSlideShow
+  3.1.6.0  : New : Added Click procedure to simulate clicks in code in TAdvSmoothToggleButton
+           : New : PictureAlignment in Button in TAdvSmoothPanel
+           : New : PictureAlignment in Button in TAdvSmoothButton
+           : Fixed : Issue with deleting text at runtime in TAdvSmoothDatePicker	
+           : Fixed : Issue with modal result window form not active in TAdvSmoothDock
+           : Fixed : Issue with focusing item selected at runtime in TAdvSmoothImageListBox
+           : Fixed : Issue with destroying DB version in TAdvSmoothListBox
+  3.2.0.0  : New : Introducing new component : TAdvSmoothCapacityBar
+           : New : Smooth Scrolling support in TAdvSmoothSpinner
+           : Improved : Event OnExtraButtonClick exposed in TAdvSmoothCalculator
+           : Fixed : Issue with margins in Delphi 7 in TAdvSmoothImageListBox
+           : Fixed : Issue with count selected items in single select in TAdvSmoothImageListBox
+           : Fixed : Issue with border and black background in TAdvSmoothProgressBar
+           : Fixed : Issue with starting and ending labels not displaying in TAdvSmoothTimeLine
+           : Fixed : Issue with indenting labels in TAdvSmoothTimeLine
+           : Fixed : Issue with closing preview at designtime in TAdvSmoothMessageDialog
+  3.2.5.0  : New : OnCompare event for custom comparing in TAdvSmoothListBox
+           : New : Filtering in TAdvSmoothListBox
+           : New : Iphone style Delete button in TAdvSmoothListBox
+           : New : ImageList and PictureContainer support for GraphicLeft and GraphicRight in TAdvSmoothListBox
+           : New : PermanentCaption property on ItemAppearance to set a permanent caption on the items in TAdvSmoothDock
+           : Fixed : Issue with accessing dataset when destroying in TAdvSmoothListBox
+           : Fixed : Issue with flickering when mouse between items in TAdvSmoothDock
+           : Fixed : Issue with accessing dataset when destroying in TAdvSmoothDatePicker
+           : Fixed : Issue with accessing dataset when destroying in TAdvSmoothImageListBox
+
+  3.3.0.0  : New : Marquee support with adjustable size, color and interval in TAdvSmoothProgressBar
+           : New : Overlapping sections in TAdvSmoothTimeLine	
+           : New : Tag property for each button in TAdvSmoothPanel
+           : New : Spin button for fast year switch on hovering in TAdvSmoothCalendar
+           : New : Disjunct Date selection in TAdvSmoothCalendar
+           : New : OnSelectDisjunctDate event called when selecting dates in TAdvSmoothCalendar
+           : New : OnDateStatusClick event called when clicking status indicator in TAdvSmoothCalendar
+           : New : ScrollInView procedure in TAdvSmoothListBox
+           : New : PopupMenu for each item in TAdvSmoothListBox
+           : New : Extra positions for basic program information in TAdvSmoothSplashScreen
+           : New : OnBeforeShow event added in TAdvSmoothSplashScreen
+           : New : Basicprogram information update improvements in TAdvSmoothSplashScreen
+           : New : Images on keys with Image List and PictureContainer support in TAdvSmoothTouchKeyBoard
+           : Improved : Check if parent form is MDI form in TAdvSmoothDock
+           : Improved : Handle show and hide on multiple section hovering in TAdvSmoothTimeLine
+           : Improved : Numeric lookupbar order before and after alphabetic characters in TAdvSmoothListBox
+           : Improved : Customizable scrollposition with CurrentScrollPosition and NextScrollPosition properties in TAdvSmoothListBox
+           : Fixed : Issue with GetFreeSpace declaration in C++Builder in TAdvSmoothCapacityBar
+           : Fixed : Invalid floating point operation in TAdvSmoothDock
+           : Fixed : Access violation when opening menu when destroying items in TAdvSmoothMegaMenu
+           : Fixed : Focus Parent form setting properties at designtime in TAdvSmoothSplashScreen
+  3.3.1.0  : New : Visible property for menu items and section items in TAdvSmoothMegaMenu
+           : Improved : Issue with Out of range divisions and subdivisions in TAdvSmoothTimeLine
+           : Improved : Changing text in edit reflected in TAdvSmoothcalculator
+	   : Improved : Only draw buttons in view in TAdvSmoothPanel
+           : Fixed : Issue with parent in TAdvSmoothDatePicker
+           : Fixed : Issue with selecting item with keyboard in TAdvSmoothComboBox
+           : Fixed : Issue with parent in TAdvSmoothComboBox
+           : Fixed : Issue with DropDown Parent in TAdvSmoothCalculator
+           : Fixed : Issue with multiselect and deleting items in TAdvSmoothListBox
+	   : Fixed : Issue with designtime range values in TAdvSmoothTimeLine
+	   : Fixed : Issue with sections disappearing when moving in TAdvSmoothTimeLine
+	   : Fixed : Issue with sections disappearing when moving in TAdvSmoothTimeLine
+  3.3.2.0  : New: Appearance.CapacityTextShadowColor and Appearance.LegenTextShadowColor added in TAdvSmoothCapacityBar
+           : Improved : appearance of free space legend indication made consistent with taken space legend indication in TAdvSmoothCapacityBar
+           : Improved : Optional Shadows with Appearance.Shadows in TAdvSmoothProgressBar
+           : Improved : Optional Overlays with Appearance.Overlays in TAdvSmoothProgressBar
+           : Fixed : Issue with Repainting in TAdvSmoothImageListBox
+           : Fixed : Issue with terminating thread from DLL in TAdvSmoothImageListBox
+           : Fixed : Issue with changing year in spinner in non-day mode in TAdvSmoothCalendar
+           : Fixed : Border issue in TAdvSmoothPanel
+           : Fixed : Issue with button size and position in TAdvSmoothDatePicker
+           : Fixed : Issue with selecting month in non animation mode in TAdvSmoothCalendar
+           : Improved : ChangeMode to change to a mode of choice in TAdvSmoothCalendar
+  3.3.2.5  : New : SelectDisjunctDays procedure in AdvSmoothCalendar
+           : Fixed : Issue with borders in AdvSmoothCalendar
+           : Fixed : Issue with selecting date in AdvSmoothCalendar
+           : Fixed : Issue with dropdowncontrol in TAdvSmoothToggleButton
+           : Fixed : Issue with adding items to displaylist with custom categories in TAdvSmoothListBox
+  3.3.3.0  : New : Property ShowDescription in TAdvSmoothSlideShow
+           : New : Exposed Down property on TAdvSmoothTouchKeyItem in TAdvSmoothTouchKeyBoard
+           : New : Property AllowAutoZoom to disable automatic zooming of keys in TAdvSmoothTouchKeyBoard
+           : Improved : FormStyle property in TAdvSmoothMessageDialog
+           : Fixed : Issue with painting selected item in TAdvSmoothComboBox
+           : Fixed : Issue with autocompletion form in TAdvSmoothTouchKeyBoard
+           : Fixed : Issue with showing form after selecting item in autocompletion form in TAdvSmoothTouchKeyBoard
+           : Fixed : Smaller improvements and fixes in TAdvSmoothTouchKeyBoard
+           : Fixed : Issue with background when double-buffered is false in TAdvSmoothButton
+           : Fixed : Issue with double-clicking in TAdvSmoothImageListBox
+  3.3.4.0  : New : Delphi and C++Builder XE support
+           : New : Property StretchPercentage in combination with Stretch item mode in TAdvSmoothSlideShow
+           : Fixed : Issue with AnimationFactor = 0 in TAdvSmoothDock
+           : Fixed : Issue with focusing in TAdvSmoothSpinner
+           : Fixed : Issue with splittertext in TAdvSmoothImageListBox
+  3.4.0.0  : New : Introducing new component : TAdvSmoothPopup
+           : Fixed : Issue with checking items after detail is shown in TAdvSmoothListBox
+           : Fixed : Issue with default value of deletebutton in TAdvSmoothListBox
+           : Fixed : Issue with Right button click and selecting items in TAdvSmoothImageListBox
+           : Fixed : Issue with hovering sections with same starttime and endtime in TAdvSmoothTimeLine
+           : Fixed : Issue with caption size of tabs in TAdvSmoothTabPager
+  3.4.0.1  : New : Public SelectedItem property in TAdvSmoothMegaMenu
+           : Fixed : Issue with middle mouse button drag in TAdvSmoothListBox
+           : Fixed : Issue with speed with non html notes text in TAdvSmoothListBox
+           : Fixed : Access violation access section items with imagelist in TAdvSmoothListBox
+           : Fixed : Issue with resize handles in section out of range in TAdvSmoothTimeLine
+           : Fixed : Issue with textrendering in TAdvSmoothCapacityBar
+           : Fixed : Issue with shadow colors = clNone in TAdvSmoothCapacityBar
+           : Fixed : Issue with text width in TAdvSmoothCapacityBar
+           : Fixed : Issue with status indicator text rendering in TAdvSmoothTabPager
+  3.4.0.2  : New : OnDrawValue event in TAdvSmoothProgressBar
+           : Fixed : Issue with decimal when setting float in TAdvSmoothCalculator
+           : Fixed : Access violation changing properties after preview is used in TAdvSmoothMessageDialog
+           : Fixed : Issue with dragging vs item selection in TAdvSmoothListBox
+           : Fixed : Memory leak with cached bitmap in TAdvSmoothButton
+  3.4.1.0  : New : HoverXY to hover programatically in TAdvSmoothDock
+           : Improved : Property StayOnTop in TAdvSmoothSplashScreen
+           : Improved : New property UpDownVisible in TAdvSmoothCalendar
+           : Fixed : Issue with triggering event OnItemDeleteClick in TAdvSmoothComboBox
+           : Fixed : Issue with painting selected item in TAdvSmoothComboBox
+           : Fixed : Mouse events not called in TAdvSmoothDock
+           : Fixed : Issue with AnimationFactor = 0 in TAdvSmoothDock
+           : Fixed : Issue with on off label in TAdvSmoothSlider
+           : Fixed : Issue with multiselect and navigator buttons in TAdvSmoothImageListBox
+           : Fixed : Issue with hint on non date hovering in TAdvSmoothCalendar
+           : Fixed : Issue with onyearchanged event in TAdvSmoothCalendar
+           : Fixed : Issue with default color start and color end in TAdvSmoothPanel
+           : Fixed : Issue in C++Builder with TKeyCachedBitmap record in TAdvSmoothTouchKeyBoard
+           : Fixed : Issue with numbers and precision = 0 in TAdvSmoothCalculator
+  3.4.1.1  : Fixed : Issue with assigning listbox events in TAdvSmoothComboBox
+           : Fixed : Issue with assigning default item in TAdvSmoothListBox
+           : Fixed : Issue with click called twice in TAdvSmoothListBox
+           : Fixed : Issue with GraphicLeftMargin not calculated in TAdvSmoothListBox
+           : Fixed : Various fixes and improvements in TAdvSmoothListBox
+           : Fixed : Issue with assigning updownvisible property in TAdvSmoothCalendar
+  3.5.0.0  : New : DB support for TAdvSmoothLabel and TAdvSmoothLedLabel
+           : New : Added Down and Hover fills for Left and Right scroll and thumb buttons in TAdvSmoothScrollBar
+           : New : Event OnFilterChange in TAdvSmoothListBox
+           : New : FixedThumb property to enable/disable variable pagesize in TAdvSmoothScrollBar
+           : New : Event OnFilterChange in TAdvSmoothListBox
+           : Fixed : Issue with flashing popup in older Delphi versions in TAdvSmoothPopup
+           : Fixed : Issue with setting Footer and Headercaption in designtime in TAdvsmoothPopup
+           : Fixed : Issue with OnButtonClick for disabled buttons in TAdvSmoothExpanderButtonPanel
+           : Fixed : Issue with initializing office colors in TAdvSmoothListBox
+           : Fixed : Visible and enabled items not selectable in TAdvSmoothMegaMenu
+           : Fixed : Issue with focusing and keyboard in TAdvSmoothMegaMenu
+           : Fixed : Issue with ALT+F4 in TAdvSmoothMegaMenu
+           : Fixed : Issue in C++builder with type declaration in TAdvSmoothGauge 
+           : Fixed : Issue with keyboard events when filtering in TAdvSmoothListBox
+  3.6.0.0  : New : Introducing new component : TAdvSmoothStepControl: a highly-customizable control for indicating processed, active and inactive steps in wizard-style user interfaces	
+           : New : OnDrawNumber event expanded with extra customization possibilities in TAdvSmoothTrackBar
+           : New : Separator for items, SeparatorLineColor, SeparatorShadowLineColor in TAdvSmoothListBox
+           : New : ctNode graphic type in TAdvSmoothListBox
+           : New : ItemAppearance.NodeOpen,ItemAppearance.NodeClosed picture properties in TAdvSmoothListBox
+           : New : ItemAppearance.InfoFill* properties added in TAdvSmoothListBox
+           : New : HTML formatting support added in item's caption in TAdvSmoothListBox
+           : New : ScrollIndicator.Style added to have an always visible scrollbar in TAdvSmoothListBox
+           : New : Customizable delete button appearance in TAdvSmoothListBox
+           : Improved : ESC handling only when mrCancel button is available in TAdvSmoothMessageDialog
+           : Improved : Function to return the internal dialog form in TAdvSmoothMessageDialog
+           : Improved : Custom drawing on bitmap for controls in TAdvSmoothSlideShow
+           : Improved : GetAnnotationRect function which returns the rectangle of the annotation in TAdvSmoothTimeLine	
+           : Improved : Closing combobox with Escape key in TAdvSmoothComboBox 
+           : Improved : added event OnGetRecordCount in DBAdvSmoothListBox in TAdvSmoothListBox
+           : Fixed : Issue with rendering divisions in TAdvSmoothCapacityBar
+           : Fixed : Issue with WMEraseBackGround in Delphi 2006 or newer in TAdvSmoothButton
+           : Fixed : Issue with filtering and selecting items in TAdvSmoothComboBox 
+           : Fixed : Issue with applying style in OnItemSelected event in TAdvSmoothComboBox 
+           : Fixed : Issue with setting selecteditemindex in Clear in TAdvSmoothListBox
+           : Fixed : Issue with selecting / deselecting disjunct days in TAdvSmoothCalendar
+           : Fixed : Issue with mouseup and popup in TAdvSmoothImageListBox
+           : Fixed : Issue with Tag property changed during drag-drop in TAdvSmoothDock
+  3.6.1.0  : New : Public Shift property to start as upper or lower case in TAdvSmoothTouchKeyBoard
+           : Fixed : Issue with Cache bitmap memory leak in TAdvSmoothPanel
+	   : Fixed : Issue with OnCanClose and OnClose not called with modal dialog in TAdvSmoothMessageDialog
+	   : Fixed : Issue with AutoSize based on caption in TAdvSmoothMegaMenu
+	   : Fixed : Issue with OnItemChanged event never called in TAdvSmoothComboBox
+	   : Fixed : Issue with PageUp, PageDown selecteditemindex in TAdvSmoothListBox
+           : Fixed : Issue with caption positioning in AdvSmoothButton
+
+
+Usage:
+------
+ Use of TMS software components in applications requires a license.
+ A license can be obtained by registration. A single developer license
+ registration is available as well as a site license.
+ With the purchase of one single developer license, one developer in
+ the company is entitled to:
+ - use of registered version that contains full source code and no
+   limitations 
+ - free updates for a full version cycle
+ - free email priority support & access to support newsgroups
+ - discounts to purchases of other products
+
+ With a site license, multiple developers in the company are entitled
+ to:
+ - use of registered version that contains full source code and no
+   limitations 
+ - add additional developers at any time who make use of the components
+ - free updates for a full version cycle
+ - free email priority support & access to support newsgroups
+ - discounts to purchases of other products
+
+ Online order information can be found at:
+ http://www.tmssoftware.com/go/?orders
+
+Note: 
+-----
+
+ The components are also part of the TMS Component Pack bundle, see 
+ http://www.tmssoftware.com/go/?tmspack
+
+
+Help, hints, tips, bug reports:
+-------------------------------
+ Send any questions/remarks/suggestions to : help@tmssoftware.com
+
+ Before contacting support about a possible issue with the component
+ you encounter, make sure that you are using the latest version of the 
+ component.
+ If a problem persists with the latest version, provide information 
+ about which Delphi or C++Builder version you are using as well as
+ the operating system and if possible, steps to reproduce the problem
+ you encounter. That will guarantee the fastest turnaround times for
+ your support case. 
+

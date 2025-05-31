@@ -1,0 +1,61 @@
+﻿# English  Translations for MVS.
+
+#Code					TEXT
+#-------------------------------------------
+
+CFG_SAVE_NOTICE		The current configuration is going to be changed, would you like to continue?
+STOP_MACHINE_NOTICE	Notice machine will STOP in the process.
+CFG_SAVED		Configuration Saved.
+CFG_NOTSAVED		Configuration Not Saved.
+CFG_NOTSELECTED		Configuration NOT Selected.
+CFG_DIRNOTEXIST		Default Folder for Configuration does NOT exist!. Contact with Technical Service.
+
+CFG_LOAD_TYPE 		You are going to load the configuration type:
+CFG_LOAD_WM		is going to be loaded. 
+NOTICE_LBL		Would you like to continue?.
+CREATE_TYPE_ERROR	Some error occurs. Type could not be created. Name:
+TYPE_NOTSELECTED	No Type Selected.
+TYPE_NAMENOTVALID	Type Name Not Valid or already exists.
+TYPE_ACTIVE_NOTSELECTED	No Active Type Selected.
+
+CFG_TYPE_OVERWRITE1	Working modes:
+CFG_TYPE_OVERWRITE2	Already exist.
+CFG_TYPE_OVERWRITE3 Do you want to overwrite it/them?
+
+NAME_NOTVALID		Name Not Valid.
+FILE_NOTVALID		File Not Valid.
+
+ERROR_NOTICE		Some error occurs.
+APPLICATION		Application.
+SHUT_DOWN_NOTICE	will be shut down in a few seconds.
+CLOSE__NOTICE		will be closed in a few seconds.
+ARE_YOU_SURE_NOTICE	Are you sure?.
+
+ERROR_SET_ACTIVE_TYPE   Something went wrong setting the working mode:
+ERROR_LOADING_TYPE 	Something went wrong loading the working mode:
+RESTORE_CFG_NOTICE 	Old configuration will be loaded.
+REVIEW_CFG_NOTICE	Option Not Allowed. Review Configuration.
+TYPE_LOADED_NOTICE	Seleced Typecannot be deleted. The type is currently loaded.
+DELETE_TYPE_NOTICE	It's going to be deleted the following configuration type.
+TYPE_NOT_DELETED	Type could not be delete.
+TYPE_NOT_RENAMED	Type could not be renamed.
+TYPE_NOT_SAVED		Type could not be saved.
+USER_NOT_SELECTED	Select a User!.
+
+USER_NOT_CREATED	User Not Created!.
+ERROR_PASS_NOTICE	Not Valid Password!. 
+PWD_NOT_CHANGED		Password not Changed!
+PWDS_NOT_EQUAL		Password not equal.
+PWD_TOO_SHORT		Password too short.
+USER_DELETE_NOTICE	A user it is going to be deleted
+
+
+XML_BACKUP_NOTICE	XML File does not exist. Backup File will be loaded instead.
+XML_BACKUP_ERROR	Error: Backup file could not be loaded.
+XML_BACKUP_NOTEXIST	Backup file does not exists.
+
+INVALID_USER_NAME	Invalid user name.
+
+
+
+

@@ -1,0 +1,482 @@
+//---------------------------------------------------------------------------
+
+
+#pragma hdrstop
+
+#include "EPOD8Driver.h"
+#include "threadsDefs.h"
+
+//---------------------------------------------------------------------------
+
+#pragma package(smart_init)
+
+//---------------------------------------------------------------------------
+
+//Labels for the state
+
+#define LBL_GET "GET"
+#define LBL_RUN "RUN"
+#define LBL_OFF "OFF"
+#define LBL_CFG "CFG"
+
+//---------------------------------------------------------------------------
+
+
+/*******************************************************************************
+***********************EPOD8Driver Class****************************************
+*******************************************************************************/
+//-----------------------------------------------------------------------------
+/**
+*  Thread to send commands to the EPOT8. All commands must be sent
+*  through this so there aren`t access conflicts to the EPOT8 serial port.
+*/
+DWORD WINAPI EPOD8DriverThread(LPVOID owner)                                     {
+
+   EPOD8Driver      *pEPOD8Driver     = (EPOD8Driver*)owner;
+   HANDLE            events[2];
+   DWORD             ev;
+
+   events[0] = pEPOD8Driver->m_evStopThread;
+   events[1] = pEPOD8Driver->m_evSetStatus;
+
+   while((ev = WaitForMultipleObjects( sizeof(events)/sizeof(events[0]), events, false, 1000))!= WAIT_OBJECT_0){
+
+      switch (ev)                                                             {
+         case WAIT_OBJECT_0 + 1 :
+
+		   //	pEPOD8Driver->m_pLastCmdResult->SetAsInt( pEPOD8Driver->SendCmd());
+			pEPOD8Driver->SendCmd();                                                   // Sends values to Driver
+			pEPOD8Driver->m_pStatus->SetAsInt( pEPOD8Driver->GetStatus());            // Receives values from Driver
+            ResetEvent(events[1]);
+         break;
+
+         case WAIT_TIMEOUT:
+			pEPOD8Driver->m_pStatus->SetAsInt( pEPOD8Driver->GetStatus());        // Ask status
+
+		 break;
+         case WAIT_FAILED:
+            LPVOID   lpMsgBuf;
+			LPVOID   lpDisplayBuf;
+			DWORD    dw ;
+
+            // En caso de error de los eventos/thread
+			dw = GetLastError();
+            FormatMessage(
+               FORMAT_MESSAGE_ALLOCATE_BUFFER |
+               FORMAT_MESSAGE_FROM_SYSTEM,
+               NULL,
+			   dw,
+               MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+               (LPTSTR) &lpMsgBuf,
+			   0, NULL );
+
+            lpDisplayBuf = (LPVOID)LocalAlloc(LMEM_ZEROINIT,
+               (lstrlen((LPCTSTR)lpMsgBuf)+40)*sizeof(TCHAR));
+               swprintf((LPTSTR)lpDisplayBuf,
+               TEXT("Error in RXSourceThread %d: %s"),
+               dw, lpMsgBuf);
+            DISPATCH_EVENT( ERROR_CODE,(wchar_t *)lpDisplayBuf, NULL , pEPOD8Driver);
+            LocalFree(lpMsgBuf);
+            LocalFree(lpDisplayBuf);
+            break;
+      }
+   }
+
+   // Indicar que no hay más comunicación, y asegurar que se limpian los "estados"
+   pEPOD8Driver->m_pStatus->SetAsInt( EPOD8DriverStatus::UNKOWN);
+   return 0;
+};
+
+
+
+//-----------------------------------------------------------------------------------
+/**
+*  Creates its TDatas
+*  @param[in]   name     Name of manager
+*  @param[in]   parent   Parent for this manager
+*/
+EPOD8Driver::EPOD8Driver(const wchar_t *name, TDataManagerControl *_parent)
+   : TDataManagerControl( name, _parent)                                      {
+
+   m_com232  = new TCom232( L"Comm", this, 9600, 8);
+
+   m_pStatus           = new TData( this, L"Status", NULL, EPOD8DriverStatus::UNKOWN, L"UNKOWN=-1;OFF=0;CFG=1;RUN=2", FLAG_NORMAL & ~FLAG_SAVE | FLAG_RDONLY, L"Current Status");
+   m_pNextCmd          = new TData( this, L"NextCmd", NULL, EPOD8DriverNextCmd::NOTHING, L"NOTHING=-1;SETOFF=0;SETCFG=1;SETRUN=2", FLAG_NORMAL & ~FLAG_SAVE /*| FLAG_RDONLY*/, L"Next Command to Send");
+
+   // TData para nueva configuracion ( no guardar en disco, no vinculado a variable)
+   m_pNewCfg           = new TData ( this, L"NewCfg", NULL, L" ", 100, FLAG_NORMAL, L"New config to send");
+
+   m_pLastCmdResult    = new TData( this, L"LastCmdResult", NULL, EPOD8DriverStatus::UNKOWN, L"NOTOK=0;OK=1", FLAG_NORMAL & ~FLAG_SAVE | FLAG_RDONLY, L"Last Command Result");
+
+   m_hthread                     = NULL;
+   m_evStopThread                = NULL;
+   m_evSetStatus                 = NULL;
+
+   DataModEventPost = DataModifiedPost;
+}
+
+//------------------------------------------------------------------------------------
+/**
+*  Destructor of the class. It calls MyClose() function to stop the thread
+*/
+EPOD8Driver::~EPOD8Driver()                                                   {
+
+   // Se llama a MyClose para detener el thread antes de eliminarse, sino se la pega
+   // al eliminar el TDatamanager de esta clase
+   MyClose();
+}
+
+//----------------------------------------------------------------------------
+/**
+*  Launchs thread to control the EPOT8 source
+*/
+bool EPOD8Driver::StartThread()                                              {
+
+   DWORD id;
+
+   if (m_hthread)
+      return true;
+
+   m_evSetStatus     = CreateEvent( NULL, false, false, L"SetStatusEvent_cid");
+   m_evStopThread    = CreateEvent( NULL, false, false, L"StopThreadEvent_cid");
+
+   ResetEvent( m_evSetStatus);
+   ResetEvent( m_evStopThread);
+
+   m_hthread   = CreateThread(
+               NULL,                // Address of thread security attributes
+               (DWORD)0x10000,      // Initial thread stack  size, in bytes
+               EPOD8DriverThread,      // Address of thread function
+               (LPVOID)this,        // Argument for new thread
+               0x0,                 // Creation flags
+               &id);                // Address of returned thread identifier
+
+   SetThreadName ( id,m_name);
+   // Return true if thread is created
+   return m_hthread ? true: false;
+}
+
+//----------------------------------------------------------------------------
+
+/**
+*  Sets to true the ReadOnly flag of the "Enable" parameter
+*/
+bool EPOD8Driver::MyInit()                                                    {
+   StartThread();
+   if (!Enabled())
+      return false;
+   (GetDataObject(LBL_ENABLED))->SetRdOnly( true);
+
+   return TDataManagerControl::MyInit();
+}
+/*
+MyGo
+*/
+bool EPOD8Driver::MyGo()                                                      {
+   SendSpecifiedCmd( EPOD8DriverNextCmd::SETRUN);
+
+   return TDataManagerControl::MyGo();
+}
+
+//----------------------------------------------------------------------------
+/**
+*  Stops thread
+*/
+void EPOD8Driver::StopThread()                                                {
+
+   // If thread is running, stop and wait until it's stopped
+   if (m_hthread)                                                             {
+      SetEvent(m_evStopThread);
+      if (WaitForSingleObject(m_hthread,3000)==WAIT_TIMEOUT)                  {
+         TerminateThread(m_hthread,0);
+         CloseHandle(m_hthread);
+      }
+      else
+         CloseHandle(m_hthread);
+   }
+   if (m_evSetStatus)                                                         {
+      ResetEvent( m_evSetStatus);
+      CloseHandle(m_evSetStatus);
+   }
+   if (m_evStopThread)                                                        {
+      ResetEvent(m_evStopThread);
+      CloseHandle(m_evStopThread);
+   }
+   m_hthread         = NULL;
+   m_evSetStatus     = NULL;
+   m_evStopThread    = NULL;
+}
+
+//------------------------------------------------------------------------------
+/**
+*  Stops the thread which is used to send comands to the generator
+*/
+bool EPOD8Driver::MyClose()                                             {
+
+   if (TDataManagerControl::MyClose())                                        {
+      StopThread();
+      return true;
+   }
+   return false;
+}
+//------------------------------------------------------------------------------
+/**
+*  Stops the thread which is used to send comands to the generator
+*/
+bool EPOD8Driver::MyStop()                                             {
+
+   SendSpecifiedCmd( EPOD8DriverNextCmd::SETOFF);
+
+   if (TDataManagerControl::MyStop())                                        {
+      StopThread();
+      return true;
+   }
+   return false;
+}
+
+//----------------------------------------------------------------------------
+/**
+*  This function sends the command through the serial port to the generator and
+*  collect your answer. First we calculate the checksum of the command to send,
+*  send the command through the serial port and check the checksum of the response.
+*  @param[in]     comando     comand to send
+*  @param[out]    resp        response
+*  @param[in,out] size        response size
+*  @param[in]     nIntentos   number of attempts for the command to be sent successfully
+*  @return     true-> Comand has been send; false-> Comand hasn't been send
+*/
+
+//---------------------------------------------------------
+
+void __fastcall EPOD8Driver::DataModifiedPost( TData *da)  {
+
+   if (!da) {
+      return;
+   }
+
+   if ( da && da==m_pNextCmd &&  m_hthread && m_evSetStatus) {
+	  if ( da->AsInt() != EPOD8DriverNextCmd::NOTHING) {
+         SetEvent( m_evSetStatus);
+      }
+   }
+}
+//---------------------------------------------------------
+/*
+SetStatus
+Funtion to set wich status is selected
+*/
+
+bool EPOD8Driver::SetStatus(EPOD8DriverStatus newStatus)   {
+
+   int newCmd;
+   //force DataModifiedPost
+   m_pNextCmd->SetAsInt( EPOD8DriverNextCmd::NOTHING);
+   return m_pNextCmd->SetAsInt( newStatus);
+
+}
+
+//---------------------------------------------------------
+/*
+SetStatus
+Funtion to get the status from EPOT
+*/
+EPOD8DriverStatus EPOD8Driver::GetStatus(){
+
+   DWORD    bytesWritten;
+   int      bytesToSend= 5; //lo que ocupa + S + F
+   char     str[5];
+   char     resp[3];
+
+   resp[0]  = 0;
+   snprintf( str, bytesToSend,"S%sF", LBL_GET);
+   if( m_com232->WriteFile( str, bytesToSend, &bytesWritten))            {
+      if( m_com232->ReadFile( resp, sizeof( resp)))   {
+         if( strncmp( resp, LBL_RUN, sizeof( resp))==0)  {
+            return EPOD8DriverStatus::RUN;
+         }
+         if( strncmp( resp, LBL_OFF, sizeof( resp))==0)  {
+            return EPOD8DriverStatus::OFF;
+         }
+         if( strncmp( resp, LBL_CFG, sizeof( resp))==0)  {
+            return EPOD8DriverStatus::CFG;
+         }
+      }
+   }
+   return EPOD8DriverStatus::UNKOWN;
+}
+/*
+SendCmd
+Funtion to send Status selected
+*/
+
+bool  EPOD8Driver::SendCmd( ) {
+   return SendSpecifiedCmd( m_pNextCmd->AsInt());
+}
+
+char *EPOD8Driver::StringForCmd( EPOD8DriverNextCmd cmd)   {
+
+   switch ( cmd)  {
+      case EPOD8DriverNextCmd::SETOFF:
+         return LBL_OFF;
+      case EPOD8DriverNextCmd::SETRUN:
+         return LBL_RUN;
+      case EPOD8DriverNextCmd::SETCFG:
+         return LBL_CFG;
+   }
+   return NULL;
+
+}
+
+bool  EPOD8Driver::SendSpecifiedCmd( EPOD8DriverNextCmd cmd) {
+   bool ret = false;
+   char *strCmd =  StringForCmd(cmd);
+   if ( strCmd==NULL)   {
+      return false;
+   }
+   //mirar nextCmd en el TData m_pNextCmd y enviar comando correspondiente por el puerto serie
+   switch ( cmd) {
+	  case EPOD8DriverNextCmd::SETOFF :
+			ret = SendCmdToEPOT( strCmd );
+			if (ret) 														  {
+				LOG_INFO2(L"RaydenBoard modo OFF", GetLangName());
+			}
+			else															  {
+				LOG_INFO2(L"RaydenBoard modo OFF ha fallado", GetLangName());
+			}
+			break;
+	  case EPOD8DriverNextCmd::SETRUN :
+			ret = SendCmdToEPOT( strCmd );
+			if (ret) 														  {
+				LOG_INFO2(L"RaydenBoard modo RUN", GetLangName());
+			}
+			else															  {
+				LOG_INFO2(L"RaydenBoard modo RUN ha fallado", GetLangName());
+			}
+			break;
+      case EPOD8DriverNextCmd::SETCFG :
+			{
+		   //	   EPOD8DriverStatus prevStatus = GetStatus();
+		   //	   if( prevStatus !=  EPOD8DriverStatus::UNKOWN){
+                  bool retCfg = SendCmdToEPOT( strCmd);
+
+				  if ( retCfg)   											  {
+                     char cfg[1000];
+                     unsigned int size = sizeof( cfg);
+                     if ( m_pNewCfg->AsText( cfg, size)) {
+						ret = SendCmdToEPOT( cfg, true);
+						LOG_INFO2(L"Se ha enviado una configuracion nueva a la RaydenBoard", GetLangName());
+				  }
+				  else              										  {
+					LOG_INFO2(L"RaydenBoard modo CFG ha fallado",GetLangName());
+                  }
+
+                  //restaurar estado anterior
+//                  switch (prevStatus) {
+//					 case EPOD8DriverStatus::OFF :
+//
+//                        SendSpecifiedCmd( EPOD8DriverNextCmd::SETOFF);
+//						break;
+//
+//					 case EPOD8DriverStatus::RUN :
+//
+//						SendSpecifiedCmd( EPOD8DriverNextCmd::SETRUN);
+//                        break;
+//
+//				  }
+//		       	}
+            }
+            break;
+
+   }
+   return ret;
+}
+
+//---------------------------------------------------------
+/*
+SetNewCfg
+Funtion to set new configuration
+*/
+bool EPOD8Driver::SetNewCfg( char *cfg)   {
+
+   if ( m_pNewCfg->SetAsText( cfg)) {
+
+      return m_pNextCmd->SetAsInt( EPOD8DriverNextCmd::SETCFG);
+   }
+   return false;
+}
+
+//---------------------------------------------------------
+
+bool EPOD8Driver::SendCmdToEPOT( char *characters, bool cfg) {
+
+   char     *toSend;
+   int      bytesToSend;
+   DWORD    bytesWritten;
+   bool     ret      = false;
+   char     resp[2];
+
+   resp[0]  = 0;
+
+   if ( !cfg)   {
+      bytesToSend = 5; // 3 caracteres + S + F
+   }
+   else  {
+      // + S + F + checkSum  ( suponiendo fin de linea en characters, y pirmer campo con numero de lineas)
+      bytesToSend = strlen( characters)+2+1;
+   }
+
+   toSend = new char[bytesToSend+1];
+   memset( toSend, 0x00, bytesToSend);
+
+//   Comunicación sin CheckSum.
+//   if ( !cfg)   {
+//      snprintf( toSend, bytesToSend, "S%sF", characters);
+//   }
+//   else  {
+//      snprintf( toSend, bytesToSend, "S%s%cF", characters, CheckSum( characters));
+//   }
+   std::string str = "S";
+   str.append( characters);
+   str.append( "X");
+   sprintf( toSend, "%s%c", str.c_str(), CheckSum( str.c_str()));
+
+   if( m_com232->WriteFile( toSend, bytesToSend, &bytesWritten))              {
+	  if( m_com232->ReadFile( resp, sizeof( resp)))   						  {
+
+		  if( strncmp( resp, "OK", 2 )==0 )   								  {
+			m_pLastCmdResult->SetAsInt(1);     //OK
+			ret = true;
+		  }
+
+		 else             													  {
+			m_pLastCmdResult->SetAsInt(0);     //NOTOK
+			ret = false;
+         }
+      }
+   }
+   delete [] toSend;
+   return ret;
+
+}
+
+//---------------------------------------------------------
+/*
+CheckSum
+Funtion to calculate CheckSum for strings
+*/
+unsigned char EPOD8Driver::CheckSum( const char *characters) {
+
+ //Función para el calculo del CheckSum de la trama que se envía.
+   unsigned char sum = 0;
+   unsigned char *p = characters,
+                 *pF = &characters[strlen(characters)-1];
+
+   while ( p <= pF) {
+      sum += *p;
+      ++p;
+   }
+
+   return sum;
+
+}
+

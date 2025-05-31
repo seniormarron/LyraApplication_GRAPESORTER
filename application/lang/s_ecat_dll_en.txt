@@ -1,0 +1,264 @@
+﻿# English  Translations for MVS.
+
+#Code					Text
+#--------------------------------------------
+
+
+
+# ETHERCAT
+
+FAULTY_ETHERCAT_NOT_CONNECTED			Comunic Fail.
+FAULTY_ETHERCAT_NOT_CONNECTED_STDBOARD  Comunic Fail.
+FAULTY_ETHERCAT_EJECTION_DISABLED		Ejection Off.
+FAULTY_INDEX_TRIGGER_ADVANCED			Adquisition Fail.
+EV_ETHERCAT_NOT_CONNECTED_STDBOARD		Ethercat not connected STDBOARD
+
+EV_INDEX_TRIGGER_ADVANCED			Adquisition failure. Index trigger advanced.
+EV_CAB_NOT_CONNECTED				Communication failure. Ethercat.
+
+FAULTY_EXECUTE_TIME					Adquisition Fail.
+EV_FAIL_EXECUTE_TIME				No time. Fail to execute Get100nsFrom1970micros.
+
+FAULTY_IREAD_EQUALS_IWRITE			Trigger Error.
+EV_IREAD_EQUALS_IWRITE				It have no trigger,index read is equal than index write.
+
+FAULTY_FAIL_PUTEXP					Ejection Fail.
+EV_PUTEXP_LATE						The ejection order was late.
+EV_PUTEXP_NO_ROOM					No room in the ejection buffer.
+FAULTY_FAIL_VALVES_LIMITED			Rejection limited
+
+EV_FAIL_STOP_ETHERCAT_REAL_TIME		Fail to stop.
+FAULTY_FAIL_ENCODER					Encoder fail.
+
+EV_ELECTRIC_CABINET					Don't find Electric Cabinet.
+EV_SYNC_TOO_LATE					Sync too late.
+EV_SYNC_EXTRAPOLATION				Sync extrapolation error.
+
+EV_FAIL_MUTEX_IR					Failed to obtain mutex for IR.
+
+EV_GETLASTTRIG_NOT_ENABLED			Get Last Trigger is not enabled.
+EV_ETH_NOVERSION					There's no driver version configured in the application. It's configured the installed now:
+EV_ETH_INCOMPATIBLEVERSION			Configured driver version is incompatible with installed. Performance may be affected. 
+EV_ETH_COMPATIBLEVERSION			Configured driver version is different than the installed one, but it's compatible.
+
+
+MSG_DRIVER_EJECT			Ejectors Driver               
+MSG_ETHERCAT_CONNECTED	    Ejectors Driver connected
+MSG_ETHERCAT_NOT_CONNECTED	Ethercat not connected              
+MSG_ETHERCAT_VERSION		Driver Version       
+MSG_BASE_TIME				Base time
+MSG_EJECTION_MODE			Ejection mode
+MSG_ETHERCAT_DEVICES		Ethercat devices
+MSG_DEVICES_STATE			Devices state
+MSG_DEVICES					Terminales
+MSG_PULSE_FREQ				Pulse frecuency
+MSG_FAILURE_DEVICE			Fail device nº
+MSG_PULSE_TURN				Pulse/turn
+MSG_TIMER_FREQ				Timer frecuency
+MSG_ELECTRIC_CABINET		Electric cabinet
+MSG_DRIVER_ELECT_CAB		Electric Cabinet Driver
+MSG_BRC_SYSTEM				Rejection bin
+MSG_OPENNING_DOOR			Openning door
+MSG_BOX_FILLING				Box filling       
+MSG_DOOR_OPEN				Open door
+MSG_REJECT_PHOTO			Photoelectric sensor rejection active
+MSG_BOX_FULL				Full box       
+MSG_DRIVER_INVERTERS		Inverters Driver
+
+EV_PRODUCT_AT_THE_END		High percentage of product at the end of machine
+EV_EJECTION_DISABLED		Ejection Dishabilitada
+
+
+#-------------------------------------------------------
+#-----------------MAchineSafetyForm---------------------
+#-------------------------------------------------------
+lb_security_status		Safety status							
+safetyNotification_lb	Safety notifications list
+notInUse_lb				Not in use:
+noti1_lb				Emergency stop front door
+noti4_lb				Emergency stop service door
+noti4_lb2				Emergency stop left
+noti4_lb3				Emergency stop back left
+noti3_lb				Empty 1
+noti3_lb2				Emergency stop right
+noti3_lb3				Emergency stop back right
+noti2_lb				Emergency stop external
+noti2_lb2				Entrance/exit product stops
+noti5_lb				Safety switch front door
+noti6_lb				Empty 2
+noti6_lb2				Safety switch service door
+noti6_lb3				Safety switch service door/curtain left
+noti7_lb				Safety switch curtain left
+noti7_lb2				Safety switch service door/curtain right
+noti7_lb3				Left door
+noti8_lb				Safety switch curtain right
+noti8_lb2				Safety switch camera 1
+noti8_lb3				Right door
+noti9_lb				Safety switch service door
+noti9_lb2				Left side protection front door
+noti9_lb3				Protection right door
+noti9_lb4				Safety switch central curtain	
+noti10_lb				Safety switch camera 1
+noti10_lb2				Left side protection back door
+noti11_lb				Empty 3
+noti11_lb2				Safety switch camera 2
+noti11_lb3				Right side protection front door
+noti12_lb				Empty 4
+noti12_lb2				Safety switch camera 3
+noti12_lb3				Right side protection back door
+noti13_lb				Safety relay doors
+noti14_lb				Safety relay stops
+noti15_lb				XRay key
+noti16_lb				Beacon
+
+btn_close_b				CLOSE
+
+
+#-------------------------------------------------------
+#-----------------OMRON FORM----------------------------
+#-------------------------------------------------------
+configuration_lb			Configuration
+inverterToConfig_lb			Inverter to config:
+movement_lb					Movement:
+labelFreqConf				Frequency (Hz):
+status_label				Status
+frequency_label				Frequency
+forwardMov_lb				Forward movement
+reverseMov_lb				Reverse movement
+error_lb					Error
+warning_lb					Warning
+remoteOp_lb					Remote operations
+frequencyMat_lb				Frequency matched
+cannotUpdate_lb				Can not update data
+btn_close_omron				CLOSE
+
+#-----------------OMRON Faulties/EVENTS----------------------------
+FAULTY_INV_ERR1				Inverter 1 Error
+EV_INV_ERR1					Inverter 1 Error
+FAULTY_INV_WARN1			Inverter 1 Warning
+EV_INV_WARN1				Inverter 1 Warning
+FAULTY_INV_NO_REMOTE1		Inverter 1 Not remote operation
+EV_INV_NO_REMOTE1			Inverter 1 Not remote operation
+FAULTY_INV_NO_UP_DATA1 		Inverter 1 Cannot update data
+EV_INV_NO_UP_DATA1 			Inverter 1 Cannot update data
+
+FAULTY_INV_ERR2				Inverter 2 Error
+EV_INV_ERR2					Inverter 2 Error
+FAULTY_INV_WARN2			Inverter 2 Warning
+EV_INV_WARN2				Inverter 2 Warning
+FAULTY_INV_NO_REMOTE2		Inverter 2 Not remote operation
+EV_INV_NO_REMOTE2			Inverter 2 Not remote operation
+FAULTY_INV_NO_UP_DATA2 		Inverter 2 Cannot update data
+EV_INV_NO_UP_DATA2 			Inverter 2 Cannot update data
+
+FAULTY_INV_ERR3				Inverter 3 Error
+EV_INV_ERR3					Inverter 3 Error
+FAULTY_INV_WARN3			Inverter 3 Warning
+EV_INV_WARN3				Inverter 3 Warning
+FAULTY_INV_NO_REMOTE3		Inverter 3 Not remote operation
+EV_INV_NO_REMOTE3			Inverter 3 Not remote operation
+FAULTY_INV_NO_UP_DATA3 		Inverter 3 Cannot update data
+EV_INV_NO_UP_DATA3 			Inverter 3 Cannot update data
+
+FAULTY_INV_ERR4				Inverter 4 Error
+EV_INV_ERR4					Inverter 4 Error
+FAULTY_INV_WARN4			Inverter 4 Warning
+EV_INV_WARN4				Inverter 4 Warning
+FAULTY_INV_NO_REMOTE4		Inverter 4 Not remote operation
+EV_INV_NO_REMOTE4			Inverter 4 Not remote operation
+FAULTY_INV_NO_UP_DATA4 		Inverter 4 Cannot update data
+EV_INV_NO_UP_DATA4 			Inverter 4 Cannot update data
+
+#-----------------XCab Faulties/EVENTS----------------------------
+FAULTY_EC_PLC					Electric Cabinet PLC Fault
+EV_EC_PLC						Electric Cabinet PLC Fault
+FAULTY_BLOCKAGE					Blockage
+EV_BLOCKAGE						Blockage
+FAULTY_REJBIN_DOOR_OPENING		Opening rejection bin door
+EV_REJBIN_DOOR_OPENING			Opening rejection bin door
+FAULTY_REJBIN_DOOR_OPEN			Rejection bin door open
+EV_REJBIN_DOOR_OPEN				Rejection bin door open
+FAULTY_REJBIN_FULL				Rejection bin full
+EV_REJBIN_FULL					Rejection bin full
+FAULTY_REJBIN_NOAIR 			Rejection bin no air
+EV_REJBIN_NOAIR 				Rejection bin no air
+
+
+#----------------------------BIT STATE----------------------------
+FAULTY_EMERGENCIA			Electric. fail./Emergency stop
+EV_EMERGENCIA				Electric. fail./Emergency stop
+FAULTY_FALLO_ETHERCAT		Ethercat failure
+EV_FALLO_ETHERCAT			Ethercat failure
+FAULTY_PERMISO_EXTERNO		External permission fail
+EV_PERMISO_EXTERNO			External permission fail
+FAULTY_LC2_02				LC-02 Error 02
+EV_LC2_02					Error LC-02 02 Voltage too high Capacitor 1
+FAULTY_LC2_03				LC-02 Error 03
+EV_LC2_03					Error LC-02 03 Voltage too high Capacitor 2
+FAULTY_LC2_04				LC-02 Error 04
+EV_LC2_04					Error LC-02 04 Current too high output 1 
+FAULTY_LC2_05				LC-02 Error 05
+EV_LC2_05					Error LC-02 05 current too high output 2
+FAULTY_LC2_06				LC-02 Error 06
+EV_LC2_06					Error LC-02 06 Input voltage too low. Check fuse
+FAULTY_LC2_07				LC-02 Error 07
+EV_LC2_07					Error LC-02 07 Voltage too low capacitor 1
+FAULTY_LC2_08				LC-02 Error 08
+EV_LC2_08					Error LC-02 08 Voltage too low capacitor 2
+FAULTY_LC2_09				LC-02 Error 09
+EV_LC2_09					Error LC-02 09 No voltage output 1
+FAULTY_LC2_10				LC-02 Error 10
+EV_LC2_10					Error LC-02 10 No voltage output 2 
+FAULTY_LC2_11				LC-02 Error 11
+EV_LC2_11					Error LC-02 11 current too low ouput 1
+FAULTY_LC2_12				LC-02 Error 12
+EV_LC2_12					Error LC-02 12 current too low output 2
+FAULTY_AIRE					Air pressure too low
+EV_AIRE						Air pressure too low
+FAULTY_VAR1					Inverter 1 Stop 
+EV_VAR1						Inverter 1: PC confirmation is missing
+FAULTY_VAR2					Inverter 2 Stop 
+EV_VAR2						Inverter 2: PC confirmation is missing
+FAULTY_VAR3					Inverter 3 Stop 
+EV_VAR3 					Inverter 3: PC confirmation is missing
+
+
+#-----------------TConditionsLineComm----------------------------
+ConditionsGb			Conditions
+Enabled					Enabled
+LoadLb					Load
+SignLoadLb				Sign Load
+EjectionLb				Ejection
+SignEjectionLb			Sign 
+NumObjectsLb			Num. Objects
+SignNumObjectsLb		Sign Num. Objects
+StateLb					State
+InfoCb					Information
+CurrentStateLb			Current state
+CurrentLoadLb			Current load
+CurrentEjectionLb		Current ejection
+CurrentCounterUnitsLb	Current counter units
+AutoAdjustCb			Auto Adjustements
+EnabledAutoMode			Enabled auto mode
+ModeAutoLb				Mode
+DesiredLoadLb			Desired load
+DesiredObjectsLb		Desired objects
+
+#-----------------TOmronFormWizard--------------------------------
+TxtOmron1				Check that the drives have the EtherCAT communications card connected and are connected to the TwinCAT network.
+TxtOmron2				An error will appear on the drive: E60.1.
+TxtOmron3				Some drive is not connected, connect and restart the assistant.
+TxtOmron4				Select the drive to be configured.
+TxtOmron5				The configuration of the inverter will be done in 2 steps: the 1st to initialize and the 2nd to parameterize.
+TxtOmron6				At the end of the first step, the inverter must be switched off and on again.
+TxtOmron7				Disconnect the inverter from the electrical network to clear the error obtained, wait until the RUN light comes on and execute Step 2.
+TxtOmron8				The inverter has been configured.
+TxtOmron9				You can continue configuring other drives or close the window.
+BtnNextOmronForm 			Next
+BtnCancelOmronForm 			Exit
+BtnConfig1OmronForm 			Config 1
+BtnConfig2OmronForm 			Config 2
+BtnConfig3OmronForm 			Config 3
+BtnConfig4OmronForm 			Config 4
+BtnStep1OmronForm 			Step 1
+BtnStep2OmronForm 			Step 2

@@ -1,0 +1,14 @@
+# English OPC Server
+
+#Code					Text
+#--------------------------------------------
+EV_OPC_INIT_FAIL	Fallo al iniciar la aplicación del Servidor OPC.
+EV_OPC_CERTIFICATES_FAIL	Fallo al establecer el certificado del Servidor OPC.
+EV_OPC_START_FAIL	Fallo al arrancar la aplicación del Servidor OPC.
+EV_OPC_ADDENDPOINT_FAIL	Fallo al añadir el EndPoint(URL) en el Servidor OPC.
+EV_OPC_ADDRESSSPACE_FAIL	Fallo al añadir el Namespace al AddressSpace del Servidor OPC.
+EV_OPC_READTDATA_FAIL		El Servidor OPC no ha podido leer un TData.
+EV_OPC_STOP_FAIL	Fallo al detener la aplicación del Servidor OPC.
+
+EV_OPC_USER_CONNECTED		Usuario OPC conectado: 	
+EV_OPC_USER_DISCONNECTED	Usuario OPC desconectado: 

@@ -1,0 +1,136 @@
+﻿# Español Traducciones MVS
+
+#Código					Texto
+#--------------------------------------------
+
+
+
+# MISC (Control de temperatura del PC)
+
+
+FAULTY_STOP_CPU_FAN_SPEED		CPU ventilador parado.
+FAULTY_CRITICAL_TEMPERATURE_CPU		CPU temperatura crítica. 
+FAULTY_HIGH_TEMPERATURE_CPU		CPU temperatura alta.
+
+FAULTY_STOP_SYS_FAN_SPEED		PC ventilador parado.
+FAULTY_CRITICAL_TEMPERATURE_SYS		PC temperatura crítica.
+FAULTY_HIGH_TEMPERATURE_SYS		PC temperatura alta.
+
+
+EV_STOP_SYS_FAN_SPEED			El ventilador del ordenador está parado.
+EV_STOP_CPU_FAN_SPEED			El ventilador de la CPU está parado.
+
+EV_CRITICAL_TEMPERATURE_SYS		Temperatura crítica en PC.
+EV_HIGH_TEMPERATURE_SYS			Temperatura alta en PC.
+
+EV_CRITICAL_TEMPERATURE_CPU		Temperatura crítica en CPU. 
+EV_HIGH_TEMPERATURE_CPU			Temperatura alta en CPU.
+
+
+EV_NOT_CONNECT_INVERTER			No se puede conectar al variador:
+EV_INVERTER_ERROR			Fallo variadores.   
+INVERTER_ERROR				Error variadores.
+INVERTER_ALARM				Alarma variadores.   
+EV_INVERTER_ALARM			Alarma variadores.   
+EV_INVERTER				Variador.
+EV_CONNECT_INVERTER			Variador conectado.
+EV_INVERTER_DISABLED			Variador deshabilitado.
+
+MemoInverterText1			El variador principal necesita una terminación de Bus, ponga los interruptores DIP 2 y 3 en la posición "terminación de Bus" ON (Arriba) 
+MemoInverterText3			El display se puede intercambiar entre los variadores, para ella hay que pulsar en el botón que tiene debajo, por lo que hay que poner el display en el variador que se desea configurar.
+MemoInverterText2			Hay que pulsar el botón "P", y con las flechas, llegar al parametro 2011 y ajustarlo a:
+MemoInverterText6			El proceso ha finalizado correctamente	
+MemoInverterText7			Para configurar el variador, pulsar el botón en el variador correspondiente.				
+MemoInverterText8			No se ha podido conectar con el variador. Comprueba conexionado y dirección puesta en el parámetro 2011.			
+ConfiguringInverter			Configurando Variador:
+TextInverter				%s con dirección %d %s
+NO_CONFIGURED				no está configurado.
+CONFIGURED				está configurado.
+CANCEL					Cancelar
+NEXT					Siguiente
+
+
+EV_INVERTER_RESTORED_EXTERNAL_PERMISSION	Restaurado permiso externo.
+EV_LOAD_ALARM_RESTORED				Recuperada la carga óptima.
+EV_LOAD_ALARM					Carga demasiado baja.		
+FAULTY_LOAD_ALARM				Carga baja.
+
+
+EV_INVERTER_COMMUNIC_ERROR		Error en la comunicacion con los variadores.
+FAULTY_INVERTER_COMMUNIC_ERROR		Fallo Variadores.
+EV_INVERTER_COMMUNIC_OK			Restaurada la comunicacion con los variadores.
+
+
+EV_INVERTER_START			Arranque de los variadores.
+EV_INVERTER_STOP			Paro de los variadores.
+EV_INVERTER_CHANGE_SPEED		Cambio a la velocidad:
+
+MSG_CONTROL_INVERTERS			Control variadores
+MSG_ERROR_INVERTERS			Error configuración variadores
+MSG_MAIN_CONVEYOR			Variador principal
+MSG_ROTATION_CONVEYOR			Variador giro
+MSG_FEED_CONVEYOR			Variador alimentación
+MSG_SYSTEM_MONITOR			Monitor del sistema
+MSG_TEMP_CPU				Temperatura de la CPU
+MSG_TEMP_SYS				Temperatura del sistema
+MSG_FAN_SPEED_CPU			Velocidad ventilador CPU
+MSG_FAN_SPEED_SYS			Velocidad ventilador Sist
+MSG_COMMUNIC_SYS			Comunicación con el sistema
+
+EV_NOT_AVERAGE_CALIBER			Fallo configuración. No se encuentra el valor del calibre medio.
+EV_MAX_SPEED_CALIBER			Máxima velocidad por calibre pequeño.
+EV_INVERTER_CHANGE_FEED_SPEED		Cambio de la velocidad de la cinta de alimentación:
+
+
+EV_STOP_MACHINE_EJECTION		Paro de la máquina por exceso de expulsión.
+EV_AUTOADJUST_EJECTION			Autoajuste de los parámetros por exceso de expulsión.
+
+EventLoadLabel				Evento
+EmailLoadLable				Email
+GbLoad					% Avisos Carga
+GbTriggers				% Otros Avisos
+EventLb					Evento
+EmailLb					Email
+AutoAdjustLb				Auto Ajuste
+StopMachineLb				Paro Máquina
+GbConditions				Condiciones
+BanksLb					Bancos
+CategoriesLb				Categorias
+ParameterLb				Parámetro
+GbAdvanced				Avanzado
+TextTS					Textos
+EmailTS					Email
+EventLoadTextLb				Evento de carga
+EventTriggersTextLb			Evento de otros
+RecipientsLabel				Destinatarios
+WarningNotifyForm			Asistente de avisos
+
+TEXT_NINGUNO				Ninguno
+
+EV_INVERTER_STOP_ENCODER_PULSES		Paro de los variadores por no detectarse pulsos de encoder. Posibilidad de motor principal bloqueado.
+
+MemoDescriptionText			Pulsa en un parámetro para obtener una descripción!
+
+EJECTION_WARNING			Aviso Expulsión
+LOAD_WARNING				Aviso Carga
+
+EV_CANT_OPEN_PRODTXT			No se puede abrir el informe de produccion
+
+#-------------------------------------------------------
+#----------AdvantechForm--------------------------------
+#-------------------------------------------------------
+
+lbl_pc_status			        Información del PC
+AdvantechForm				Información del PC
+manufacturer_lb				Fabricante
+boardName_lb				Ref. de la placa
+status_lb				Estado
+LabelTempCPU				Temperatura CPU
+LabelSysTemp				Temp. Sistema
+LabelFanCPUSpeed			Ventilador CPU
+LabelSystemFanSpeed			Ventilador Sistema
+system2Fan_lb				Ventilador 2 Sistema
+warningThre_lb				Aviso
+errorThreshold_lb			Error
+lbl_threshold				Umbrales
+

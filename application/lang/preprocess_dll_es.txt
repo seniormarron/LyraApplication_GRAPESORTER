@@ -1,0 +1,26 @@
+﻿# Español Traducciones MVS
+
+#Código					Texto
+#--------------------------------------------
+
+
+
+# PREPROCESS
+
+EV_IMG_LOAD_FILE			Error cargando imagen de compensación.
+EV_MISSING_PLANE			Fallo configuración.Se necesita algun plano que no existe.
+EV_BITCOUNT_ERRONEOUS			Fallo configuración.El tamaño en bits del plano no es correcto.
+EV_ERROR_IN_SIZE_PLANES			Fallo configuración.Los tamaños de los planos no coinciden.
+EV_COMP_ERROR				Fallo configuración.No se encuentra el plano de compensación.
+EV_MONO2INTCOMP_SAVE_ERROR		Fallo al guardar la compensacion de color en fichero.
+
+EV_EXTERNAL_FILE_COULDNT_OPEN		Fallo al cargar el fichero externo:
+
+EV_FUSION_ERR_CODE			Fallo en la fusión de imágenes
+EV_FUSSION_MYGO				Fallo en la fusión de imágenes
+EV_FUSSION_INVALID			Fallo en la fusión de imágenes
+EV_SENDER_REQUIRED			Fallo en la fusión de imágenes
+EV_IMAGE_MNGR_REQUIRED			Fallo en la fusión de imágenes
+EV_DISTORTION_REQUIRED			Fallo en la fusión de imágenes
+
+FAULTY_FAIL_FUSSION			Fallo fusión

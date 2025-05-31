@@ -1,0 +1,14 @@
+# English OPC Server
+
+#Code					Text
+#--------------------------------------------
+EV_OPC_INIT_FAIL 		Failed to initialize the OPC Server application.
+EV_OPC_CERTIFICATES_FAIL		Failed to set the OPC Server instance certificate.
+EV_OPC_START_FAIL		Failed to start the OPC Server application.
+EV_OPC_ADDENDPOINT_FAIL		Failed to add endpoints to the OPC Server.
+EV_OPC_ADDRESSSPACE_FAIL		Failed to add the Namespace to the AddressSpaceRoot of the OPC Server.
+EV_OPC_READTDATA_FAIL		The OPC Server can not read a tdata value.
+EV_OPC_STOP_FAIL	Failed to stop the OPC Server application.
+
+EV_OPC_USER_CONNECTED		OPC User connected: 	
+EV_OPC_USER_DISCONNECTED		OPC User disconnected: 

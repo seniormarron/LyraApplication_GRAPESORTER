@@ -1,0 +1,59 @@
+﻿# English  Translations for MVS.
+
+#Code					TEXT
+#-------------------------------------------
+
+CFG_SAVE_NOTICE		Se cambiará la configuración actual, ¿Desea continuar?
+STOP_MACHINE_NOTICE	La máquina se detendrá durante el proceso.
+CFG_SAVED		Configuración guardada.
+CFG_NOTSAVED		No se ha podido guardar la configuración. 
+CFG_NOTSELECTED		No hay ninguna configuración seleccionada. 
+CFG_DIRNOTEXIST	Default	¡No existe la carpeta/directorio!. Contacte con Servicio Técnico. 
+
+CFG_LOAD_TYPE 		Se cargará la configuración de producto.
+CFG_LOAD_WM		va a ser cargado. 
+NOTICE_LBL		¿Desea continuar?
+CREATE_TYPE_ERROR	Occurrió algún error. Producto No Creado. Name:
+TYPE_NOTSELECTED	No ha seleccionado ningún producto.
+TYPE_NAMENOTVALID	Nombre NO válido o ya existente.
+TYPE_ACTIVE_NOTSELECTED	No ha seleccionado ningún producto.
+
+CFG_TYPE_OVERWRITE1	Los modos de trabajo:
+CFG_TYPE_OVERWRITE2	Ya existen.
+CFG_TYPE_OVERWRITE3 ¿Desea sobrescribirlo/s?
+
+NAME_NOTVALID		Nombre no válido.
+FILE_NOTVALID		Fichero No válido.
+
+ERROR_NOTICE		Ha ocurrido algún error.
+APPLICATION		Aplicación.
+SHUT_DOWN_NOTICE	se reiniciará si continua.
+CLOSE__NOTICE		se cerrará si continua.
+ARE_YOU_SURE_NOTICE	¿Está seguro?.
+
+
+ERROR_SET_ACTIVE_TYPE   Ha ocurrido algún error durante el establecimiento del modo de trabajo:
+ERROR_LOADING_TYPE 	Ha ocurrido algún error durante la carga del modo de trabajo:
+RESTORE_CFG_NOTICE 	Se cargará la configuración anterior.
+REVIEW_CFG_NOTICE	Opción no permitida. Revise configuración.
+TYPE_LOADED_NOTICE	El producto seleccionado no se puede eliminar. Actulamente en activo.
+DELETE_TYPE_NOTICE	Va a elminar la siguiente configuración de producto:
+TYPE_NOT_DELETED	El producto No se ha podido eliminar.
+TYPE_NOT_RENAMED	El producto no se ha podido renombrar.
+TYPE_NOT_SAVED		No se ha podido guardar el producto.
+USER_NOT_SELECTED	¡Seleccione un usuario!.
+
+USER_NOT_CREATED	No se ha creado el usuario.
+ERROR_PASS_NOTICE	Contraseña no Válida.
+PWD_NOT_CHANGED		No es posible cambiar la contraseña.
+PWDS_NOT_EQUAL		No coinciden las contraseñas.
+PWD_TOO_SHORT		Contraseña demasiado corta.
+
+
+
+USER_DELETE_NOTICE	Va a eliminar un usuario
+XML_BACKUP_NOTICE	El fichero XML NO existe. Se cargará el fichero Backup.
+XML_BACKUP_ERROR	Error: Fichero Backup no se pudo cargar. 
+XML_BACKUP_NOTEXIST	Fichero Backup NO existe. 
+
+INVALID_USER_NAME	Nombre de usuario invalido.

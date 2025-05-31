@@ -1,0 +1,200 @@
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+/*
+                  Lyra Techs Artificial Intelligence Software
+*/
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+/*
+   File:                      LyraTechsArtificialIntelligence.cpp
+   Compilation group:         LyraTechsArtificial Intelligence.exe
+   Subgroup
+   Version:                   1.0
+   Author:                    Daniel Ivorra
+   Date Created:              15/03/2021
+   Date Last Modification:
+*/
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+#include <tchar.h>
+#include <IOUtils.hpp>
+//---------------------------------------------------------------------------
+//USEFORM("..\code\shared\TColorAjustForm.cpp", ColorAjustForm);
+USEFORM("..\code\LTAISForm.cpp", FormLT);
+USEFORM("..\code\shared\TLoadCfgDlg.cpp", LoadCfgDlg);
+USEFORM("..\code\shared\TImageSignalEmbededForm.cpp", ImageSignalEmbededForm);
+USEFORM("..\code\shared\TImageSignalForm.cpp", ImageSignalForm);
+USEFORM("..\code\RaydenBoard\TConfigEPotForm.cpp", ConfigEPotForm);
+USEFORM("..\code\RaydenBoard\TConfigEPotFormAux.cpp", ConfigEPotFormAux);
+USEFORM("..\code\RaydenBoard\TEPotCycle.cpp", EPotCycle);
+//---------------------------------------------------------------------------
+#include <tlhelp32.h>
+
+#include "LTInit.h"
+#include "TMyMachineModuleMngr.h"
+#include "HardlockMgmt.h"
+
+//------------------------------------------------------------------------------
+// Function protection for double ejecution application
+bool  __fastcall appIsRunningAlready(wchar_t *szProcess)                      {
+
+
+   HANDLE         hProcessSnap;
+   HANDLE         hProcess;
+   PROCESSENTRY32 pe32;
+   DWORD          dwPriorityClass;
+   bool ret = false;
+
+   hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);  // Takes a snapshot of all the processes
+
+   if(hProcessSnap == INVALID_HANDLE_VALUE){
+      return ret;
+   }
+
+   pe32.dwSize = sizeof(PROCESSENTRY32);
+
+   if(!Process32First(hProcessSnap, &pe32)){
+      CloseHandle(hProcessSnap);
+      return ret;
+   }
+
+   int found = 0;
+
+   do{
+      if(!wcscmp(pe32.szExeFile,szProcess)){    //  checks if process at current position has the name of to be killed app
+         found++;
+      }
+   } while(Process32Next(hProcessSnap,&pe32) && !ret );  // gets next member of snapshot
+
+   ret = found > 1;
+
+   CloseHandle(hProcessSnap);  // closes the snapshot handle
+   return ret;
+}
+//---------------------------------------------------------------------------
+
+
+
+//---------------------------------------------------------------------------
+WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR lpCmdLine, int)
+{
+   try
+   {
+
+      bool running =  appIsRunningAlready(L"LyraTechsArtificialIntelligence.exe");
+
+      if (running)                                                            {
+         Application->MessageBox(L"The application was previusly ejecuted and is running yet.", L"ERROR", MB_OK);
+         return -1;
+      }
+
+      // -- Init application
+      Application->Initialize();
+
+      // -- Set in task bar
+//    SetApplicationMainFormOnTaskBar(Application, true);
+      Application->MainFormOnTaskBar = true;
+
+      // -- Read configuration
+      if (TAux::FileExists(lpCmdLine))                                        {
+         // Load params and execute Log Server
+         // Init language options and translations.
+         // English language is selected by default.
+         LOG_DEBUG(L"Loading file configuration in the command line:", lpCmdLine);
+         INIT_AIS(lpCmdLine);
+      }
+      else                                                                    {
+
+         UnicodeString str = TPath::GetFileNameWithoutExtension(Application->ExeName) + UnicodeString(L".txt");
+         if( TAux::FileExists(str.c_str()))                                   {
+            LOG_DEBUG(L"Loading file configuration with same exe name:", str.w_str());
+            INIT_AIS(str.w_str());
+         }
+//         else if( HardHASP_GetEspecialHardLock() == MASTER)                   {
+//            TSelectorApplication *sApp = new TSelectorApplication( Application);
+//            if( sApp->ShowModal() == mrOk)                                    {
+//               wchar_t        file[2048];
+//               sApp->FileSelected(file);
+//
+//               if( wcslen( file))                                             {
+//                  LOG_DEBUG(L"Loading file name:", file);
+//                  INIT_AIS(file);
+//               }
+//               else                                                           {
+//                  LOG_DEBUG(L"Default File configuration will be loaded. Name: Config.txt.");
+//                  INIT_AIS(L"config.txt");
+//               }
+//            }
+//            delete sApp;
+//         }
+
+         else                                                                 {
+            //LOG_DEBUG(L"Default File configuration will be loaded. Name: Config.txt.");
+            LOG_ERROR(L"Configuration not loaded correctly. Review config file");
+
+            //INIT_AIS(L"config.txt");
+         }
+      }
+
+
+      // -- Hook mouse and keyboard
+//      mouseHook   = SetWindowsHookEx( WH_MOUSE, (HOOKPROC)MouseProc, HInstance, _threadid);
+//      keybHook    = SetWindowsHookEx( WH_KEYBOARD, (HOOKPROC )KeyboardProc, HInstance, _threadid);
+
+      Application->Title = "LyraTechs Artificial Intelligence Software";
+      Application->CreateForm(__classid(TFormLT), &FormLT);
+		Application->CreateForm(__classid(TLoadCfgDlg), &LoadCfgDlg);
+		Application->CreateForm(__classid(TImageSignalForm), &ImageSignalForm);
+		Application->CreateForm(__classid(TImageSignalEmbededForm), &ImageSignalEmbededForm);
+		Application->CreateForm(__classid(TConfigEPotForm), &ConfigEPotForm);
+		Application->CreateForm(__classid(TConfigEPotFormAux), &ConfigEPotFormAux);
+		Application->CreateForm(__classid(TEPotCycle), &EPotCycle);
+		LOAD_TRANSLATIONS((TComponent*)FormLT);
+
+      // -- Set real time prority & affinity
+      SetPriorityClass(  GetCurrentProcess(),   REALTIME_PRIORITY_CLASS);
+      SetThreadPriority( GetCurrentThread(), HIGH_PRIORITY_CLASS);
+
+      DWORD processMask = 256,
+            systemMask;
+
+      GetProcessAffinityMask( GetCurrentProcess(), &processMask, &systemMask);
+      SetThreadAffinityMask( GetCurrentThread(), 0x1 );
+
+
+      // -- Run applicacion
+      Application->Run();
+      //  ToDo: KeyboardProc()
+      //  ToDo: MouseProc()
+
+      ClearLangTable();
+
+   }
+   catch (Exception &exception)
+   {
+       Application->ShowException(&exception);
+   }
+   catch (...)
+   {
+       try
+       {
+          throw Exception("");
+       }
+       catch (Exception &exception)
+       {
+          Application->ShowException(&exception);
+       }
+   }
+   return 0;
+}
+
+
+
+//-----------------------------------------------------------------------------
+/*
+   Lyra Techs Intellectual Property Copyright@2021.
+*/
+//-----------------------------------------------------------------------------

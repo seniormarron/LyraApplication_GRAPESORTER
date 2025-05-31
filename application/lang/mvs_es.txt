@@ -1,0 +1,272 @@
+﻿# Español Traducciones MVS
+
+#Código					Texto
+#--------------------------------------------
+
+USER					Usuario.
+ADVANCED_USER				Usuario Avanzado.
+
+EV_CORE_INIT    			Señal Inicialización.
+EV_CORE_GO      			Señal Ejecución.
+EV_CORE_STOP    			Señal Parada.
+EV_CORE_CLOSE   			Señal  Cierre.
+
+EV_CORE_CFG     			Configuración.
+EV_CORE_HARDLOCK 			Hardlock.
+EV_USER_LOGIN				Inicio de Sesión de usuario.
+EV_USER_LOGOUT				Cierre de sesión de usuario.
+	
+EV_KERNEL_APP_INIT    			Inicio de aplicación.
+EV_KERNEL_APP_CLOSE    			Cierre de aplicación.
+
+EV_LOW_MEMORY				Poca memoria disponible. Se recomienda reiniciar la aplicación.
+
+#DATA
+EV_EXTERNAL_FILE_COULDNT_OPEN		Fallo al abrir el fichero externo.
+EV_EXTERNAL_FILE_WITH_TYPE		Fallo al guardar el fichero externo porque tiene el flag de tipo.
+EV_WRITE_EXTERNAL_ERROR			El dato no se ha podido guardar.
+
+#DATA MNGR
+EV_FAIL_READING_MANAGER			Fallo creando manager.
+EV_FAIL_READING_DATA			Fallo creando data.
+
+# CAPTURER MNGR
+EV_NOT_GET_CAP_TO_PROCESS		La cámara envia imagenes y no se pueden procesar.	
+EV_FLOW_CONTROL_DISCARDED_CAP		Exceso de tiempo de análisis.Captura descartada por el control de flujo.		
+EV_NOT_PURGE_CAP			Fallo al purgar imagenes desde la lista de pending a free.
+
+#CAPTURE MNGR
+EV_LOCKED_CAPTURE			Captura bloqueada.
+EV_CAPTURE_NOT_FOUND			Imagen no encontrada.
+EV_CAPTURE_NULL				Captura null.
+
+# CAMERAS
+FAULTY_CAM_UNKNOW_DEVICE       		No se encuentra.
+FAULTY_CAM_ERROR_CONFIG             	Revisar Config.
+FAULTY_CAM_ERROR_ADQUISITION        	Fallo Adquisición.
+MSG_CAMERA_THREAD			Camara tiene thread
+MSG_CAMARA_NOT_THREAD			Camara no tiene thread
+MSG_TRIGGER_ENABLED			Trigger habilitado
+MSG_TRIGGER_DISABLED			Trigger deshabilitado
+MSG_CAP_PER_SECOND			Capturas por segundo					
+EV_NOT_PLANES_FILLED			El plano RAWLOW o RAWHIGH no han sido rellenados
+
+# GENERADORES
+EV_XRAYDRV_WARMUP_FAIL	 		El precalentamiento del generador de falló.
+
+# PROCESS
+FAULTY_HIGH_PROCESS_TIME		Exceso Análisis.
+EV_HIGH_PROCESS_TIME			El tiempo del proceso es mayor de lo permitido.
+EV_INCORRECT_AFFINITY_MASK		Error en la afinidad del proceso.
+EXECUTED_IN_TWO_THREADS			Proceso ejecutandose desde dos threads.
+
+#GETTRIGGER
+FAULTY_GETTRIGGER_LOST_IMAGE        	Img Perdidas.	
+FAULTY_GETTRIGGER_DISCARDED_IMAGE   	Img Descartadas.
+FAULTY_GETTRIGGER_DISCARDED&LOST_IMAGE	Img Descar&Perdid.
+EV_DISCARDED_CAP			Imágen descartada.
+EV_LOST_CAPTURE				Imágen perdida.
+EV_NO_REAL_TIME				Fallo configuración. No se encuentra el manager de tipo Io_real_time.
+EV_COULD_ADJUST_LASTRESYNC		Fallo al sincronizar con la vuelta completa.
+EV_NEGATIVE_VALUES_OFFSET		Fallo al sincronizar con la vuelta completa por valores negativos de offset.
+
+#MODULE MANAGER
+EV_TYPE_NOT_FOUND			No se encuentra el manager de tipo.
+DIAG_ABORTED				DIAGNÓSTICO ABORTADO
+MSG_DIAG				OK para diagnóstico simple. Cancelar para diagnóstico completo. 
+
+#SAVER
+FAULTY_UNESPECIFIED_FOLDER		Revisar Config.
+EV_UNESPECIFIED_FOLDER			No se ha definido directorio para guardar.
+
+# TDATAMANAGERCONTROL
+EV_EXCEPTION_CAPTURED			Excepción capturada.
+FAULTY_ERROR_LOADING_CONF		Fallo Config.
+EV_ERROR_LOADING_CONF			Error al cargar configuración.
+
+#CATEGORY
+EV_EXPRESSION_INCORRECT			La expresión del filtro es incorrecta.
+
+#CATEGORY WITH ADJUST
+EV_NOT_ADJUSTED				El porcentaje de clasificación de esta categoría no está dentro del rango permitido.
+
+#COMUNIC
+FAULTY_ERROR_COM232			Fallo Puerto COM.
+EV_ERROR_INIT_COM232			Fallo al inicializar el puerto COM.
+EV_RS_232_ERROR				Error de transmisión de datos.
+
+#IMG
+EV_PPMM_NOT_FOUND			Necesaria la conversion de pixeles a mm, no se encuentra la distorsión de coordenadas.
+
+#IMG MNGR
+EV_IMG_ALLOC_MEM_FRAGMENT		Fragmentación de memoria. Numero de fragmentos:
+EV_IMG_ALLOC_MEM_FRAGMENT_WARN		No se puede reservar memoria para todos los planos de imagen. Memoria reservada para: 
+FAULTY_IMGS_NUMBER			Fallo Memoria.
+EV_IMGS_NUMBER				No se puede reservar memoria para todos los planos de imagen.
+
+
+#IMG PLANE
+EV_ERROR_PAINT_RECT			No se puede dibujar el plano porque no hay bitmapInfo.
+EV_WIDTH_NOT_EXIST			Fallo configuración. No se encuentra el attr width del plano.
+EV_HEIGHT_NOT_EXIST			Fallo configuración. No se encuentra el attr height del plano.
+EV_IMG_INCORRECT_SIZE			Fallo configuración. Tamaño del plano incorrecto.
+
+#EJECTOR MAN DRAWER
+EV_NO_DRAW_PLANE			No se han podido dibujar las válvulas ni las ordenes de expulsión. No existe el plano.
+EV_NO_DISTCOORD				Fallo configuración. No hay distorsion de coordeanas.
+
+#VISUALIZER MNGR
+EV_HS_LIMITS_NOT_FOUND			Fallo configuración.No se encuentran los límites HS.
+
+#EJECTOR BANK
+EV_PRIORITIES_WRONG_CONF		Fallo configuración. Fallo en la configuración de las prioridades de expulsión.
+EV_PREV_INDEX				Fallo expulsion. El indice es anterior al almacenado en el buffer.
+EV_NEGATIVE_POSY			Fallo expulsión. Posición negativa en Y.
+
+#EJECTOR MAN
+EV_REPEATED_BANK_CODE			Fallo configuración. Hay bancos de expulsión con el mismo identificador.
+
+#DATA HIST CAT
+EV_HISTORIC_FILE_BYTES			Se ha escrito un número incorrecto de bytes.
+EV_HISTORIC_FILE_NAME			No se encuentra el fichero.
+
+#OBJECT ANALIZER MANAGER
+EV_VELOCITY_NOT_EXIST			No existe el atributo de velocidad en Y.
+
+#VIEW ANALIZER
+EV_CHECK_PITCH				Pitch error.
+
+ST_FAULTY_INIT                 		Fallo Init.
+ST_FAULTY_DLL_NOT_FOUND        		Dll no existe.
+ST_FAULTY_MNGR_NOT_FOUND       		Error.
+
+NO_TYPES_NOTICE				No hay tipos permitidos.
+NOT_VALID_NAME_IFC			Nombre Incorrecto. Nombre no permitido o en uso.
+NOT_VALID_NAME_LENGHT			Longitud incorrecta para el Nombre. Al menos 1 carácter es necesario.
+
+NOT_SELECTED_MANAGER			Seleccione un manager!
+NOT_SELECTED_ITEM			Seleccione un item!
+
+ACTION_NOT_ALLOWED			Acción no permitida.
+
+ACTION_ASK				¿Desea realmente eliminar este item?
+ACTION_ASK_NOTICE			No olvide guardar la configuración haciendo click sobre el TData SaveCfg.
+
+ERROR_NO_HARDLOCK			Hardlock no detectado, contacte con el servicio post venta
+
+#MOVE CONTROL
+FAULTY_MOVE_CTRL_BUFFER_SIZE		Fallo Config.
+EV_MOVE_CTRL_BUFFER_SIZE		Error en el tamaño del buffer de objetos.
+EV_MOVECTRL_DISCARD_OBJ			Se descarta objecto en el MoveControl. Se excede el número de objectos.
+EV_MEMORY_FAULT				Fallo al reservar memoria.
+
+EV_RANGE_HISTOGRAM			El rango no se encuentra en el histograma:
+FAULTY_RANGE_HISTOGRAM			Fallo Conf.
+
+#XRAYDRV
+FAULTY_XRAYDRV_ALARM			Error XRayDrv.
+FAULTY_XRAYDRV_WARNING			Alarma XRayDrv.
+
+#XRAYSOURCE
+FAULTY_XRAY_NO_RESPOND			Generador no responde.
+FAULTY_XRAY_WARM_PARAM_NOT_SET		Error configuración precalentamiento.
+FAULTY_XRAY_OPEN_INTERLOCK 		Interlock abierto.
+FAULTY_XRAY_WARN_WARMING_UP		Calentando: %d%% ...
+FAULTY_XRAY_WARMUP_ABORTED		Calentamiento abortado.
+EV_STATE_EMISSION_FAIL			Generador: estado emision incorrecto.
+
+EV_XRAY_NO_RESPOND			Generador no responde.
+EV_XRAY_WARM_PARAM_NOT_SET		Error configuración parámetros de precalentamiento.
+EV_XRAY_WARMUP_ABORTED			El precalentamiento se ha abortado.
+EV_XRAY_OPEN_INTERLOCK			Interlock abierto.
+EV_ERROR_RXTHREAT2			Error en el threat de comunicaciones con el generador.
+EV_INIT_WARMINGUP_TIME			Tiempo estimado: %d seg.
+EV_INIT_WARMINGUP			Se inicia el precalentamiento.
+EV_END_WARMINGUP			El precalentamiento finalizó correctamente. 
+EV_WARMING_UP_ALARM			Reintento precalentamiento: Alarma del generador: 
+EV_WARMING_UP_ALARM_TEXT		%d. Paso: %d. Número de intento: %d.
+EV_WARMING_UP_EMISSION			Reintento precalentamiento: Rayos x se han apagado. 
+EV_WARNING_UP_EMISSION_TEXT		Paso: %d. Número de intento: %d.
+EV_WARMING_UP_KV			Reintento precalentamiento: KV de precalentamiento no ha sido establecido. 
+EV_WARMING_UP_KV_TEXT			Paso: %d. Número de intento: %d.
+EV_WARMING_UP_MA			Reintento precalentamiento: MA de precalentamiento no ha sido establecida. 
+EV_WARMING_UP_MA_TEXT			Paso: %d. Número de intento: %d.
+
+MSG_GENERATOR				Generador de Rayos X
+MSG_SERIAL_NUM				Número de serie del generador
+MSG_MANUFACTURER			Fabricante
+MSG_MODEL				Modelo
+MSG_EMISSION_HOURS			Horas de emisión
+MSG_STARTS_NUM				Número de arranques
+MSG_XRAY_STATE				¿El generador está emitiendo?
+MSG_KV_VALUE				Voltaje de emisión
+MSG_MA_VALUE				Corriente de emisión
+MSG_ALARM_CODE				Código alarma
+MSG_OIL_TEMP				Temperatura del aceite
+MSG_ANODE_TEMP				Temperatura del ánodo
+MSG_NO_RESP				El generador no responde.
+MSG_COMMUNICATION			Comunicación serie
+
+#ZONE CLASSIFIER
+FAULTY_ZONECLAS_DUPLICATE		Fallo Config.
+EV_ZONECLAS_DUPLICATE			Identificador de categoria duplicado.
+EV_OBJ_NOT_CLASS			Objeto no clasificado.
+
+#THRESHOLD WITH ADJUST
+FAULTY_NOT_ADJUSTABLE_PARENT		Fallo Config.
+EV_NOT_ADJUSTABLE_PARENT		No es de tipo de ajuste de umbral.
+EV_COULD_NOT_PUSH			Fallo al realizar el ajuste de umbral.
+
+#TDIVISIONXMNGR	
+EV_NOT_DIVISION_ID			Valor fuera del rango de divisiones.
+
+#TBASICDIAGNOSE
+FAIL_CONFIGURATION			Fallo de configuración.           			
+FAIL_ELECTRICAL              		Fallo eléctrico.
+FAIL_CAPTURER                		Fallo en el capturador.
+FAIL_REAL_TIME               		Fallo con el tiempo real.
+FAIL_COMMUNICATION           		Fallo en las comunicaciones.
+FAIL_GENERATOR				Fallo en el generador.
+FAIL_SYSTEM				Fallo en el sistema.
+FAIL_INVERTERS				Fallo en los variadores.
+
+DIAG_RESULT				RESULTADO DIAGNÓSTICO:
+
+#TREPORTMNGR
+EV_SIZE_REPORTMNGR			Tamaño del report y del hipercubo no coinciden.
+
+#THASPLOG
+EV_TIME_HASP				Tiempo total de máquina en marcha:
+EV_ERROR_HARDLOCK_TIME			No es posible leer el tiempo de funcionamiento en el hardlock
+
+#TROUBLESHOOT
+EV_TROUBLESHOOT_DIAGNOSE		Lanzado diagnóstico
+EV_TROUBLESHOOT_SHUTDOWN		Reinicio del ordenador
+EV_TROUBLESHOOT_RECOVERY		Lanzada aplicación de mantenimiento
+EV_TROUBLESHOOT_TECHASSITANCE		Solicitada asistencia técnica
+EV_TROUBLESHOOT_STOP_RUN		Reinicio del programa (Stop/go)
+
+FAULTY_ENCODER			Fallo Encoder
+EV_ENCODER_NO_PULSES		No llegan pulsos de encoder. Revise cableado
+EV_ENCODER_NO_ZERO		No llegan la señal de vuelta completa del encoder. Revise cableado
+EV_ENCODER_WRONG_ZERO		Los pulsos por vuelta del encoder no son correctos. Revise giro del encoder
+EV_ENCODER_PULSES_NOT_RUNNING	Se están recibiendo pulsos de encoder con la máquina parada
+
+CARGA_HEADER			Fecha/Hora;Kg/h;Carga
+DAILY_REPORT_HEADER		Fecha inicio;Hora inicio;Fecha fin;Hora fin;Tiempo funcionamiento máquina;Tipo;Número partida;Kg/h;Unidades
+DAILY_REPORT_TEXT_FIELD		Campo de texto
+
+FAULTY_ENTRY1_SAT		Entrada1 SAT
+EV_ENTRY1_SATURATED		Entrada Nº1 saturada
+FAULTY_ENTRY2_SAT		Entrada2 SAT
+EV_ENTRY2_SATURATED		Entrada Nº2 saturada
+
+EV_LOST_IMAGE 			Imagenes perdidas
+EV_DISCARDED_IMAGE		Imagenes decartadas
+EV_LOCALTIME_CHANGED 		Cambio de hora local
+EV_NOT_ENOUGH_ANALIZERS		Fallo configuración. Exceso de analizadores
+EV_IMG_LOAD_FILE		CARGAR IMG
+EV_ETHERCAT_NOT_CONNECTED	Ethercat no se puede conectar
+DRIVER_MAPPING_CHANGED		Versión de driver no comopatible
+EV_REMOTE_CHANGE_BATCH		Cambio de lote remoto#TMODULE
+MSG_CONF_LOAD_ERROR_SAVE_ANYWAY		La carga de la configuración fue incorrecta. ¿Guardar de todos modos?

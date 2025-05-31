@@ -1,0 +1,280 @@
+﻿# Español Traducciones MVS
+
+#Code					Text
+#--------------------------------------------
+
+USER					User.
+ADVANCED_USER				Advanced User.
+
+
+EV_CORE_INIT    			Init Signal.
+EV_CORE_GO      			Go Signal.
+EV_CORE_STOP    			Stop Signal.
+EV_CORE_CLOSE   			Close Singal. 
+
+EV_CORE_CFG     			Configuration.
+EV_CORE_HARDLOCK 			Hardlock.
+EV_USER_LOGIN				Login User.
+EV_USER_LOGOUT				Logout user.
+
+
+EV_KERNEL_APP_INIT			Application Starting.
+EV_KERNEL_APP_CLOSE			Application Closing.
+
+EV_LOW_MEMORY				Low available memory. Restarting the application is recommended.
+
+#DATA
+EV_EXTERNAL_FILE_COULDNT_OPEN		Fail to open external file.
+EV_EXTERNAL_FILE_WITH_TYPE		Fail to save external file, because has a type flag.
+EV_WRITE_EXTERNAL_ERROR			Data coulnd not be saved.
+
+#DATA MNGR
+EV_FAIL_READING_MANAGER			Fail creating manager.
+EV_FAIL_READING_DATA			Fail creating data.
+
+# CAPTURER MNGR
+EV_NOT_GET_CAP_TO_PROCESS		The camera sends images and can not be processed.
+EV_FLOW_CONTROL_DISCARDED_CAP		Excess analysis time.Discarded capture by flow control.
+EV_NOT_PURGE_CAP			Failed purging capture from pending list to free.
+
+#CAPTURE MNGR
+EV_LOCKED_CAPTURE			Capture locked.
+EV_CAPTURE_NOT_FOUND			Image not found.
+EV_CAPTURE_NULL				Capture null.
+
+# CAMERAS
+FAULTY_CAM_UNKNOW_DEVICE		Not Found.
+FAULTY_CAM_ERROR_CONFIG			Review Config.
+FAULTY_CAM_ERROR_ADQUISITION		Adquisition Fail.
+MSG_CAMERA_THREAD			Camera has thread
+MSG_CAMARA_NOT_THREAD			Camera has not thread
+MSG_TRIGGER_ENABLED			Trigger enabled
+MSG_TRIGGER_DISABLED			Trigger disabled
+MSG_CAP_PER_SECOND			Captures per Second
+EV_NOT_PLANES_FILLED			The RAWLOW or RAWHIGH planes have not been filled.
+				
+# GENERATORS
+EV_XRAYDRV_WARMUP_FAIL			The Warm-up for generator fails.
+
+# PROCESS
+FAULTY_HIGH_PROCESS_TIME		Excess Analysis.
+EV_HIGH_PROCESS_TIME			The process time is greater than allowed.
+EV_INCORRECT_AFFINITY_MASK		Fail the affinity in process.
+EXECUTED_IN_TWO_THREADS			Process executed in two threads.
+
+#GETTRIGGER
+FAULTY_GETTRIGGER_LOST_IMAGE		Lost Img.
+FAULTY_GETTRIGGER_DISCARDED_IMAGE	Discarded Img.
+FAULTY_GETTRIGGER_DISCARDED&LOST_IMAGE	Discar&Lost Img.
+EV_DISCARDED_CAP			Discarded Img.
+EV_LOST_CAPTURE				Lost image.
+EV_NO_REAL_TIME				Configuration fail. Can not find the manager Io_real_time.
+EV_COULD_ADJUST_LASTRESYNC		Fail to sync with last resync.
+EV_NEGATIVE_VALUES_OFFSET		Fail to sync with last resync. Offset have negative values.
+
+
+#MODULE MANAGER
+EV_TYPE_NOT_FOUND			Can not find the manager type.
+DIAG_ABORTED				DIAGNOSE IS ABORTED
+MSG_DIAG				OK for simple diagnostic.Cancel for exhaustive diagnostic
+
+
+#SAVER
+FAULTY_UNESPECIFIED_FOLDER		Review Config.
+EV_UNESPECIFIED_FOLDER			Not defined the directory to save.
+
+#DATA MANAGER CONTROL
+EV_EXCEPTION_CAPTURED			Exception captured.
+FAULTY_ERROR_LOADING_CONF		Fail Config.
+EV_ERROR_LOADING_CONF			Fail to load configuration.
+
+#CATEGORY
+EV_EXPRESSION_INCORRECT			The filter expression is incorrect.
+
+#CATEGORY WITH ADJUST
+EV_NOT_ADJUSTED				The percentage of classification for this category is not in allowed range.
+
+#COMUNIC
+FAULTY_ERROR_COM232			Fail COM Port.
+EV_ERROR_INIT_COM232			Fail initializing the COM port.
+EV_RS_232_ERROR				Data transmission error.
+
+#IMG
+EV_PPMM_NOT_FOUND	  		Pixel per mm required, but not coordinate distortion was found.
+
+#IMG MNGR
+EV_IMG_ALLOC_MEM_FRAGMENT		Memory fragmentation. Number of fragments:
+EV_IMG_ALLOC_MEM_FRAGMENT_WARN		Couldn't allocate memory for all image planes. Memory reserved for: 
+EV_IMG_ALLOC_MEM_ERROR			Memory fragmentation. 
+FAULTY_IMGS_NUMBER			Fail Memory.
+EV_IMGS_NUMBER				Couldn't allocate memory for all image planes.
+
+
+#IMG PLANE		
+EV_ERROR_PAINT_RECT			Couldn't paint plane because hasn't got bitmpaInfo.
+EV_WIDTH_NOT_EXIST			Configuration fail. Attr width not found in plane.
+EV_HEIGHT_NOT_EXIST			Configuration fail. Attr height not found in plane.
+EV_IMG_INCORRECT_SIZE			Configuration fail. Incorrect image size.
+
+#EJECTOR MAN DRAWER
+EV_NO_DRAW_PLANE			Unable to draw the valves or expulsion orders. There is no plane.
+EV_NO_DISTCOORD				Configuration fail. There is no distortion of coordinates.
+
+#VISUALIZER MNGR
+EV_HS_LIMITS_NOT_FOUND			Configuration fail.HS limits not found.
+
+#EJECTOR BANK
+EV_PRIORITIES_WRONG_CONF		Configuration fail. Ejection priorities are configured wrongly.
+EV_PREV_INDEX				Ejection fail. Index is previous to stored in the buffer.
+EV_NEGATIVE_POSY			Ejection fail. Negative position in Y.
+
+#EJECTOR MAN
+EV_REPEATED_BANK_CODE			Configuration fail. There are ejector banks with the same ID.
+
+#DATA HIST CAT
+EV_HISTORIC_FILE_BYTES			Written wrong number of bytes.
+EV_HISTORIC_FILE_NAME			Couldn't get name.
+
+#OBJECT ANALIZER MANAGER
+EV_VELOCITY_NOT_EXIST			Doesn't exists VELY attribute.
+
+#VIEW ANALIZER
+EV_CHECK_PITCH				Pitch error.
+
+ST_FAULTY_INIT				Fail Init.
+ST_FAULTY_DLL_NOT_FOUND			DLL Not found.
+ST_FAULTY_TYPE_NOT_FOUND		Error.
+
+NO_TYPES_NOTICE				No Types Allowed.
+NOT_VALID_NAME_IFC			Incorrect Name. Name not allowed or already exists in Configuration.
+NOT_VALID_NAME_LENGHT			Incorrect Length for New Name. At least one character is necessary.
+
+NOT_SELECTED_MANAGER			No manager selected!.
+NOT_SELECTED_ITEM			No item selected!.
+
+ACTION_NOT_ALLOWED			Action Not Allowed!
+	
+ACTION_ASK				Do you really want to delete this item?
+ACTION_ASK_NOTICE			Do not forget SAVE configuration by clicking on Save Button.
+
+ERROR_NO_HARDLOCK			Hardlock not detected. Contact with service department.
+
+#MOVE CONTROL
+FAULTY_MOVE_CTRL_BUFFER_SIZE		Fail Config.
+EV_MOVE_CTRL_BUFFER_SIZE		Error with objects buffer size.
+EV_MOVECTRL_DISCARD_OBJ			Discard object in move control. Excess number of objects.
+EV_MEMORY_FAULT				Fail reserving memory.
+
+EV_RANGE_HISTOGRAM			The range is not found in the histogram:
+FAULTY_RANGE_HISTOGRAM			Fail Conf.
+
+#XRAYDRV
+FAULTY_XRAYDRV_ALARM			Error XRayDrv.
+FAULTY_XRAYDRV_WARNING			Alarm XRayDrv.
+
+#XRAYSOURCE
+FAULTY_XRAY_NO_RESPOND			X-ray Generator not respond.
+FAULTY_XRAY_WARM_PARAM_NOT_SET		Configuration warming up error.
+FAULTY_XRAY_OPEN_INTERLOCK 		Interlock is open.
+FAULTY_XRAY_WARN_WARMING_UP		Performing warming up: %d%% ...
+FAULTY_XRAY_WARMUP_ABORTED		The warming Up is aborted.
+EV_STATE_EMISSION_FAIL			X-ray emission state incorret.
+
+EV_XRAY_NO_RESPOND			X-ray Generator not respond.
+EV_XRAY_WARM_PARAM_NOT_SET		Generator parameters of Warming up not set or incorrect.
+EV_XRAY_WARMUP_ABORTED			The warming Up is aborted.
+EV_XRAY_OPEN_INTERLOCK			Interlock is open. 	
+EV_ERROR_RXTHREAT2			Error in the threat to send comand to generator.
+EV_INIT_WARMINGUP			Warming up starts. 
+EV_INIT_WARMINGUP_TIME			Estimated time: %d sec. 
+EV_END_WARMINGUP			Warming up completed successfully.  
+EV_WARMING_UP_ALARM			Retry warming up: Alarm generator:
+EV_WARMING_UP_ALARM_TEXT		% d. Step: %d. Number of attempts: %d. 
+EV_WARMING_UP_EMISSION			Retry warming up: x-rays are turned off. 
+EV_WARNING_UP_EMISSION_TEXT		Step: %d. Number of attempts: %d. 
+EV_WARMING_UP_KV			Retry warming up: warming up KV has not been established. 
+EV_WARMING_UP_KV_TEXT			Step: %d. Number of attempts: %d.
+EV_WARMING_UP_MA			Retry warming up: warming up MA has not been established. 
+EV_WARMING_UP_MA_TEXT			Step: %d. Number of attempts: %d.
+
+MSG_GENERATOR				X Ray Generator
+MSG_SERIAL_NUM				Generator Serial number
+MSG_MANUFACTURER			Manufacturer
+MSG_MODEL				Model
+MSG_EMISSION_HOURS			Emission hours
+MSG_STARTS_NUM				Starts number
+MSG_XRAY_STATE				Does the X-Ray source is emitting?
+MSG_KV_VALUE				Voltage emission
+MSG_MA_VALUE				Current emission
+MSG_ALARM_CODE				Alarm code
+MSG_OIL_TEMP				Oil Temperature
+MSG_ANODE_TEMP				Anode Temperature
+MSG_NO_RESP				X-Ray sources not respond.
+MSG_COMMUNICATION			Serial Comunication
+
+#ZONE CLASSIFIER
+FAULTY_ZONECLAS_DUPLICATE		Fail Config.
+EV_ZONECLAS_DUPLICATE			Duplicated category identifier found.
+EV_OBJ_NOT_CLASS			Object not classified.
+
+#THRESHOLD WITH ADJUST
+FAULTY_NOT_ADJUSTABLE_PARENT		Fail Config.
+EV_NOT_ADJUSTABLE_PARENT		Is not threshold type.
+EV_COULD_NOT_PUSH			Fail to make push in Threshold.
+
+#TDIVISIONXMNGR	
+EV_NOT_DIVISION_ID			Value out of range of divisions.
+
+#TBASICDIAGNOSE
+FAIL_CONFIGURATION					Configuration fail.           			
+FAIL_ELECTRICAL              		Electrical fail.
+FAIL_CAPTURER                		Capturer fail.
+FAIL_REAL_TIME               		Real time fail.
+FAIL_COMMUNICATION           		Communications fail.
+FAIL_GENERATOR				Generator fail.
+FAIL_SYSTEM				System fail.
+FAIL_INVERTERS				Inverters fail.
+
+
+DIAG_RESULT				DIAGNOSTIC RESULT:
+
+#TREPORTMNGR
+EV_SIZE_REPORTMNGR			Size of hipercube and report are differents.
+
+#THASPLOG
+EV_TIME_HASP				Total time running machine:
+EV_ERROR_HARDLOCK_TIME			Can't read working time from the Hardlock
+
+#TROUBLESHOOT
+EV_TROUBLESHOOT_DIAGNOSE		Diagnostics launched
+EV_TROUBLESHOOT_SHUTDOWN		Computer reboot
+EV_TROUBLESHOOT_RECOVERY		Maintenance app launched
+EV_TROUBLESHOOT_TECHASSITANCE		Technical support launched
+EV_TROUBLESHOOT_STOP_RUN		Program reboot launched (Stop/Go)
+
+FAULTY_ENCODER			Encoder failure
+EV_ENCODER_NO_PULSES		No encoder pulses. Check wiring
+EV_ENCODER_NO_ZERO		No encoder zero signal. Revise cableado
+EV_ENCODER_WRONG_ZERO		Encoder pulses per turn are not correct. Check Encoder rotation
+EV_ENCODER_PULSES_NOT_RUNNING	Encoder pulses are being detected while the conveyor is stopped
+
+CARGA_HEADER			Date/Time;Kg/h;Load
+DAILY_REPORT_HEADER		Start Date;Start Time;End Date;End Time;Machine operating time;Product;Batch number;Kg/h;Units
+DAILY_REPORT_TEXT_FIELD		Text field
+
+FAULTY_ENTRY1_SAT		Entry1 SAT
+EV_ENTRY1_SATURATED		Entry Nº1 saturated
+FAULTY_ENTRY2_SAT		Entry2 SAT
+EV_ENTRY2_SATURATED		Entry Nº2 saturated
+
+EV_LOST_IMAGE 			Lost image
+EV_DISCARDED_IMAGE		Discarted image
+EV_LOCALTIME_CHANGED 		Local time changed
+EV_NOT_ENOUGH_ANALIZERS		Configuration fail. Excess analyzers
+EV_IMG_LOAD_FILE		Load File
+EV_ETHERCAT_NOT_CONNECTED	Ethercat not connected
+DRIVER_MAPPING_CHANGED		Driver version not supported
+
+EV_REMOTE_CHANGE_BATCH		Remote change batch
+#TMODULE
+MSG_CONF_LOAD_ERROR_SAVE_ANYWAY		COnfiguration load returned error. Save anyway?

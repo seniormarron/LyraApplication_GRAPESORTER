@@ -1,0 +1,3 @@
+exe:RegistersConsole.exe days=7 enable=on registersfile=E:\registers\LTAIS_registers.log port=900 level=DEBUG
+params:"LTAIS		entrypoint:TCPSERVER#31500	xml:LyraApplication_GRAPESORTER.xml		eventsfilepath:E:\registers\"
+

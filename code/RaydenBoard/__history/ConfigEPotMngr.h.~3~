@@ -1,0 +1,121 @@
+/*******************************************************************************
+Multiscan Technologies SL
+Copyright  2009. All Rights Reserved.
+
+Project:       MultiscanBeltSorter
+Subsystem      MVS
+File:          ConfigEPotMngr.h
+
+Author:        Software Group Multiscan Technologies SL <mvs@multiscan.eu>
+Created:       10/01/2018 J Puerto
+
+Overview:
+
+
+*******************************************************************************/
+//---------------------------------------------------------------------------
+
+#ifndef ConfigEPotMngrH
+#define ConfigEPotMngrH
+//---------------------------------------------------------------------------
+
+#include "TDataMngControl.h"
+
+class VisibleParams;
+//Dani: class TDemosaic;
+class RaydenBoard;
+
+
+#define LBL_ILUMS                      L"Ilums"
+#define LBL_CAMERA_LINES               L"CameraLines"
+#define LBL_PLANE_NAMES                L"PlaneNames"
+#define LBL_COMB_EPOT_DEMOSAIC L"CombEpotDemosaic"
+
+
+
+/******************************************************************************
+                 s_epotHeader , s_epotTail , s_epotLine
+*******************************************************************************/
+/**
+   s_epotHeader
+*/
+struct s_epotHeader {
+   char numberOfLines[2]; //2 digit number of lines
+
+   int NumberOfLines() {
+      return (numberOfLines[0] - '0') * 10 + (numberOfLines[1] - '0');
+   }
+};
+/**
+   s_epotTail
+*/
+struct s_epotTail {
+   char lastChar; //F
+};
+
+/**
+   s_epotLine
+*/
+struct s_epotLine {
+   char cameraOrIlum; // 'C' or 'I'
+   char camOrIlumNumber; // decimal number ( 1..2 for cameras, and 1..8 for iluminations)
+   char offset[5]; // 5 digit number for offset
+   char duration[5]; //5 digit number for duration
+
+   int Number5Digits( char number[5])  {
+      int acc = 0;
+      for ( int i=0; i< 5; ++i)  {
+         int val = number[i] - '0';
+         acc = acc * 10 + val;
+      }
+      return acc;
+   }
+
+   int Offset()   {
+      return Number5Digits( offset);
+   }
+   int Duration() {
+      return Number5Digits( duration);
+   }
+};
+
+
+/******************************************************************************
+                              ConfigEPotMngr
+*******************************************************************************/
+class ConfigEPotMngr : public TDataManagerControl {
+
+public:
+
+   ConfigEPotMngr(const wchar_t *name, TDataManager *parent);
+   virtual ~ConfigEPotMngr();
+
+   static const int LinesInfoMax = 1024;
+
+protected:
+
+   VisibleParams *m_visibleParams;
+//Dani:   TDemosaic     *m_demosaic;
+   RaydenBoard   *m_epodDriver;
+
+   TData    //Dani: *m_daCombEpotDemosaic,
+             *m_daForwardDirPath,
+             *m_daDirection;
+
+   wchar_t   m_forwardDirPath[LinesInfoMax];
+
+//Dani:   char      m_combEpotDemosaic[LinesInfoMax];
+
+   virtual bool MyGo();
+   virtual void  DataModifiedPost( TData* da);
+
+//Dani:   void SearchForDemosaic();
+   void SearchForRaydenBoard();
+//DANi:   void CalculateLinesInfo();
+   virtual void UpdateEpod(char *ePodDemosaic);
+//Dani:   void UpdateDemosaic(wchar_t *ePodDemosaic);
+//Dani:   bool GetPlanesFromTemplates(wchar_t *planes);
+//Dani:   bool UpdateCombEpotDemosaicData(const char * epotInfo,const wchar_t *demosaicInfo);
+};
+
+#endif

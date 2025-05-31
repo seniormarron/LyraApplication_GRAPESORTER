@@ -1,0 +1,136 @@
+﻿# Español Traducciones MVS
+
+#Código					Texto
+#--------------------------------------------
+
+EV_WRONG_PLANE							Error configuración.No hay plano o el tamaño es incorrecto.
+EV_CHARACTERISTIC_NOT_FOUND				Error configuración.En la vista no se encuentra la característica.
+
+FAULTY_NOT_ENOUGH_VIEWS					Fallo de análisis.
+EV_NOT_ENOUGH_VIEWS						El buffer de vistas es demasiado pequeño. Demasiadas vistas recividas en la imágen.
+
+FAULTY_INCORRECT_DIMENSION				Tamaño incorrecto.
+
+EV_TOO_MUCH_ANADEF_METHODS				Excesivos métodos de análisis de defectos. 
+EV_METHOD_WRONG_PLANE					Error configuración.No hay plano o el tamaño es incorrecto en el análisis de defectos.
+EV_METHOD_WRONG_BITCOUNT_PLANE			Error configuración.Error en el bit count del plano en el analísis de defectos.
+EV_VELOCITY_NOT_EXIST					No existe el atributo de velocidad en Y.
+
+EV_INCORRECT_DIMENSION					Tamaño incorrecto (columnas o filas).
+
+EV_IMG_CAM_STOP_ERROR					Fallo al parar la cámara.
+EV_CAMERAID_NOT_FOUND					No se encuentra el identificador de camara.
+EV_INVALID_TIFF_FILE					Identificador invalido para un fichero TIFF.
+EV_IMG_CAM_FILE_ERROR_FORMAT			Formato incorrecto del fichero de imagen.
+EV_NO_FILES_IN_LIST						No hay mas archivos en la lista.
+EV_IMG_CAM_INCORRECT_FRAMES_VALUE		Valor de frames incorrecto.
+EV_NOT_FREE_IMG							No hay imagenes libres.
+EV_IMG_CAM_LOAD_FILE					Error cargando fichero.
+
+
+EV_REPEATED_BANK_CODE		Error configuración. Identificador de banco de expulsión repetido.
+
+EV_HS_LIMITS_NOT_FOUND		No se encuentran los limites HS.
+
+EV_FINDVIEWS_LIMITED		Limitando el buscador de vistas.
+EV_FINDVIEWS_LIMITED2		Limitando el buscador de vistas2.
+EV_FINDVIEWS_LIMITED3		Limitando el buscador de vistas3.
+
+PreclassificForm			Asignaciones
+
+BATCH_NUMBER				Partida
+BATCH_TOTAL_OBJECTS			Nº de frutos
+BATCH_TOTAL_WEIGHT			Peso analizado
+BATCH_START					Inicio
+BATCH_TYPE					Tipo
+BATCH_TEXT_FIELD			Campo de texto
+
+BtnCloseInfoProd			Cerrar
+LabelBatch					Partida:
+LabelCategory				Categoría
+LabelEndTime				Fin:
+LabelStartTime				Inicio:
+LabelTotalKg				Total Kg:
+LabelUnities				Unidades
+
+CutFlow						Parar análisis de objetos
+OnlyWithViews				Guardar solo objetos
+LabelFolder					Directorio
+LabelFile					Nombre
+LabelNumImgs				Num. imagenes
+LabelCameras				Cámaras
+LabelIluminations			Iluminaciones
+Cancel						Salir
+TXT_SAVE					Guardar
+TXT_SAVING					Guardando...
+TXT_ADVANCED				Avanzado
+TXT_BACK					Volver	
+
+MemoIlumCapture1			Camaras e iluminaciones, si el 
+MemoIlumCapture2			valor está vacio, el filtro no 
+MemoIlumCapture3			se aplica. Valores separados por ;
+
+
+ChainAdjustement			Ajuste de cadena
+LblCamera					Cámara
+LblZoom						Zoom
+LblOffset					Retraso G
+LblOffsetParticular				Retraso P
+BtnAceptar					Aceptar
+BtnCancelar					Cancelar
+FAULTY_CHAIN_STRETCH		Revisar Ajuste Cadena
+EV_CHAIN_STRETCH			Es necesario realizar el asistente de ajuste de cadena.
+MSG_CHAIN_ADJUSTEMENT		Después de realizar el ajuste, recuerde comprobar que la expulsión funciona correctamente.
+
+FAULTY_LIMITS				Limitando:
+EV_LIMITED_IN				Limitada la salida
+
+EV_RECEIVER_REQUIRED		Fallo en la fusión de imágenes
+EV_DIFFERENT_WIDTH			Ancho diferente
+
+lbRGB_BS					RGB/Disc. Cinta
+lbIlum						Iluminación
+lbThreshold					Umbral
+btClose						Cerrar
+
+FAULTY_SATURATED_EXIT		Exceso expulsión:
+EV_SATURATED_IN				Exceso de expulsión en salida
+
+EXIT_LBL					Salida
+COUNT_INS					Obj Expulsados
+COUNT_OBJ					Limite de caja
+S_LIMITADA					Limitada
+S_ALTERNATIVA				Salida Alternativa
+BTN_RESET					Reiniciar
+BTN_ACEPTAR					Aceptar
+BTN_CLOSE					Cerrar
+ORDER_CHANGE_BOX			Cambio de caja
+
+LabelThresholdConfigDist			Threshold
+LabelBlackConfigDist			Líneas del Margen		
+LabelLeftConfigDist			Izq
+LabelRightConfigDist			Der
+LabelBottomConfigDist			Inf
+LabelTopConfigDist			Sup	
+ViewsNeed				VistasQuiero
+ViewsHave				VistasTengo	
+
+MSG_INCORRECT_VIEWS	Revisar si la plantilla está bien colocada, en caso de persistir el fallo, contactar con el servicio técnico
+MSG_DIF_VALUES_I	Diferentes valores de intensidad detectados en la plantilla
+MSG_AUTO_ADJUST 	Auto ajustando valores de exposición y ganancia, este paso puede tardar un par de minutos, presionar OK para continuar con el AutoAjuste
+MSG_AUTO_ADJUST_FIN     Auto ajuste de Exposición y Ganancia finalizado, presione OK para continuar con el ajuste de la distorsión, para ello pulsar el boton AUTO
+MSG_AUTO_ADJUST_LOG     Autoajustando ganacia y exposición
+MSG_AUTO_ADJUST_FIN_LOG Autoajustado de ganancia y exposición finalizado
+
+Next_btn		Descartar 
+okbt			Cerrar	
+AutoAdjustBtn		Auto
+ShowDiscoordGrid 	Rejilla
+ImgPanelDistCoord	Cargando...
+chbMModPointSel		Mover Pnt Man
+ForceManual		Forzado Man
+chbMoveGrid		Mover Rejilla
+AdvSettings		Opc Avanzadas
+LabelAutoAdjust		Ajuste Automático
+GainCheck		Ganancia Ok
+ExposureCheck		Exposición Ok

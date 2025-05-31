@@ -1,0 +1,105 @@
+//---------------------------------------------------------------------------
+
+#ifndef TConfigEPotFormH
+#define TConfigEPotFormH
+//---------------------------------------------------------------------------
+#include <Classes.hpp>
+#include <Controls.hpp>
+#include <StdCtrls.hpp>
+#include <Forms.hpp>
+#include <ExtCtrls.hpp>
+#include "TViewInterface.h"
+#include <Buttons.hpp>
+#include "ConfigEPotMngr.h"
+
+
+class TEPotCycle;
+
+class TConfigEPotInterface : public TViewInterface  {
+
+public:
+
+   static const int MaxCycles = 15;
+
+   __fastcall TConfigEPotInterface(TDataManager *mngr, TForm *form );
+   virtual ~TConfigEPotInterface();
+
+   virtual bool RefreshInterface (TNode *tdata); 
+   
+   void Close();
+   void AddCyclos();
+   void DeleteCyclos();
+   void CloseWithSave();
+   void UpdateCycles(bool add);
+
+
+protected:
+
+   static const unsigned int FirstIndexDestLine = 4;
+   static const unsigned int IndexDestLineGap = 3;
+
+   std::vector<TEPotCycle*> m_cycles;
+
+   TDataManager  *m_mngr;
+   
+   TScrollBar    *m_scrollBar;
+   TPanel        *m_panelOptions;
+   TPanel        *m_panelAdd;
+   TEdit         *m_combEpotDemosaic,
+                 *m_shots,
+                 *m_dir;
+
+   wchar_t m_ilums[120],
+           m_cameraLines[50],
+           m_planeNames[256];
+
+   void ResetCyclos( TData *data=NULL);
+   void SetComponents();
+   void ClearVector();
+   void UpdateScrollbar();
+   void GenerateCamLines(std::string &camLines, const char *cameraStr);
+   void GetLinesNumber( std::vector<std::string> &tokCamLines, std::vector<std::string> &linesNumber);
+
+};
+
+//---------------------------------------------------------------------------
+class TConfigEPotForm : public TView {
+
+__published:
+   TLabel *lbl_EnableMailing;
+   TShape *Shape7;
+   TPanel *PanelOptions;
+   TPanel *PanelAdd;
+   TScrollBar *VScrollBar;
+   TPanel *pan_btns_hardwareCfg;
+   TSpeedButton *btn_close_hardwareCfg;
+   TShape *sh_splitter2_hardwareCfg;
+   TSpeedButton *btn_next_verif;
+   TSpeedButton *ShotsPerCycle_I01;
+   TSpeedButton *ShotsPerCycle_A01;
+   TShape *ShotsPerCycle_I01_sh;
+   TShape *ShotsPerCycle_A01_sh;
+   TEdit *LinesInfo;
+   TEdit *Shots;
+   TEdit *Direction;
+   void __fastcall VScrollBarChange(TObject *Sender);
+   void __fastcall OnChange(TObject *Sender);
+   void __fastcall ShotsPerCycle_I01Click(TObject *Sender);
+   void __fastcall FormShow(TObject *Sender);
+   void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
+   void __fastcall FormCloseBtn(TObject *Sender);
+   void __fastcall FormDestroy(TObject *Sender);
+   void __fastcall ShotsPerCycleChange(TObject *Sender);
+   void __fastcall btn_next_verifClick(TObject *Sender);
+   void __fastcall ShotsPerCycle_A01Click(TObject *Sender);
+
+private:	
+   TConfigEPotInterface *m_PotIntf;
+
+public:	
+   __fastcall TConfigEPotForm(TComponent* Owner, TDataManager *mn);
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TConfigEPotForm *ConfigEPotForm;
+//---------------------------------------------------------------------------
+#endif

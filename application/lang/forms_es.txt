@@ -1,0 +1,308 @@
+﻿# Spanish Translations for MVS.
+
+DeleteConfigConfirm		¿Estas seguro de querer borrar la configuracion seleccionada? 
+Select				Seleccionar:
+HomeFolder			Carpeta local	
+ExternalDisk			Disco externo	
+Load				Cargar
+Cancel				Cancelar
+Delete				Borrar
+SelectConf			Seleccionar configuracion:	
+OkBtnSaveCfgDlg			Aceptar	
+OkBtn				Ok
+
+#Code					TEXT
+#-------------------------------------------
+ErrorEventsTabSheet		Errores
+#------
+WarningEventsTabSheet	Avisos
+#------
+InfoEventsTabSheet		Info
+#------
+AllEventsTabSheet		Todos
+#------
+EventsClearBt			Limpiar
+#------
+
+#------
+PanelBotomRight
+#------
+LogoImg
+#------
+AppName
+#------
+SerialNumber
+#------
+Version
+
+#------
+StartButton			Arrancar
+StartButtonStop			Parar
+#------
+InitButton			START SOFTWARE
+#------
+StopButton			STOP SOFTWARE
+#------
+CfgButton			Configurar
+#------
+#-- Same button, two "captions" to be sowhed. 
+ShutDownBt			Apagar
+ShutDownLockBt			Bloquear
+
+#------
+PanelTop
+TVisualizerForm
+OptionsPanel
+#------
+sbFullScreen
+#------
+Pixelslb				Coord
+#------
+CoordValue				
+#------
+timestamplb
+#------
+
+TimeStamp
+#------
+selectedplanelb			valor
+
+HideBt					Ocultar
+#------
+numberImglbl
+#------
+
+#------
+
+keyboard
+#------
+
+
+PanelUI
+#------
+PanelGraph
+#------
+PanelUser
+#------
+PanelBotomLeft
+#------
+PageControlCfg
+#------
+TabSheetInternalCfg			CONFIGURACIÓN
+Classification				CLASIFICACIÓN
+#------
+
+PanelInternalCfg
+#------
+
+ToolsTabSheet			Herramientas
+#------
+
+SaveImagesBt		GUARDAR IMG
+#------
+
+LoadImgBt		CARGAR IMG
+#------
+
+SaveCfgBt		COPIAR CONFIG
+#------
+LoadCfgBt		CARGAR CONFIG
+#------
+
+cfgInfoPanel
+#------
+
+ImportWkModesBt		Importar
+LoadFromFilelbl		Cargar del archivo:
+LoadXFile			Cargado archivo %s
+LoadingFile			Cargando ...
+ImportWkFailedinX	La importación de modos de trabajo ha fallado en el modo de trabajo %s. Los anteriores modos de trabajo han sido importados correctamente.
+ImportWkFailed		La configuración tras la importación no es valida. Por favor, reinicie la maquina.
+ImportWkFailedlbl	La importación falló.
+lbl_importWM		Importar modos de trabajo
+btn_closeImport		CERRAR
+	
+ExportWkModesBt		Exportar
+SelectWkTypeslbl	Seleccione modos de trabajo:
+SaveToFilelbl		Guardar al archivo:
+SavedXFile			Guardado archivo %s
+SaveFileFailed		El guardado ha fallado
+SavingFile			Guardando ...
+lbl_exportWM		Exportar modos de trabajo
+btn_closeExport		CERRAR
+
+
+#------
+
+GroupBoxFocus		Calidad Enfoque
+LabelSatFocus	  	Puntos Saturados
+LabelIntenFocus 	Intensidad máx.
+FormFocus  		Enfoque
+
+ButtonFocus		Enfoque
+
+BtClearColor		Borrar	
+
+
+
+
+SelectTypelbl		Seleccione Producto:
+SaveTypeAsBt		Guardar Como
+RenameTypeBt		Renombrar
+DeleteTypeBt		Eliminar
+
+
+RenameCaption		Renombrar Producto
+renamelbl		Introduzca su nuevo Nombre:
+renameselectlbl		Seleccione un producto: 
+
+DeleteProduct 		Eliminar Producto
+deleteselectlbl		Seleccione el producto a elminar:
+
+SaveProductAs		Guardar Producto Como
+saveasproductlbl	Intrduzca un nombre para el producto: 
+CreateProduct		Crear Producto
+
+
+ConfigTabSheet		Configuración
+UserMngTabSheet		Gestión Usuarios
+#------
+CreateUserBt			Crear Usuario
+DeleteUserBt			Eliminar 
+ChangePassBt			Cambiar Contraseña
+UserNamelbl			Nombre Usuario
+passlbl				Contraseña
+repasslbl			Repetir Contraseña
+Userlbl				Usuario
+AdvancedUserlbl			Usuario Avanzado
+selectuserlbl			Seleccionar Usuario
+
+
+#------
+TabSheeExtCfg		LT CONFIGURACIÓN
+
+#--GRIDINTERFACE----
+userlbl		Usuario
+#------
+CfgCB_16
+#------
+CfgCB_18
+#------
+CfgCB_17
+#------
+CfgCB_19
+#------
+CfgCB_23
+#------
+CfgCB_22
+#------
+CfgCB_21
+#------
+CfgCB_20
+#------
+FlagsSystemPanel
+#------
+systemflagslbl	Flags Sistema
+#------
+CfgCB_0
+#------
+CfgCB_1
+#------
+CfgCB_14
+#------
+CfgCB_15
+#------
+CfgCB_2
+#------
+CfgCB_3
+#------
+CfgCB_4
+#------
+CfgCB_5
+#------
+CfgCB_6
+#------
+CfgCB_10
+#------
+
+
+LeftPanel
+#------
+
+GridTreeView
+#------
+
+BottomPanel
+#------
+sbFullScreen
+#------
+sbKeyBoard
+#------
+buttonDelItem			Eliminar Item
+#------
+buttonAddAttrib			Añadir Attrib
+#------
+buttonAddData			Añadir Data
+#------
+buttonAddItem			Añadir Manager
+
+
+TabSheetAnalysis		ANÁLISIS
+
+#GRIDINTERFACE USER
+BACK_BUTTON			Volver
+
+#------
+#TEJECTORTEST
+
+LabelAvailable			Disponible	
+LabelOK				Chequeo: OK
+LabelKO				Chequeo: KO
+LabelDiabled			Deshabilitado
+LabelActivated			Activado
+SBPruebaCiclica			Prueba cíclica válvulas
+LBEjecTestManualMode		Modo manual	
+LBEjecTestActivate		Activar
+
+#------
+
+CAP_EXITS			Salida
+BtnCopyToDevice			Copiar a dispositivo
+BtnEjectDevice			Expulsar dispositivo
+NO_EXIST_EXTERNAL_DEVICE	No se encuentra el dispositivo externo
+FILE_ACCESS_FORM_CAPTION	Administrador de ficheros
+
+#------
+NoCamAssistant			Esta cámara no dispone de asistente
+NoCamSelected			Por favor seleccione una cámara
+
+#-------
+FormUnlock			Bloqueo de pantalla
+LabelUnLock			¿Desbloquear pantalla táctil?
+BitBtnUnLock			Aceptar
+
+#-------
+LABEL_EXIT			Salida:
+SAVE_TO_DISK		Guardar en disco
+LABEL_PATH_SAVE		Ruta para guardar:
+BTN_RETAIN			Retener
+BTN_CLIPBOARD		Copiar
+
+#-------
+CyclesValvesButton				Asistente de válvulas
+CHART_TRACK						Vía
+CHART_BANK						Salida
+BtnResetAllChart				Reiniciar todas las válvulas
+BtnResetChart					Reiniciar válvula seleccionada
+BtnCloseFormChart				Cerrar
+ERROR_CHART_CONVEYOR_RUNING		Pare la máquina para reiniciar las válvulas
+WARN_RESET_VALVE				Se va a reiniciar la válvua
+QUESTION_RESET_VALVE			¿Desea reiniciarla?
+WARN_RESET_ALL_VALVE			Se van a reiniciar todas las válvulas
+QUESTION_RESET_ALL_VALVE		¿Desea reiniciarlas?
+EV_RESET_VALVE					Reinicio de los ciclos de la valvula
+EV_RESET_VALVES					Reinicio de todos los ciclos de la valvulas
+
+#-------
+INVERTERS_CONFIGURING1		Los variadores se están configurando
+INVERTERS_CONFIGURING2		Inténtelo de nuevo en unos segundos

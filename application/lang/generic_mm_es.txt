@@ -1,0 +1,61 @@
+﻿# Español Traducciones MVS
+
+#Código					Texto
+#--------------------------------------------
+
+RequestSupportBt	Asistencia técnica
+diagnoseBtn		Diagnóstico
+rebootProgramButon	REINICIAR PROGRAMA
+rebootComputerButton	REINICIAR MÁQUINA
+recoveryButton		Recuperacion
+
+TabSheetTroubleShoot	Sol. problemas
+TabSheetWizards		Asistentes
+EjectionWizardButton	Asistente expulsión
+InverterWizardButton	Asistente variador
+CalibrationWizardButton Asistente de cadena
+CameraLbl		Cámara
+CameraWizardButton	Asistente cámara
+CoordDistWizardButton   Asistente distorsión coord.
+GBUserWizards		Asistente de usuario	
+GBTechnicalServiceWizards Asistentes de servicio técnico
+Ejectionbtn		Expulsión
+Returnbtn		Volver
+
+exitExtractButton	Salir
+extractButton		Expulsar
+extractDevice		Expulsar dispositivo
+devicenotStop		No se puede expulsar el dispositivo
+
+BtnNewInfoProd		Nueva Partida
+TEXT_BACK		Volver
+
+LabelBadPos1		Indice calidad carga
+LabelBadPosNow1		Calidad carga (últ. 100 obj)
+LabelBadPos2		Indice calidad carga
+LabelBadPosNow2		Calidad carga (últ. 100 obj)
+PanelInfoCam1		Info. Cámara 1
+PanelInfoCam2		Info. Cámara 2
+LabelAverageCaliber	Calibre (últimos 10000 obj.)
+GeneralInfoPanel	Info. General	
+
+InfoProdBtn		Informes Prod.
+WarningsWizardButtonS	Asistente de avisos
+BtnInfo			Info
+
+chbMModPointSel		Mov. Man. Puntos
+chbMoveGrid		Mov. Rejilla
+
+#StartButton			START SOFTWARE
+#StopButton			PARAR SOFTWARE
+
+MSG_START_INVERTER_WIZARD	Para el asistente de configuración de variadores, se parará el programa de clasificado
+MSG_END_BATCH			¿Desea guardar los datos y cambiar de partida?
+
+LineCommunicationWB	Asistente com. linea
+
+CLEAN_MODE		Modo de limpieza
+CLEAN_MODE_STOP		Paro modo de limpieza
+ModoLimpieza		Modo de limpieza
+FAULTY_CLEAN_MODE	Modo de limpieza
+MSG_CLEANING_MODE	¿Desea activar el modo de limpieza? La máquina dejará de analizar.

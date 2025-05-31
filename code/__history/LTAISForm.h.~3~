@@ -1,0 +1,559 @@
+
+//-----------------------------------------------------------------------------
+/*
+                  Lyra Techs Artificial Intelligence Software
+*/
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+/*
+   File:                      LTAISForm.h
+   Compilation group:         LyraTechsArtificial Intelligence.exe
+   Subgroup
+   Version:                   1.0
+   Author:                    Daniel Ivorra
+   Date Created:              15/03/2021
+   Date Last Modification:
+*/
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+
+//---------------------------------------------------------------------------
+#ifndef LTAISFormH
+#define LTAISFormH
+//---------------------------------------------------------------------------
+
+#include <Classes.hpp>
+#include <Controls.hpp>
+#include <StdCtrls.hpp>
+#include <Forms.hpp>
+#include <Buttons.hpp>
+#include <ComCtrls.hpp>
+#include <ExtCtrls.hpp>
+#include <Mask.hpp>
+#include <AppEvnts.hpp>
+#include <Grids.hpp>
+#include <ValEdit.hpp>
+#include <jpeg.hpp>
+#include <Dialogs.hpp>
+#include <Keyboard.hpp>
+#include <ImgList.hpp>
+#include <Menus.hpp>
+#include <Graphics.hpp>
+#include <IdBaseComponent.hpp>
+#include <IdComponent.hpp>
+#include <IdTCPClient.hpp>
+#include <IdTCPConnection.hpp>
+#include <pngimage.hpp>
+
+#include "GDIPPictureContainer.hpp"
+#include "Chart.hpp"
+#include "TeEngine.hpp"
+#include "TeeProcs.hpp"
+#include "DBChart.hpp"
+#include "Series.hpp"
+#include "AdvSmoothButton.hpp"
+#include "AdvSmoothDock.hpp"
+#include "AdvSmoothGauge.hpp"
+#include "AdvSmoothTrackBar.hpp"
+#include "AdvSmoothLabel.hpp"
+#include "AdvSmoothPanel.hpp"
+#include "AdvSmoothSplashScreen.hpp"
+#include "AdvSmoothSlideShow.hpp"
+#include "AdvSmoothTouchKeyBoard.hpp"
+#include "AdvSmoothImageListBox.hpp"
+#include "AdvSmoothListBox.hpp"
+#include "AdvSmoothStatusIndicator.hpp"
+#include "TVisualizerMngrDoubleContinuous.h"
+#include "TColorAjustFormAux.h"
+
+// ToDo Dani: ver aqui que clases sobran para eliminar
+#include "TGridInterface.h"
+#include "TEventsInterface.h"
+#include "TAuxProcessTime.h"
+#include "TGm.h"                    //añadido para la version distribuida
+
+#include "TStdElectricCabinet.h"
+
+
+
+// ToDo Dani: añadir que clases vamos a utilizar para modificar los forms  de las clases a utilizar (aspecto general del form)
+// -- forms
+#include "TFormColor.h"
+#include "AdvSmoothToggleButton.hpp"
+#include "AdvSmoothComboBox.hpp"
+#include <IdHTTP.hpp>
+#include "TeeData.hpp"
+#include <DB.hpp>
+
+// -- Defines
+// Screen block
+#define BLOQ_NORMAL        0           // Simple
+#define BLOQ_PASSWORD      1           // With password
+
+
+// -- Previous class definition
+class TMyMachineModuleMngr;
+class TImg;
+class LT::TRect;
+class TVisualizerMngrDouble;
+class TMyMachineIO;
+class TCapturer;
+class TModule;
+class TCapture;
+class TAuxGraph;
+class TClassifierInterface;
+class TGridInterfaceUser;
+class TZoneClassifier;
+class TPersistence;
+class THistZone;
+class TProdGraphInterface;
+class TAuxHistCatInstantanous;
+class TAuxValveCycles;
+
+
+
+//---------------------------------------------------------------------------
+class TFormLT : public TForm                                                  {
+
+ __published:
+
+   // -- IDE-managed Components
+   TImageList *TDataManagerImageList;
+   TAdvSmoothSplashScreen *IntroSplash;
+   TImageList *ImageList;
+   TMemo *EventsBt;
+   TPanel *PanelEvents;
+   TPageControl *PageControlCfg;
+   TTabSheet *TabSheeExtCfg;
+   TPanel *PanelGridInterface;
+   TTimer *ColorEventTimer;
+   TTimer *m_timerClassInt;
+   TLabel *Version;
+   TTabSheet *TabSheetAnalysis;
+   TPageControl *AnalysisPageControl;
+   TTabSheet *TabSheetProcessTime;
+   TPanel *PanelProcessTime;
+   TAdvSmoothTouchKeyBoard *keyboard;
+   TTabSheet *Classification;
+   TPanel *PanelUI;
+   TPanel *PanelGraph;
+   TScrollBox *PanelUser;
+   TMemo *InfoEvents;
+   TTimer *TimerUpdateMainScreen;
+   TTimer *m_timerProcessTime;
+   TIdTCPClient *IdTCPClient1;
+   TAdvSmoothSplashScreen *SplashLoad;
+   TButton *rebootComputerButton;
+   TButton *rebootProgramButon;
+   TScrollBox *PanelInternalCfg;
+   TButton *StopButton;
+   TButton *InitButton;
+   TTimer *TimerCarga;
+   TTimer *OnStatusButton;
+   TPanel *PanelFrontalInterfazUsuario;
+   TPanel *PanelControlMaquina;
+   TPanel *PanelCabeceraTitulo;
+   TPanel *PanelLogoVersion;
+   TPanel *PanelVisualizer;
+   TPanel *PanelInfoProduccion;
+   TImage *Img_A_logoLyraIzq;
+   TImage *Img_A_logoLyraDrch;
+   TImage *Img_logo_LyraTechs;
+   TLabel *Label_title_soft_version;
+   TGroupBox *GrupoBotones_Cinta;
+   TAdvSmoothToggleButton *BotonParoCinta;
+   TAdvSmoothToggleButton *BotonMarchaCinta;
+   TGroupBox *GrupoBotones_Alimentador;
+   TLabel *Titulo_Alimentador;
+   TAdvSmoothToggleButton *BotonParoAlimentador;
+   TAdvSmoothToggleButton *BotonMarchaAlimentador;
+   TLabel *Titulo_CintaTrasportadora;
+   TImage *EstadoMaquinaTodoOk;
+   TGroupBox *GroupBox_ControlMaquina;
+   TLabel *Titulo_ControlMaquina;
+   TImage *EstadoMaquinaParada;
+   TGroupBox *GroupBox_Controles;
+   TAdvSmoothToggleButton *Boton_NoAlarma;
+   TAdvSmoothToggleButton *BotonEncendidoApagado;
+   TAdvSmoothToggleButton *BotonAjustes;
+   TTimer *m_timerGraphProd;
+   TPanel *PanelGraficaIluminacion;
+   TPanel *PanelAjustes;
+   TPanel *PanelStatus;
+   TAdvSmoothToggleButton *BotonConfigColor;
+   TChart *Chart2;
+   TPanel *PanelCfg;
+   TPanel *PanelAlarms;
+   TAdvSmoothToggleButton *Boton_Alarma;
+   TSpeedButton *sbKeyBoard;
+	TMemo *MemoInfoClasificacion;
+	TLabel *Label1;
+	TLabel *Label2;
+   TGroupBox *BotonesImagenes;
+   TGroupBox *BotonesConfigs;
+   TGroupBox *BotonesHerramientas;
+   TGroupBox *BotonesSoftware;
+   TButton *TestValvulas;
+   TImage *EstadoAlimentacionParada;
+   TTimer *TimerControlMaquina;
+   TPanel *PanelAjusteColor;
+   TButton *BotonCerrarPanel;
+   TPanel *PanelFormAjustColor;
+	TAdvSmoothToggleButton *C1;
+	TAdvSmoothToggleButton *C11;
+	TAdvSmoothToggleButton *C21;
+	TAdvSmoothToggleButton *C31;
+	TAdvSmoothToggleButton *C41;
+	TAdvSmoothToggleButton *C51;
+	TAdvSmoothToggleButton *C61;
+	TAdvSmoothToggleButton *C71;
+	TAdvSmoothToggleButton *C81;
+	TAdvSmoothToggleButton *C91;
+	TAdvSmoothToggleButton *C101;
+	TAdvSmoothToggleButton *C111;
+	TAdvSmoothToggleButton *C121;
+	TAdvSmoothToggleButton *C131;
+	TAdvSmoothToggleButton *C141;
+	TAdvSmoothToggleButton *C151;
+	TAdvSmoothToggleButton *C2;
+	TAdvSmoothToggleButton *C92;
+	TAdvSmoothToggleButton *C102;
+	TAdvSmoothToggleButton *C112;
+	TAdvSmoothToggleButton *C122;
+	TAdvSmoothToggleButton *C132;
+	TAdvSmoothToggleButton *C142;
+	TAdvSmoothToggleButton *C152;
+	TAdvSmoothToggleButton *C12;
+	TAdvSmoothToggleButton *C22;
+	TAdvSmoothToggleButton *C32;
+	TAdvSmoothToggleButton *C42;
+	TAdvSmoothToggleButton *C52;
+	TAdvSmoothToggleButton *C62;
+	TAdvSmoothToggleButton *C72;
+	TAdvSmoothToggleButton *C82;
+	TAdvSmoothToggleButton *C3;
+	TAdvSmoothToggleButton *C93;
+	TAdvSmoothToggleButton *C103;
+	TAdvSmoothToggleButton *C113;
+	TAdvSmoothToggleButton *C123;
+	TAdvSmoothToggleButton *C133;
+	TAdvSmoothToggleButton *C143;
+	TAdvSmoothToggleButton *C153;
+	TAdvSmoothToggleButton *C13;
+	TAdvSmoothToggleButton *C23;
+	TAdvSmoothToggleButton *C33;
+	TAdvSmoothToggleButton *C43;
+	TAdvSmoothToggleButton *C53;
+	TAdvSmoothToggleButton *C63;
+	TAdvSmoothToggleButton *C73;
+	TAdvSmoothToggleButton *C83;
+	TAdvSmoothToggleButton *C4;
+	TAdvSmoothToggleButton *C94;
+	TAdvSmoothToggleButton *C104;
+	TAdvSmoothToggleButton *C114;
+	TAdvSmoothToggleButton *C124;
+	TAdvSmoothToggleButton *C134;
+	TAdvSmoothToggleButton *C144;
+	TAdvSmoothToggleButton *C154;
+	TAdvSmoothToggleButton *C14;
+	TAdvSmoothToggleButton *C24;
+	TAdvSmoothToggleButton *C34;
+	TAdvSmoothToggleButton *C44;
+	TAdvSmoothToggleButton *C54;
+	TAdvSmoothToggleButton *C64;
+	TAdvSmoothToggleButton *C74;
+	TAdvSmoothToggleButton *C84;
+	TAdvSmoothToggleButton *C5;
+	TAdvSmoothToggleButton *C95;
+	TAdvSmoothToggleButton *C105;
+	TAdvSmoothToggleButton *C115;
+	TAdvSmoothToggleButton *C125;
+	TAdvSmoothToggleButton *C135;
+	TAdvSmoothToggleButton *C145;
+	TAdvSmoothToggleButton *C155;
+	TAdvSmoothToggleButton *C15;
+	TAdvSmoothToggleButton *C25;
+	TAdvSmoothToggleButton *C35;
+	TAdvSmoothToggleButton *C45;
+	TAdvSmoothToggleButton *C55;
+	TAdvSmoothToggleButton *C65;
+	TAdvSmoothToggleButton *C75;
+	TAdvSmoothToggleButton *C85;
+	TAdvSmoothToggleButton *C6;
+	TAdvSmoothToggleButton *C96;
+	TAdvSmoothToggleButton *C106;
+	TAdvSmoothToggleButton *C116;
+	TAdvSmoothToggleButton *C126;
+	TAdvSmoothToggleButton *C136;
+	TAdvSmoothToggleButton *C146;
+	TAdvSmoothToggleButton *C156;
+	TAdvSmoothToggleButton *C26;
+	TAdvSmoothToggleButton *C36;
+	TAdvSmoothToggleButton *C46;
+	TAdvSmoothToggleButton *C56;
+	TAdvSmoothToggleButton *C66;
+	TAdvSmoothToggleButton *C76;
+	TAdvSmoothToggleButton *C86;
+	TAdvSmoothToggleButton *C7;
+	TAdvSmoothToggleButton *C97;
+	TAdvSmoothToggleButton *C107;
+	TAdvSmoothToggleButton *C117;
+	TAdvSmoothToggleButton *C127;
+	TAdvSmoothToggleButton *C137;
+	TAdvSmoothToggleButton *C147;
+	TAdvSmoothToggleButton *C157;
+	TAdvSmoothToggleButton *C17;
+	TAdvSmoothToggleButton *C27;
+	TAdvSmoothToggleButton *C37;
+	TAdvSmoothToggleButton *C47;
+	TAdvSmoothToggleButton *C57;
+	TAdvSmoothToggleButton *C67;
+	TAdvSmoothToggleButton *C77;
+	TAdvSmoothToggleButton *C87;
+	TAdvSmoothToggleButton *C8;
+	TAdvSmoothToggleButton *C98;
+	TAdvSmoothToggleButton *C108;
+	TAdvSmoothToggleButton *C118;
+	TAdvSmoothToggleButton *C128;
+	TAdvSmoothToggleButton *C138;
+	TAdvSmoothToggleButton *C148;
+	TAdvSmoothToggleButton *C158;
+	TAdvSmoothToggleButton *C18;
+	TAdvSmoothToggleButton *C28;
+	TAdvSmoothToggleButton *C38;
+	TAdvSmoothToggleButton *C48;
+	TAdvSmoothToggleButton *C58;
+	TAdvSmoothToggleButton *C68;
+	TAdvSmoothToggleButton *C78;
+	TAdvSmoothToggleButton *C88;
+	TAdvSmoothToggleButton *C9;
+	TAdvSmoothToggleButton *C99;
+	TAdvSmoothToggleButton *C109;
+	TAdvSmoothToggleButton *C119;
+	TAdvSmoothToggleButton *C129;
+	TAdvSmoothToggleButton *C139;
+	TAdvSmoothToggleButton *C149;
+	TAdvSmoothToggleButton *C159;
+	TAdvSmoothToggleButton *C19;
+	TAdvSmoothToggleButton *C29;
+	TAdvSmoothToggleButton *C39;
+	TAdvSmoothToggleButton *C49;
+	TAdvSmoothToggleButton *C59;
+	TAdvSmoothToggleButton *C69;
+	TAdvSmoothToggleButton *C79;
+	TAdvSmoothToggleButton *C89;
+	TAdvSmoothToggleButton *C16;
+	TComboBox *ColorAdjustComboBox;
+   TAdvSmoothLabel *AdvSmoothLabel1;
+   TPanel *Panel2;
+   TLabel *Label3;
+   TLabel *Label4;
+   TLabel *Label5;
+	TTimer *TimerCheckLicense;
+	TIdHTTP *IdHTTP1;
+   TSpeedButton *VerImgButton;
+   TSpeedButton *SaveImgButton;
+   TLabel *LabelImg;
+   TSpeedButton *LoadCFGButton;
+   TSpeedButton *SaveCFGButton;
+   TLabel *ConfigLabel;
+   TLabel *Label6;
+	TPanel *PaneHorasProduccion;
+	TPanel *PanelProdGraph;
+	TPanel *PanelDivision;
+	TPanel *PanelDivision2;
+	TChart *Chart1;
+	TChart *ChartLoad;
+   TChart *Chart3;
+   TLabel *Label7;
+   TLabel *Label8;
+   TLabel *Label9;
+   TButton *BotonResetDatos;
+	TMemo *MemoInfoClasificacion2;
+   TPanel *PanelVisualizer2;
+   TImage *Image_Logo_OliveSorter;
+   TTabSheet *PARÁMETROS;
+
+   void __fastcall FormShow(TObject *Sender);
+   void __fastcall ButtonCloseClick(TObject *Sender);
+//   void __fastcall CfgButtonClick(TObject *Sender);
+   void __fastcall m_timerBloqueoTimer(TObject *Sender);
+   void __fastcall SetVisible( TObject *Sender);
+   void __fastcall ShutDownButtonClick(TObject *Sender);
+   void __fastcall FormDestroy(TObject *Sender);
+   void __fastcall FormCreate(TObject *Sender);
+   void __fastcall EventsBtClick(TObject *Sender);
+   void __fastcall PageControlCfgChange(TObject *Sender);
+   void __fastcall LoadCfgBtClick(TObject *Sender);
+   void __fastcall SaveCfgBtClick(TObject *Sender);
+   void __fastcall LoadImgBtClick(TObject *Sender);
+   void __fastcall SaveImagesBtClick(TObject *Sender);
+   void __fastcall EventsBtChange(TObject *Sender);
+   void __fastcall ColorEventTimerTimer(TObject *Sender);
+   void __fastcall m_timerClassIntTimer(TObject *Sender);
+   void __fastcall m_timerProcessTimeTimer(TObject *Sender);
+   void __fastcall FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
+   void __fastcall SaveCfgButtonClick(TObject *Sender);
+   void __fastcall OnFormChange(TObject *Sender);
+   void __fastcall OnTimerSpeedButton(TObject *Sender);
+   void __fastcall OnButtonMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+   void __fastcall OnButtonMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+   void __fastcall m_timerHideInfoEventsTimer(TObject *Sender);
+   void __fastcall TimerUpdateMainScreenTimer(TObject *Sender);
+   void __fastcall EjectionWizardButtonClick(TObject *Sender);
+   void __fastcall LimitsValuesClick(TObject *Sender);
+   void __fastcall rebootProgramButonClick(TObject *Sender);
+   void __fastcall OnChartClick(TObject *Sender);
+   void __fastcall BtnUsbClick(TObject *Sender);
+   void __fastcall TimerQuickTestTimer(TObject *Sender);
+   void __fastcall TimerControlMaquinaTimer(TObject *Sender);
+   void __fastcall BtnNewInfoProdClick(TObject *Sender);
+   void __fastcall InitButtonClick(TObject *Sender);
+   void __fastcall StopButtonClick(TObject *Sender);
+   void __fastcall TimerCargaTimer(TObject *Sender);
+   void __fastcall InfoProdBtnClick(TObject *Sender);
+   void __fastcall ReturnbtnClick(TObject *Sender);
+   void __fastcall OnStatusButtonTimer(TObject *Sender);
+   void __fastcall Timer_HardLockCheckTimer(TObject *Sender);
+   void __fastcall BotonParoCintaClick(TObject *Sender);
+   void __fastcall BotonMarchaCintaClick(TObject *Sender);
+   void __fastcall BotonParoAlimentadorClick(TObject *Sender);
+   void __fastcall BotonMarchaAlimentadorClick(TObject *Sender);
+   void __fastcall BotonAjustesClick(TObject *Sender);
+   void __fastcall BotonEncendidoApagadoClick(TObject *Sender);
+   void __fastcall BotonAlarmaClick(TObject *Sender);
+   void __fastcall sbKeyBoard1Click(TObject *Sender);
+   void __fastcall rebootComputerButtonClick(TObject *Sender);
+   void __fastcall Img_logo_LyraTechsDblClick(TObject *Sender);
+   void __fastcall BotonConfigColorClick(TObject *Sender);
+   void __fastcall BotonCerrarPanelClick(TObject *Sender);
+   bool __fastcall CheckLicense();
+   bool __fastcall GetServerTime(int &year, int &month, int &day);
+   void __fastcall TimerCheckLicenseTimer(TObject *Sender);
+   void __fastcall PanelInfoProduccionClick(TObject *Sender);
+   void __fastcall BotonResetDatosClick(TObject *Sender);
+
+ public:
+
+   TMyMachineModuleMngr    *m_modMngr;
+
+   // -- Machine states
+   bool                    m_infoProdVisible,   // Flag visibilidad info produccion
+                           m_showLimits0,       // Flag de visibilidad de los límites de tercera
+                           m_showLimits1;       // Flag de visibilidad de los límites de tercera
+
+
+
+    __fastcall       TFormLT(TComponent* Owner);
+   __fastcall        ~TFormLT();
+   void __fastcall   MyWndProc(Messages::TMessage &Message);
+   void __fastcall   keyDown(WORD tecla) ;     //decide que hacer segun la tecla que he pulsado
+   void __fastcall   PideClave();
+
+   TPersistence      *GetPersistence();
+
+   void              SetChartProduction( THistZone *zone);
+   int               GetLockMode();
+
+
+ protected:
+
+   HDC                                    m_hdcPaint;               //Device context to paint into
+
+   TPersistence                           *m_persistence;
+   TModule                                *m_module;
+
+//   TVisualizerMngrDoubleContinuous*       m_visualizer;
+//   TVisualizerMngrDoubleContinuous*       m_visualizer2;
+
+   TVisualizerMngrDouble*  m_visualizer;
+   TVisualizerMngrDouble*  m_visualizer2;
+
+   TColor                                 m_EventColor;
+   TMouseEvent                            event;
+
+   // Interfaces
+   TGridInterface                         *m_gridIntf;
+   TGridInterfaceUser                     *m_gridIntfUser;
+   TEventsInterface                       *m_EventsInterface;
+   TClassifierInterface                   *m_classInt,
+                                          *m_classIntExt;
+
+   TGridInterface                         *m_GMgridIntf;
+
+   TProdGraphInterface                    *m_prodgraphInterface;
+   TAuxHistCatInstantanous                *m_auxHistCatInstantaneous;
+   TAuxValveCycles						  *m_auxValveCycles;
+   TAuxProcessTime                        *m_processTimes;
+   TTimer                                 *m_timerSpeed;
+   TColorAjustFormAux                     *m_formAdjustColorAux;
+   TAdvSmoothButton                       *sb;
+   TAdvSmoothTouchKeyBoard                *m_UserKeyboard;
+
+
+   char                       m_appName[50];
+
+   bool                       m_insideDraw;
+
+   bool                       m_prevEstadoMarcha;
+
+
+   int                        m_lastLang,
+                              m_incrTimer,
+                              m_v_incrTimer,
+                              m_closing,
+                              m_checkHardlockAttempts;
+
+   bool                       m_menuAjustes,
+                              m_panelAlarma;
+
+
+   TMachineMngr               *m_machineMngr;
+   TGm                        *m_GM;
+
+   TPieSeries *m_pieSeries;
+
+   // -- Functions
+   TData*   GetLoadImages();
+   TData*   GetSaverForm();
+   TData*   GetSaveDialogImages();
+   void  PaintRect_2( TCapture *cap, LT::TRect *dst, LT::TRect *org );
+   void  PaintControls();
+   void  LogoutUser( );
+   void  TryShutDown( bool reboot = false);
+   void  CloseMachine();
+   void  LoadNumricKeyboard();
+   void  LoadKeyBoard();
+   void  LockScreen();
+   bool  LoginUser( wchar_t *user, wchar_t *password);
+   bool  ShutdownComputer( bool reboot = false);
+   void VisualizarControlesEspeciales(int nivelAcesso = 1);
+
+};
+
+
+//---------------------------------------------------------------------------
+extern PACKAGE TFormLT *FormLT;
+//---------------------------------------------------------------------------
+
+// block screen
+extern long    timeNoAction;
+extern bool    locked;
+
+#endif
+
+
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------
+/*
+   Lyra Techs Intellectual Property Copyright@2021.
+*/
+//-----------------------------------------------------------------------------

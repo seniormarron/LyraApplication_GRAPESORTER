@@ -1,0 +1,18 @@
+﻿# Español Traducciones MVS
+
+#Código					Texto
+#--------------------------------------------
+
+
+
+# CAMARAS DALSA GIGE
+
+EV_DALSACAMGIGE_UNKNOW_DEVICE		No se ha conectado la cámara.
+EV_DALSACAMGIGE_NOT_READY		La cámara no ha sido configurada todavía.
+EV_DALSACAMGIGE_ERROR_CFG		La cámara no se configuró correctamente.
+EV_DALSACAMGIGE_NO_REAL_TIME		Fallo al obtener el manager de tiempo real.
+EV_DALSACAMGIGE_NO_PLANE_RAW		No existe plano de RAW.
+EV_DALSACAMGIGE_IMAGE_SIZE		Tamaño de imagen incorrecto.
+EV_DALSACAMGIGE_IMAGE_BITCOUNT		Fallo leyendo el tamaño de pixel del plano de RAW.
+EV_DALSACAMGIGE_FAIL_START_ADQ		Fallo al iniciar la adquisición de imágenes.
+EV_DALSACAMGIGE_FAIL_STOP_ADQ		Fallo al parar la adquisisción de imágenes.

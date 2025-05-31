@@ -1,0 +1,311 @@
+//---------------------------------------------------------------------------
+
+#pragma hdrstop
+
+#include "ConfigEPotMngr.h"
+#include "VisibleParams.h"
+#include "AdvSmoothComboBox.hpp"
+//#include "TDemosaic.h"
+//#include "TCapturerMBS.h"
+#include "TEPotCycle.h"
+#include "RaydenBoard.h"
+#include <sstream>
+
+
+//---------------------------------------------------------------------------
+
+#pragma package(smart_init)
+
+//---------------------------------------------------------------------------
+/**
+   Constructor
+*/
+ConfigEPotMngr::ConfigEPotMngr(const wchar_t *name, TDataManager *parent): TDataManagerControl( name, parent )  {
+
+   m_visibleParams = new VisibleParams(L"VisibleParams",this);
+
+   //Dani:
+//   m_daCombEpotDemosaic   = new TData( this, LBL_COMB_EPOT_DEMOSAIC, m_combEpotDemosaic, "", 1024, FLAG_NORMAL & ~FLAG_SAVE, L"Combination of epod config and Demosaic info" );
+//   m_daCombEpotDemosaic->SetAttribValue( LBL_ILUMS, L"");
+//   m_daCombEpotDemosaic->SetAttribValue( LBL_CAMERA_LINES, L"");
+//   m_daCombEpotDemosaic->SetAttribValue( LBL_PLANE_NAMES, L"");
+
+// Dani:  m_daForwardDirPath = new TData( this, L"RouteToForwardDirectionData", m_forwardDirPath, L"MVS\XInspect_Cab\I/O_Configuration\ForwardDirection", LinesInfoMax , FLAG_NORMAL , L"Route to the forwar dir data relative to electric cabinet manager" );
+   m_daDirection       = new TData( this, L"Direction", NULL  , 0, 0, 1,  NULL,FLAG_NORMAL );
+
+//Dani:   m_demosaic   = NULL;
+   m_epodDriver = NULL;
+
+//Dnai:   CalculateLinesInfo();
+
+ //Dani:  m_dataModPostManager = this;
+}
+
+//---------------------------------------------------------------------------
+/**
+   Destructor
+*/
+ConfigEPotMngr::~ConfigEPotMngr(){
+}
+
+//---------------------------------------------------------------------------
+/**
+   DataModifiedPost
+*/
+void ConfigEPotMngr::DataModifiedPost(TData* da)  {
+
+ // Dani:  TDataManager::DataModifiedPost(da);
+
+   if  ( da==NULL) {
+      return;
+   }
+
+ //Dani:
+//   else if (da == m_daCombEpotDemosaic ){
+//	  wchar_t *aux = TAux::STR_TO_WSTR(m_combEpotDemosaic);
+//	  UpdateDemosaic(aux);
+//	  delete [] aux;
+//	  UpdateEpod(m_combEpotDemosaic);
+//   }
+}
+
+//---------------------------------------------------------------------------
+/**
+   MyGo
+*/
+bool ConfigEPotMngr::MyGo(){
+   bool ret =  TDataManagerControl::MyGo();
+
+
+   TDataManager *mng = GetRootMngr();
+   TData *da = mng->GetDataObject(m_forwardDirPath);
+   if(da){
+      m_daDirection->SetAsInt(da->AsInt());
+   }
+
+//Dani:   SearchForDemosaic();
+   SearchForRaydenBoard();
+
+//Dani;   CalculateLinesInfo();
+
+//Dani:   if(!m_demosaic)  {
+//	  return ret;
+//   }
+//   const wchar_t * demosaicInfo = m_demosaic->GetDemosaicInfo();
+//   if(_wcsicmp( demosaicInfo, L"") == 0) {
+//	  m_daCombEpotDemosaic->SetAsText(L"");
+//	  return ret;
+//   }
+   if(!m_epodDriver)  {
+      return ret;
+   }
+   const char *cfg= m_epodDriver->GetCfg();
+//Dani:   UpdateCombEpotDemosaicData( cfg,demosaicInfo);
+   delete [] cfg;
+   return ret;
+}
+
+
+//    Dani:
+////---------------------------------------------------------------------------
+///**
+//   UpdateCombEpotDemosaicData
+//   Takes the actual configuration of epod and demosaicInfo and update the tdata CombEpotDemosaic with the combination of both
+//*/
+//bool ConfigEPotMngr::UpdateCombEpotDemosaicData(const char * epotInfo, const wchar_t *demosaicInfo) {
+//
+//   if(!epotInfo){
+//      return false;
+//   }
+//   unsigned int epotLength = strlen( epotInfo);
+//   if ( epotLength < sizeof( s_epotHeader) + sizeof( s_epotTail)) {
+//      return false;
+//   }
+//   //comprobar numero de lineas
+//   int numberOfDataBytes = epotLength - sizeof( s_epotHeader) - sizeof( s_epotTail);
+//   if ( numberOfDataBytes % sizeof(s_epotLine)) {
+//	  return false;
+//   }
+//   int numberOfLines = numberOfDataBytes / sizeof(s_epotLine);
+//   s_epotHeader* header = (s_epotHeader*)epotInfo;
+//   if ( numberOfLines != header->NumberOfLines())   {
+//      return false;
+//   }
+//
+//   const char *pline = epotInfo + sizeof(s_epotHeader);
+//
+//   std::string cadena;
+//
+//   std::vector<std::wstring> tokensDem;
+//   TAux::ExtractTokens( demosaicInfo, tokensDem, L";");
+//   int nDItem = 0;
+//
+//   int cameraLinesNumber = m_visibleParams->CameraLinesNumber();
+//
+//   for ( int i=0; i < numberOfLines; ++i) {
+//
+//      if ( i!=0)  {
+//         cadena += ';';
+//      }
+//      s_epotLine* line = (s_epotLine*)&pline[i*sizeof(s_epotLine)];
+//
+//      cadena += line->cameraOrIlum;
+//      cadena += ',';
+//	  cadena += line->camOrIlumNumber;
+//      cadena += ',';
+//      for ( int i=0; i<5; ++i)   {
+//         cadena += line->offset[i];
+//      }
+//      cadena += ',';
+//      for ( int i=0; i<5; ++i)   {
+//         cadena += line->duration[i];
+//      }
+//
+//      if (line->cameraOrIlum == 'C')   {
+//         for ( int i=0; i < cameraLinesNumber; ++i)   {
+//            cadena += ',';
+//            char *str =  TAux::WSTR_TO_STR(tokensDem[nDItem].c_str());
+//			cadena += str;
+//            delete [] str;
+//            nDItem++;
+//         }
+//      }
+//
+//   }
+//   m_daCombEpotDemosaic->SetAsText( cadena.c_str());
+//   return true;
+//}
+
+
+////---------------------------------------------------------------------------
+///**
+//   UpdateDemosaic
+//   Takes the content of the data CombEpotDemosaic and extract the info to update demosaicInfo, and unpdate demosaicInfo
+//   From this->CombEpotDemosaic to Demosaic->Info
+//*/
+//void ConfigEPotMngr::UpdateDemosaic(wchar_t *ePodDemosaic)   {
+//   wchar_t demosaicSting[TDemosaic::DInfoSize];
+//   memset(demosaicSting,0x0, sizeof(demosaicSting));
+//   std::vector<std::wstring> tokens;
+//   TAux::ExtractTokens( ePodDemosaic, tokens, L";");
+//   for(unsigned int i = 1; i < tokens.size(); i+=2){
+//      std::vector<std::wstring> tokCameras;
+//      TAux::ExtractTokens( tokens[i].c_str(), tokCameras, L",");
+//	  for(unsigned int j = 4 ; j < tokCameras.size() ; j+=3){
+//         wcscat(demosaicSting,tokCameras[j].c_str());
+//         wcscat(demosaicSting,L",");
+//         wcscat(demosaicSting,tokCameras[j+1].c_str());
+//         wcscat(demosaicSting,L",");
+//         wcscat(demosaicSting,tokCameras[j+2].c_str());
+//		 wcscat(demosaicSting,L";");
+//      }
+//   }
+//   if(!m_demosaic)  {
+//	  return ;
+//   }
+//   m_demosaic->SetDemosaicInfo(demosaicSting);
+//}
+
+////---------------------------------------------------------------------------
+///**
+//   UpdateEpod
+//   Takes the content of the data CombEpotDemosaic and extract the info to update epodConfig, and unpdate epodConfig
+//   From this->CombEpotDemosaic to Epod->Config
+//*/
+//void ConfigEPotMngr::UpdateEpod(char *ePodDemosaic)   {
+//   char epodSting[TDemosaic::DInfoSize];
+//   memset(epodSting,0x0, sizeof(epodSting));
+//   std::vector<std::string> tokens;
+//   TAux::ExtractTokens( ePodDemosaic, tokens, ";");
+//   sprintf(epodSting,"%02d",tokens.size());
+//   for(unsigned int i = 0; i < tokens.size(); i++){
+//	  std::vector<std::string> tokLine;
+//      TAux::ExtractTokens( tokens[i].c_str(), tokLine, ",");
+//      for(int j = 0 ; j < 4; j++) {
+//		 strcat(epodSting,tokLine[j].c_str());
+//      }
+//   }
+//   if(!m_epodDriver)  {
+//	  return ;
+//   }
+//   m_epodDriver->SetNewCfg(epodSting);
+//}
+
+//
+////---------------------------------------------------------------------------
+///**
+//   SearchForDemosaic
+//*/
+//void ConfigEPotMngr::SearchForDemosaic(){
+//   TDataManager *mng = GetRootMngr();
+//   std::list<TDataManager *>::iterator it = mng->DataManagerBegin();
+//   std::list<TDataManager *>::iterator itEnd = mng->DataManagerEnd();
+//   while (it != itEnd)   {
+//	  m_demosaic = dynamic_cast<TDemosaic*>(*it);
+//	  if(m_demosaic){
+//		 return;
+//	  }
+//	  it++;
+//   }
+//   return;
+//}
+
+//---------------------------------------------------------------------------
+/**
+   SearchForRaydenBoard
+*/
+void ConfigEPotMngr::SearchForRaydenBoard(){
+   TDataManager *mng = GetRootMngr();
+   std::list<TDataManager *>::iterator it = mng->DataManagerBegin();
+   std::list<TDataManager *>::iterator itEnd = mng->DataManagerEnd();
+   while (it != itEnd)   {
+	  m_epodDriver = dynamic_cast<RaydenBoard*>(*it);
+      if(m_epodDriver){
+         return;
+      }
+      it++;
+   }
+   return;
+}
+
+////---------------------------------------------------------------------------
+///**
+//   CalculateLinesInfo
+//*/
+//void ConfigEPotMngr::CalculateLinesInfo( ){
+//   wchar_t planes[LinesInfoMax];
+//   memset(planes, 0x00, sizeof(planes));
+//   bool ret = GetPlanesFromTemplates(planes);
+//   if(!ret){
+//
+//      return;
+//   }
+//   m_daCombEpotDemosaic->SetAttribValue( LBL_PLANE_NAMES, planes, NULL, false);
+//   wchar_t *ilums = m_visibleParams->GetIluminations();
+//   m_daCombEpotDemosaic->SetAttribValue( LBL_ILUMS, ilums, NULL, false);
+//   wchar_t *cameraLines = m_visibleParams->GetCameraLines();
+//   m_daCombEpotDemosaic->SetAttribValue( LBL_CAMERA_LINES, cameraLines, NULL, true);
+//}
+
+////---------------------------------------------------------------------------
+///**
+//   GetPlanesFromTemplates
+//*/
+//bool ConfigEPotMngr::GetPlanesFromTemplates(wchar_t *planes){
+//	  if(!m_demosaic) {
+//	  return false;
+//   }
+//   std::list<TDataManager *>::iterator it2 = m_demosaic->DataManagerBegin();
+//   std::list<TDataManager *>::iterator itEnd2 = m_demosaic->DataManagerEnd();
+//   while ( it2 != itEnd2)   {
+//	  TCapturerMBS* capMBS = dynamic_cast<TCapturerMBS*>(*it2);
+//	  if (capMBS) {
+//         capMBS->GetTemplateNames(planes,12);
+//		 return true;
+//      }
+//	  it2++;
+//   }
+//   return false;
+//}
+
+

@@ -1,0 +1,128 @@
+﻿# English  Translations for MVS.
+
+#Code					TEXT
+#-------------------------------------------
+
+
+
+# MISC (PC temperature control) 
+
+FAULTY_STOP_CPU_FAN_SPEED		CPU fan stopped.
+FAULTY_CRITICAL_TEMPERATURE_CPU		CPU critical temperature. 
+FAULTY_HIGH_TEMPERATURE_CPU		CPU temperature too high.
+
+FAULTY_STOP_SYS_FAN_SPEED		PC fan stopped.
+FAULTY_CRITICAL_TEMPERATURE_SYS		PC critical temperature.
+FAULTY_HIGH_TEMPERATURE_SYS		PC temperature too high.
+
+EV_STOP_SYS_FAN_SPEED			PC fan is stopped.
+EV_STOP_CPU_FAN_SPEED			CPU fan is stopped.
+
+EV_CRITICAL_TEMPERATURE_SYS		Critical temperature in PC.
+EV_HIGH_TEMPERATURE_SYS			Hight temperature in PC.
+
+EV_CRITICAL_TEMPERATURE_CPU		Critical temperature in CPU. 
+EV_HIGH_TEMPERATURE_CPU			Hight temperature in CPU.
+
+EV_NOT_CONNECT_INVERTER			Can not connect to inverter:
+EV_INVERTER_ERROR			Inverters failure      
+EV_INVERTER_ALARM			Inverters alarm     
+EV_INVERTER				Inverter 
+INVERTER_ERROR				Inverter error.
+INVERTER_ALARM				Inverter alarm. 
+EV_CONNECT_INVERTER			Connect inverter:
+EV_INVERTER_DISABLED			Inverter disabled.
+
+
+MemoInverterText1			The main inverter needs a Bus Termination, set the DIP keys 2 and 3 in the position "Bus Termination" ON (up).
+MemoInverterText3			The display can be moved between inverter by pushing the button at the bottom, move the display to the inverter you want to configure.
+MemoInverterText2			Press the button "P", and with the arrows go to param 2011 and adjust it to:
+MemoInverterText6			The process is finished correctly	
+MemoInverterText7			To configure the inverter, press the appropriate button. 
+MemoInverterText8			Can not connect to inverter. Check connections and address in parameter 2011.		
+ConfiguringInverter			Configuring Inverter:	
+TextInverter				%s with address %d %s	
+NO_CONFIGURED				is not configured.
+CONFIGURED				is configured.
+CANCEL					Cancel
+NEXT					Next
+
+
+EV_INVERTER_RESTORED_EXTERNAL_PERMISSION	Restored external permission.
+EV_LOAD_ALARM_RESTORED				Restored optimum load.
+EV_LOAD_ALARM					Load too low.		
+FAULTY_LOAD_ALARM				Load too low.
+
+EV_INVERTER_COMMUNIC_ERROR		Inverter communication failure.
+FAULTY_INVERTER_COMMUNIC_ERROR		Inverters Fail.
+EV_INVERTER_COMMUNIC_OK			Inverter communication restored.
+
+EV_INVERTER_START			Start inverters.
+EV_INVERTER_STOP			Stop inverters.
+EV_INVERTER_CHANGE_SPEED		Change to velocity:
+
+MSG_CONTROL_INVERTERS			Inverters control
+MSG_ERROR_INVERTERS			Inverter configuration error
+MSG_MAIN_CONVEYOR			Main conveyor
+MSG_ROTATION_CONVEYOR			Rotation conveyor
+MSG_FEED_CONVEYOR			Feed conveyor
+MSG_SYSTEM_MONITOR			System monitor
+MSG_TEMP_CPU				CPU Temperature
+MSG_TEMP_SYS				System Temperature
+MSG_FAN_SPEED_CPU			Fan Speed Processor
+MSG_FAN_SPEED_SYS			Fan Speed System
+MSG_COMMUNIC_SYS			Communication with system
+
+EV_NOT_AVERAGE_CALIBER			Configuration fail. Don't find the average caliber value.
+EV_MAX_SPEED_CALIBER			Maximum speed by small caliber.
+EV_INVERTER_CHANGE_FEED_SPEED		Change the feed conveyor speed to:
+
+EV_STOP_MACHINE_EJECTION		Stop the machine by ejection excess
+EV_AUTOADJUST_EJECTION			Auto adjust the machine by ejection excess
+
+EventLoadLabel				Event
+EmailLoadLable				Email
+GbLoad					% load triggers
+GbTriggers				% other triggers
+EventLb					Event
+EmailLb					Email
+AutoAdjustLb				Auto Adjust
+StopMachineLb				Stop Machine
+GbConditions				Conditions
+BanksLb					Banks
+CategoriesLb				Categories
+ParameterLb				Parameter
+GbAdvanced				Advanced
+TextTS					Texts
+EmailTS					Email
+EventLoadTextLb				Load event
+EventTriggersTextLb			Triggers event
+RecipientsLabel				Recipients
+WarningNotifyForm			Warnings Wizard
+
+TEXT_NINGUNO				Any
+EV_INVERTER_STOP_ENCODER_PULSES		Stop conveyors by no encoder pulses. It is possible that the main motor is locked.
+MemoDescriptionText			Click on a parameter to get a description!
+
+EJECTION_WARNING			Ejection Warning
+LOAD_WARNING				Load Warning
+
+EV_CANT_OPEN_PRODTXT			Can't open the production report
+
+#-------------------------------------------------------
+#----------AdvantechForm--------------------------------
+#-------------------------------------------------------
+
+lbl_pc_status			        Computer information
+AdvantechForm				Computer information
+manufacturer_lb				Manufacturer
+boardName_lb				Motherboard Ref.
+status_lb				Status
+LabelTempCPU				CPU Temp.
+LabelSysTemp				System Temp.
+LabelFanCPUSpeed			CPU Fan Speed
+LabelSystemFanSpeed			System Fan Speed
+system2Fan_lb				System 2 Fan Speed
+warningThre_lb				Warning
+errorThreshold_lb			Error
+lbl_threshold				Thresholds

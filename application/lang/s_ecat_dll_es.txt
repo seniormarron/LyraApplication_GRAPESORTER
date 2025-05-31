@@ -1,0 +1,264 @@
+﻿# Español Traducciones MVS
+
+#Código					Texto
+#--------------------------------------------
+
+
+
+# ETHERCAT
+
+FAULTY_ETHERCAT_NOT_CONNECTED			Fallo Comunic.
+FAULTY_ETHERCAT_NOT_CONNECTED_STDBOARD  Fallo Comunic.
+FAULTY_ETHERCAT_EJECTION_DISABLED		Expulsión Off.
+FAULTY_INDEX_TRIGGER_ADVANCED			Fallo Adquisición.
+EV_ETHERCAT_NOT_CONNECTED_STDBOARD		Ethercat no se puede conectar a STDBOARD
+
+EV_INDEX_TRIGGER_ADVANCED			Fallo adquisición. Índice del trigger avanzado.
+EV_CAB_NOT_CONNECTED				Fallo comunicación del Ethercat.
+
+FAULTY_EXECUTE_TIME					Fallo Adquisición.
+EV_FAIL_EXECUTE_TIME				No hay tiempo. Fallo al ejecutar Get100nsFrom1970micros.
+
+FAULTY_IREAD_EQUALS_IWRITE			Trigger Error.
+EV_IREAD_EQUALS_IWRITE				No tengo trigger,índice de lectura igual al índice de escritura.
+
+FAULTY_FAIL_PUTEXP					Fallo Expulsión.
+EV_PUTEXP_LATE						La orden de expulsión llegó tarde.
+EV_PUTEXP_NO_ROOM					No hay sitio en el buffer de expulsiones.
+FAULTY_FAIL_VALVES_LIMITED			Válvulas limitadas
+
+EV_FAIL_STOP_ETHERCAT_REAL_TIME		Fallo al parar.
+FAULTY_FAIL_ENCODER					Fallo encoder.
+
+EV_ELECTRIC_CABINET					No se encuentra el cuadro eléctrico.
+EV_SYNC_TOO_LATE					Retraso en la sincronización.
+EV_SYNC_EXTRAPOLATION				Error en el sincronismo.
+
+EV_FAIL_MUTEX_IR					Fallo la obtener el mutex del IR.
+
+EV_GETLASTTRIG_NOT_ENABLED			Get Last Trigger no está habilitado.
+EV_ETH_NOVERSION					No hay version de driver configurada en la aplicacion. Se configurara la instalada actualmente
+EV_ETH_INCOMPATIBLEVERSION			La version de driver configurada en la aplicacion, es INCOMPATIBLE con la instalada
+EV_ETH_COMPATIBLEVERSION			La version de driver configurada en la aplicacion, es distinta a la instalada, pero es compatible.
+
+
+MSG_DRIVER_EJECT			Controlador expulsores
+MSG_ETHERCAT_CONNECTED		Controlador expulsores conectado
+MSG_ETHERCAT_NOT_CONNECTED	Controlador expulsores desconectado
+MSG_ETHERCAT_VERSION		Version Controlador
+MSG_BASE_TIME				Base de tiempos
+MSG_EJECTION_MODE			Modo de expulsión
+MSG_ETHERCAT_DEVICES		Terminales ethercat
+MSG_DEVICES_STATE			Estado terminales
+MSG_DEVICES					Terminales
+MSG_FAILURE_DEVICE			Fallo en el terminal nº
+MSG_PULSE_FREQ				Frecuencia pulso
+MSG_PULSE_TURN				Pulsos/vuelta
+MSG_TIMER_FREQ				Frecuencia timer
+MSG_ELECTRIC_CABINET		Cuadro eléctrico
+MSG_DRIVER_ELECT_CAB		Controlador del cuadro electrico
+MSG_BRC_SYSTEM				Cajón rechazo
+MSG_OPENNING_DOOR			Abriendo puerta
+MSG_BOX_FILLING				Cajón llenandose
+MSG_DOOR_OPEN				Puerta abierta
+MSG_REJECT_PHOTO			Fotocelula de rechazo activa
+MSG_BOX_FULL				Cajón lleno
+MSG_DRIVER_INVERTERS		Controlador variadores
+
+EV_PRODUCT_AT_THE_END		Alto porcentaje de producto al final de máquina
+EV_EJECTION_DISABLED		Expulsión deshabilitada
+
+
+#-------------------------------------------------------
+#-----------------MAchineSafetyForm---------------------
+#-------------------------------------------------------
+lb_security_status		Estado de seguridad	
+safetyNotification_lb	Lista de avisos de seguridad
+notInUse_lb				Sin usar:
+noti1_lb				Paro de emergencia puerta frontal
+noti4_lb				Paro de emergencia puerta de servicio
+noti4_lb2				Paro de emergencia de la izquierda
+noti4_lb3				Paro de emergencia detrás izquierda
+noti3_lb				Vacío 1
+noti3_lb2				Paro de emergencia de la derecha
+noti3_lb3				Paro de emergencia detrás derecha
+noti2_lb				Paro de emergencia externo
+noti2_lb2				Stops de la entrada/salida producto	
+noti5_lb				Cirtuito de seguridad puerta frontal
+noti6_lb				Vacío 2
+noti6_lb2				Circuito de seguridad puerta de servicio
+noti6_lb3				Seguridad puerta servicio/cortinillas izquierda
+noti7_lb				Circuito de seguridad cortinillas izquierda
+noti7_lb2				Seguridad puerta servicio/cortinillas derecha
+noti7_lb3				Puerta izquierda
+noti8_lb				Circuito de seguridad cortinillas derecha
+noti8_lb2				Circuito de seguridad de la cámara 1
+noti8_lb3				Puerta derecha
+noti9_lb				Circuito de seguridad puerta de servicio
+noti9_lb2				Protección izquierda puerta delantera
+noti9_lb3				Protección puerta derecha
+noti9_lb4				Circuito de seguridad cortinillas centrales
+noti10_lb				Circuito de seguridad de la cámara 1
+noti10_lb2				Protección izquierda puerta trasera
+noti11_lb				Vacío 3
+noti11_lb2				Circuito de seguridad de la cámara 2
+noti11_lb3				Protección derecha puerta delantera
+noti12_lb				Vacío 4
+noti12_lb2				Circuito de seguridad de la cámara 3
+noti12_lb3				Protección derecha puerta trasera
+noti13_lb				Relé de seguridad de la puerta
+noti14_lb				Relé de seguridad de los paros de emergencia
+noti15_lb				Llave de rayos X
+noti16_lb				Baliza
+
+btn_close_b				CERRAR
+
+
+#-------------------------------------------------------
+#-----------------OMRON FORM----------------------------
+#-------------------------------------------------------
+configuration_lb			Configuración
+inverterToConfig_lb			Variador a configurar:
+movement_lb					Movimiento:
+labelFreqConf				Frecuencia (Hz):
+status_label				Estado
+frequency_label				Frecuencia
+forwardMov_lb				MOV. hacia adelante
+reverseMov_lb				MOV. inverso
+error_lb					Error
+warning_lb					Alarma
+remoteOp_lb					Operación Remota
+frequencyMat_lb				Frecuencia establecido
+cannotUpdate_lb				No se puede actualizar
+btn_close_omron				CERRAR
+
+#-----------------OMRON Faulties/EVENTS----------------------------
+FAULTY_INV_ERR1				Error variador 1
+EV_INV_ERR1					Error variador 1
+FAULTY_INV_WARN1			Alerta variador 1
+EV_INV_WARN1				Alerta variador 1
+FAULTY_INV_NO_REMOTE1		Variador 1 sin operación remota
+EV_INV_NO_REMOTE1			Variador 1 sin operación remota
+FAULTY_INV_NO_UP_DATA1 		Variador 1 no puede actualizar información
+EV_INV_NO_UP_DATA1 			Variador 1 no puede actualizar información
+
+FAULTY_INV_ERR2				Error variador 2
+EV_INV_ERR2					Error variador 2
+FAULTY_INV_WARN2			Alerta variador 2
+EV_INV_WARN2				Alerta variador 2
+FAULTY_INV_NO_REMOTE2		Variador 2 sin operación remota
+EV_INV_NO_REMOTE2			Variador 2 sin operación remota
+FAULTY_INV_NO_UP_DATA2 		Variador 2 no puede actualizar información
+EV_INV_NO_UP_DATA2 			Variador 2 no puede actualizar información
+
+FAULTY_INV_ERR3				Error variador 3
+EV_INV_ERR3					Error variador 3
+FAULTY_INV_WARN3			Alerta variador 3
+EV_INV_WARN3				Alerta variador 3
+FAULTY_INV_NO_REMOTE3		Variador 3 sin operación remota
+EV_INV_NO_REMOTE3			Variador 3 sin operación remota
+FAULTY_INV_NO_UP_DATA3 		Variador 3 no puede actualizar información
+EV_INV_NO_UP_DATA3 			Variador 3 no puede actualizar información
+
+FAULTY_INV_ERR4				Error variador 4
+EV_INV_ERR4					Error variador 4
+FAULTY_INV_WARN4			Alerta variador 4
+EV_INV_WARN4				Alerta variador 4
+FAULTY_INV_NO_REMOTE4		Variador 4 sin operación remota
+EV_INV_NO_REMOTE4			Variador 4 sin operación remota
+FAULTY_INV_NO_UP_DATA4		Variador 4 no puede actualizar información
+EV_INV_NO_UP_DATA4 			Variador 4 no puede actualizar información
+
+#-----------------XCab Faulties/EVENTS----------------------------
+FAULTY_EC_PLC					Electric Cabinet PLC Fault
+EV_EC_PLC						Electric Cabinet PLC Fault
+FAULTY_BLOCKAGE					Atasco
+EV_BLOCKAGE						Atasco
+FAULTY_REJBIN_DOOR_OPENING		Abriendo puerta del cajón de rechazo
+EV_REJBIN_DOOR_OPENING			Abriendo puerta del cajón de rechazo
+FAULTY_REJBIN_DOOR_OPEN			Puerta del cajón de rechazo abierta
+EV_REJBIN_DOOR_OPEN				Puerta del cajón de rechazo abierta
+FAULTY_REJBIN_FULL				Cajón de rechazo lleno
+EV_REJBIN_FULL					Cajón de rechazo lleno
+FAULTY_REJBIN_NOAIR 			Cajón de rechazo sin aire
+EV_REJBIN_NOAIR 				Cajón de rechazo sin aire
+
+
+#----------------------------BIT STATE----------------------------
+FAULTY_EMERGENCIA			Fallo Eléctrico/Emergencia
+EV_EMERGENCIA				Fallo Eléctrico/Emergencia
+FAULTY_FALLO_ETHERCAT		Fallo Ethercat
+EV_FALLO_ETHERCAT			Fallo Ethercat
+FAULTY_PERMISO_EXTERNO		Falta Permiso Externo
+EV_PERMISO_EXTERNO			Falta Permiso Externo
+FAULTY_LC2_02				LC-02 Error 02
+EV_LC2_02					Error LC-02 02 tension excesiva condensador1
+FAULTY_LC2_03				LC-02 Error 03
+EV_LC2_03					Error LC-02 03 tension excesiva condensador2
+FAULTY_LC2_04				LC-02 Error 04
+EV_LC2_04					Error LC-02 04 corriente excesiva salida1 
+FAULTY_LC2_05				LC-02 Error 05
+EV_LC2_05					Error LC-02 05 corriente excesiva salida2
+FAULTY_LC2_06				LC-02 Error 06
+EV_LC2_06					Error LC-02 06 tension fuente demasiado baja
+FAULTY_LC2_07				LC-02 Error 07
+EV_LC2_07					Error LC-02 07 tension baja condensador1
+FAULTY_LC2_08				LC-02 Error 08
+EV_LC2_08					Error LC-02 08 tension baja condensador2
+FAULTY_LC2_09				LC-02 Error 09
+EV_LC2_09					Error LC-02 09 no hay tension en salida1
+FAULTY_LC2_10				LC-02 Error 10
+EV_LC2_10					Error LC-02 10 no hay tension en salida2 
+FAULTY_LC2_11				LC-02 Error 11
+EV_LC2_11					Error LC-02 11 corriente baja salida1
+FAULTY_LC2_12				LC-02 Error 12
+EV_LC2_12					Error LC-02 12 corriente baja salida2
+FAULTY_AIRE					Presión de aire baja
+EV_AIRE						Presión de aire baja
+FAULTY_VAR1					Parada Variador 1
+EV_VAR1						Variador 1: Falta confirmacion de PC
+FAULTY_VAR2					Parada Variador 2
+EV_VAR2						Variador 2: Falta confirmacion de PC
+FAULTY_VAR3					Parada Variador 3
+EV_VAR3 					Variador 3: Falta confirmacion de PC
+
+
+#-----------------TConditionsLineComm----------------------------
+ConditionsGb			Condiciones
+Enabled					Habilitado
+LoadLb					Carga
+SignLoadLb				Signo Carga
+EjectionLb				Expulsión
+SignEjectionLb			Signo Expulsión
+NumObjectsLb			Número Objetos
+SignNumObjectsLb		Signo Num. Objetos
+StateLb					Estado
+InfoCb					Información
+CurrentStateLb			Estado actual
+CurrentLoadLb			Carga actual
+CurrentEjectionLb		Expulsión actual
+CurrentCounterUnitsLb	Contador objs. actual
+AutoAdjustCb			Ajustes automáticos
+EnabledAutoMode			Hablitar modo automático
+ModeAutoLb				Modo
+DesiredLoadLb			Carga deseada
+DesiredObjectsLb		Objetos deseados
+
+#-----------------TOmronFormWizard--------------------------------
+TxtOmron1				Compruebe que los variadores tengan la tarjeta de comunicaciones de EtherCAT conectada y esten conectados a la red de TwinCAT.
+TxtOmron2				Aparecerá un error en el variador: E60.1.
+TxtOmron3				Algún variador no esta conectado, conecte y reinicie el asistente.
+TxtOmron4				Seleccione el variador a configurar.
+TxtOmron5				La configuración del variador se hará en 2 pasos: el 1º para inicializar y el 2º para parametrizar.
+TxtOmron6				Al terminar el primer paso deberá apagar de la red eléctrica el variador y volver a encender.
+TxtOmron7				Desconecte el variador de la red eléctrica para quitar el error obtenido, espere a que la luz de RUN se encienda y ejecute el Paso 2.
+TxtOmron8				El variador ha sido configurado.
+TxtOmron9				Puede seguir configurando otros variadores o cerrar la ventana.
+BtnNextOmronForm			Siguiente
+BtnCancelOmronForm			Salir
+BtnConfig1OmronForm			Config 1
+BtnConfig2OmronForm			Config 2
+BtnConfig3OmronForm			Config 3
+BtnConfig4OmronForm			Config 4
+BtnStep1OmronForm			Paso 1
+BtnStep2OmronForm			Paso 2

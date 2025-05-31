@@ -1,0 +1,73 @@
+﻿# English  Translations for MVS.
+
+#Code					Text
+#-------------------------------------------
+
+FAULTY_ENCODER			Encoder failure
+EV_ENCODER_NO_PULSES		No encoder pulses. Check wiring
+EV_ENCODER_NO_ZERO		No encoder zero signal. Revise cableado
+EV_ENCODER_WRONG_ZERO		Encoder pulses per turn are not correct. Check Encoder rotation
+EV_ENCODER_PULSES_NOT_RUNNING	Encoder pulses are being detected while the conveyor is stopped
+
+EV_TROUBLESHOOT_DIAGNOSE	Start diagnose
+EV_TROUBLESHOOT_TECHASSITANCE 	Start technical assistance 
+EV_TROUBLESHOOT_RECOVERY	Start recovery application
+EV_TROUBLESHOOT_STOP_RUN	Start stop and run application
+CARGA_HEADER			Date/Time;  Kg/h;   Load
+
+RequestSupportBt	Request support
+diagnoseBtn		Diagnose
+rebootProgramButon	Stop/Run program
+rebootComputerButton	Reboot computer
+recoveryButton		Run recovery
+Ejectionbtn		Ejection
+Returnbtn		Return
+
+TabSheetTroubleShoot	TroubleShoot
+TabSheetWizards		Wizards
+EjectionWizardButton	Ejection wizard
+InverterWizardButton	Inverter wizard
+CalibrationWizardButton Chain Adjustment
+CameraLbl		Camera
+CameraWizardButton	Camera Wizard
+CoordDistWizardButton   Coord. distortion wizard
+GBUserWizards		User Wizards
+GBTechnicalServiceWizards Technical service Wizards
+
+exitExtractButton	Exit
+extractButton		Eject
+extractDevice		Eject device
+devicenotStop		Device can not stop
+
+BtnNewInfoProd		New Batch
+TEXT_BACK		Back
+
+LabelBadPos1		Load quality ratio
+LabelBadPosNow1		Load quality (last 100 obj.)
+LabelBadPos2		Load quality ratio
+LabelBadPosNow2		Load quality (last 100 obj.)
+PanelInfoCam1		Info. Camera 1
+PanelInfoCam2		Info. Camera 2
+LabelAverageCaliber	Avg size (last 10000 obj.)
+GeneralInfoPanel	Info. General
+
+InfoProdBtn		Prod. Reports
+WarningsWizardButtonS	Warnings wizard
+BtnInfo			Info
+
+chbMModPointSel		Manual Mode Point Movement
+chbMoveGrid		Move All Grid
+
+StartButton			Start
+StopButton			Stop
+
+MSG_START_INVERTER_WIZARD	To start the inverter wizard, the classifier program will be stopped
+MSG_END_BATCH			Do you want to save data and starting another batch?
+
+LineCommunicationWB	Line comm. wizard	
+
+CLEAN_MODE		Clean Mode
+CLEAN_MODE_STOP		Stop Clean Mode	
+ModoLimpieza		Clean Mode
+FAULTY_CLEAN_MODE	Clean Mode	
+MSG_CLEANING_MODE	Do you want to activate the cleaning mode? The analysis will be stopped.
