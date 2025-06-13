@@ -739,6 +739,15 @@ void __fastcall TFormLT::FormCreate(TObject *Sender)                          {
 //    m_classIntExt     = new TClassifierInterface(this, PanelMainScreenCfg, PanelGraphMainScreen, m_modMngr, false, FLAG_USER  << 7, FLAG_USER  << 6);
    }
 
+   if (m_gridIntf)
+      m_gridIntf->SetEnabled(false);
+   if (m_gridIntfUser)
+      m_gridIntfUser->SetEnabled(false);
+   if (m_classInt)
+      m_classInt->SetEnabled(false);
+   if (m_classIntExt)
+	  m_classIntExt->SetEnabled(false);
+
 
    //Cambio de nombre de los flags
    if (m_gridIntf)                                                            {

@@ -25,7 +25,7 @@
 		<PropertyGroup Condition="'$(Base)'!=''">
 			<ILINK_AdditionalOptions>-L Mastermind_lyra.lib -L TCatIODrv.lib -L tcadsdll.lib  -L libxml2.lib -L libhasp_windows_bcc.lib -L psapi.lib -L Susi4.lib -L susi_bor.lib</ILINK_AdditionalOptions>
 			<IncludePath>..\code\RaydenBoard\;..\code\Advantech\;..\..\Mastermind_lyra\code\processes\;..\code\twincat3\;..\code\twincat2\;$(BDS)\include\windows\rtl\;..\..\Mastermind_lyra\code\tools\;..\code\;..\code\appControls;..\code\twincat\;..\code\shared\;$(LTAISRootMastermind)\code\;$(LTAISRootMastermind)\code\hardlock;$(LTAISRootMastermind)\code\tools;$(LTAISRootMastermind)\code\processes;$(LTAISRootMastermind)\code\interface;$(LTAISRootMastermind)\code\images;$(LTAISRootMastermind)\code\analysis;$(IncludePath)</IncludePath>
-			<ILINK_LibraryPath>..\code\RaydenBoard\;..\code\Advantech\;..\..\Mastermind_lyra\code\processes\;..\code\twincat3\;..\code\twincat2\;..\..\VisionCameraDalsaGiGe\libraries\;..\..\Mastermind_lyra\code\tools\;..\code\shared\;..\code\twincat\;..\code\;$(BDS)\include\windows\rtl\;C:\Program Files (x86)\Embarcadero\RAD Studio\8.0\lib\win32\release\psdk;..\libraries;$(LTAISRootMastermind)\code\hardlock;$(LTAISRootMastermind)\code\interface;$(LTAISRootMastermind)\code\tools;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+			<ILINK_LibraryPath>..\libraries\;..\..\opencv_4_5_1\opencv_4_5_1\lib\;..\code\RaydenBoard\;..\code\Advantech\;..\..\Mastermind_lyra\code\processes\;..\code\twincat3\;..\code\twincat2\;..\..\VisionCameraDalsaGiGe\libraries\;..\..\Mastermind_lyra\code\tools\;..\code\shared\;..\code\twincat\;..\code\;$(BDS)\include\windows\rtl\;C:\Program Files (x86)\Embarcadero\RAD Studio\8.0\lib\win32\release\psdk;..\libraries;$(LTAISRootMastermind)\code\hardlock;$(LTAISRootMastermind)\code\interface;$(LTAISRootMastermind)\code\tools;$(ILINK_LibraryPath)</ILINK_LibraryPath>
 			<OutputExt>exe</OutputExt>
 			<PackageImports>vclimg.bpi;vcl.bpi;vclx.bpi;dbrtl.bpi;Rave90VCL.bpi;bdertl.bpi;rtl.bpi;svnui.bpi;svn.bpi;TeeUI.bpi;TeeDB.bpi;Tee.bpi;vclactnband.bpi;vcldb.bpi;vcldbx.bpi;vcltouch.bpi;xmlrtl.bpi;dsnap.bpi;dsnapcon.bpi;vclib.bpi;ibxpress.bpi;adortl.bpi;IndyCore.bpi;IndySystem.bpi;IndyProtocols.bpi;inet.bpi;intrawebdb_110_150.bpi;Intraweb_110_150.bpi;vclie.bpi;websnap.bpi;webdsnap.bpi;inetdb.bpi;inetdbbde.bpi;inetdbxpress.bpi;soaprtl.bpi;vclribbon.bpi;dbexpress.bpi;DbxCommonDriver.bpi;DataSnapIndy10ServerTransport.bpi;DataSnapProviderClient.bpi;DbxClientDriver.bpi;DataSnapClient.bpi;dbxcds.bpi;DataSnapServer.bpi;AzureCloud.bpi;DBXInterBaseDriver.bpi;DBXMySQLDriver.bpi;DBXFirebirdDriver.bpi;DBXSybaseASEDriver.bpi;DBXSybaseASADriver.bpi;DBXOracleDriver.bpi;DBXMSSQLDriver.bpi;DBXInformixDriver.bpi;DBXDb2Driver.bpi;CodeSiteExpressVcl.bpi;TMSSmoothControlsPackPkgC2011.bpi</PackageImports>
 			<Multithreaded>true</Multithreaded>
@@ -267,11 +267,18 @@
 				<DependentOn>..\code\twincat3\TStdElectricCabinetT3.h</DependentOn>
 				<BuildOrder>45</BuildOrder>
 			</CppCompile>
+			<LibFiles Include="..\libraries\opencv_world451.lib">
+				<IgnorePath>true</IgnorePath>
+				<BuildOrder>53</BuildOrder>
+			</LibFiles>
+			<LibFiles Include="..\libraries\opencv_world451d.lib">
+				<IgnorePath>true</IgnorePath>
+				<BuildOrder>54</BuildOrder>
+			</LibFiles>
 			<CppCompile Include="LyraApplication_GRAPESORTER.cpp">
 				<BuildOrder>0</BuildOrder>
 			</CppCompile>
 			<ResFiles Include="LyraApplication_GRAPESORTER.res">
-				<ModuleName>LyraApplication_GRAPESORTER.res</ModuleName>
 				<BuildOrder>38</BuildOrder>
 			</ResFiles>
 			<None Include="..\..\Mastermind_lyra\project\Mastermind_lyra.bpf"/>

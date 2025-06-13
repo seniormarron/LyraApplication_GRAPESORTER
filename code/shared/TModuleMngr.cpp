@@ -930,17 +930,15 @@ void TModuleMngr::WhatCanYouCreate(std::list<s_wcyc_container_class> &list,
       if ( stricmp(name, typeid( LTBeltDiscr_RGBHSI).name()) == 0 || firstLevel ){
          s_wcyc_container_class s1( typeid( LTBeltDiscr_RGBHSI).name() );
          s1.AddToList( list );
-	  }
-	  /*
-	  if ( stricmp(name, typeid( LTBeltDiscrGrappe).name()) == 0 || firstLevel ){
-		 s_wcyc_container_class s1( typeid( LTBeltDiscrGrappe).name() );
-		 s1.AddToList( list );
-	  }
-	  if ( stricmp(name, typeid( LTDeletePlaneInfoNotProduct).name()) == 0 || firstLevel ){
-		 s_wcyc_container_class s1( typeid( LTDeletePlaneInfoNotProduct).name() );
-		 s1.AddToList( list );
-	  }
-	  */
+      }
+      if ( stricmp(name, typeid( LTBeltDiscrGrappe).name()) == 0 || firstLevel ){
+         s_wcyc_container_class s1( typeid( LTBeltDiscrGrappe).name() );
+         s1.AddToList( list );
+      }
+      if ( stricmp(name, typeid( LTDeletePlaneInfoNotProduct).name()) == 0 || firstLevel ){
+         s_wcyc_container_class s1( typeid( LTDeletePlaneInfoNotProduct).name() );
+         s1.AddToList( list );
+      }
       if ( stricmp(name, typeid( LTBeltOcupation).name()) == 0 || firstLevel ){
          s_wcyc_container_class s1( typeid( LTBeltOcupation).name() );
          s1.AddToList( list );
@@ -2031,16 +2029,14 @@ TDataManager *TModuleMngr::CreateDataMngr(wchar_t *name, char* code,
       if ( p)
       return new LTBeltDiscr_RGBHSI( name, p);
    }
-   /*
    if ( stricmp( code, typeid( LTBeltDiscrGrappe).name())==0)                 {
-	  if ( p)
-	  return new LTBeltDiscrGrappe( name, p);
+      if ( p)
+      return new LTBeltDiscrGrappe( name, p);
    }
    if ( stricmp( code, typeid( LTDeletePlaneInfoNotProduct).name())==0)       {
-	  if ( p)
-	  return new LTDeletePlaneInfoNotProduct( name, p);
+      if ( p)
+      return new LTDeletePlaneInfoNotProduct( name, p);
    }
-   */
 
    if ( stricmp( code, typeid( LTBeltOcupation).name())==0)                   {
       if ( p)

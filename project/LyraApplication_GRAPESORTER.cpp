@@ -143,10 +143,10 @@ WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR lpCmdLine, int)
 
       Application->Title = "LyraTechs Artificial Intelligence Software";
       Application->CreateForm(__classid(TFormLT), &FormLT);
-		Application->CreateForm(__classid(TLoadCfgDlg), &LoadCfgDlg);
-		Application->CreateForm(__classid(TImageSignalForm), &ImageSignalForm);
-		Application->CreateForm(__classid(TImageSignalEmbededForm), &ImageSignalEmbededForm);
-		LOAD_TRANSLATIONS((TComponent*)FormLT);
+       Application->CreateForm(__classid(TLoadCfgDlg), &LoadCfgDlg);
+       Application->CreateForm(__classid(TImageSignalForm), &ImageSignalForm);
+       Application->CreateForm(__classid(TImageSignalEmbededForm), &ImageSignalEmbededForm);
+       LOAD_TRANSLATIONS((TComponent*)FormLT);
 
       // -- Set real time prority & affinity
       SetPriorityClass(  GetCurrentProcess(),   REALTIME_PRIORITY_CLASS);
