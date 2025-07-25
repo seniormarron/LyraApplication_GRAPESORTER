@@ -746,7 +746,7 @@ void __fastcall TFormLT::FormCreate(TObject *Sender)                          {
    if (m_classInt)
       m_classInt->SetEnabled(false);
    if (m_classIntExt)
-	  m_classIntExt->SetEnabled(false);
+      m_classIntExt->SetEnabled(false);
 
 
    //Cambio de nombre de los flags

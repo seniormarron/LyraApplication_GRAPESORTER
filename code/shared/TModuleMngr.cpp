@@ -112,6 +112,7 @@
 #include "TMoveCtrlView.h"
 #include "TCalcBadPositioned.h"
 #include "RaydenBoard.h"
+#include "LTElipseDetector.h"
 
 
 #pragma package(smart_init)
@@ -668,7 +669,7 @@ void TModuleMngr::WhatCanYouCreate(std::list<s_wcyc_container_class> &list,
    bool firstLevel = (stricmp(name, FIRST_LEVEL_MANAGER) == 0);
    if (manager)                                                               {
 
-      // -- Manager Controls
+	  // -- Manager Controls
 
       if ((stricmp(name, typeid(TCalcCompactness).name()) == 0) || firstLevel) {
          s_wcyc_container_class s1(typeid(TCalcCompactness).name());
@@ -797,13 +798,14 @@ void TModuleMngr::WhatCanYouCreate(std::list<s_wcyc_container_class> &list,
          s_wcyc_container_class s1(typeid(TWarningNotifyMngr).name());
          s1.AddToList(list);
       }
-      if ((stricmp(name, typeid(TEmailConfiguration).name()) == 0) )          {
-         s_wcyc_container_class s1(typeid(TEmailConfiguration).name());
-         s1.AddToList(list);
-      }
-
-
-
+	  if ((stricmp(name, typeid(TEmailConfiguration).name()) == 0) )          {
+		 s_wcyc_container_class s1(typeid(TEmailConfiguration).name());
+		 s1.AddToList(list);
+	  }
+	  if ((stricmp(name, typeid(LTElipseDetector).name()) == 0) )          		{
+		 s_wcyc_container_class s1(typeid(LTElipseDetector).name());
+		 s1.AddToList(list);
+	  }
       // -- Processes
       if ( stricmp(name, typeid( TComputeImg).name()) == 0 || firstLevel)     {
          s_wcyc_container_class s1( typeid( TComputeImg).name() );
@@ -1806,8 +1808,13 @@ TDataManager *TModuleMngr::CreateDataMngr(wchar_t *name, char* code,
          return new TAbsDefect( name, mnc);
 
    if ( stricmp( code, typeid( RaydenBoard).name())==0)
-      if ( mnc)
-         return new RaydenBoard( name, mnc);
+	  if ( mnc)
+		 return new RaydenBoard( name, mnc);
+
+   if ( stricmp( code, typeid( LTElipseDetector).name())==0)
+	  if ( mnc)
+		 return new LTElipseDetector( name, mnc);
+
 
 
 

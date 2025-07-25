@@ -267,14 +267,6 @@
 				<DependentOn>..\code\twincat3\TStdElectricCabinetT3.h</DependentOn>
 				<BuildOrder>45</BuildOrder>
 			</CppCompile>
-			<LibFiles Include="..\libraries\opencv_world451.lib">
-				<IgnorePath>true</IgnorePath>
-				<BuildOrder>53</BuildOrder>
-			</LibFiles>
-			<LibFiles Include="..\libraries\opencv_world451d.lib">
-				<IgnorePath>true</IgnorePath>
-				<BuildOrder>54</BuildOrder>
-			</LibFiles>
 			<CppCompile Include="LyraApplication_GRAPESORTER.cpp">
 				<BuildOrder>0</BuildOrder>
 			</CppCompile>
